@@ -1,0 +1,150 @@
+services:
+  s1_1:
+    build: ./dockerfiles/haproxy/
+    volumes:
+      - ./codes/s1_1:/app
+      - ./configs/s1_1/haproxy.cfg:/etc/haproxy/haproxy.cfg
+    tty: true
+    entrypoint: bash /app/static_route.sh
+    privileged: true
+    networks:
+      network_1:
+        ipv4_address: 10.1.1.1
+      network_5:
+        ipv4_address: 10.5.1.1
+  s1_2:
+    build: ./dockerfiles/router/
+    volumes:
+      - ./codes/s1_2:/app
+    tty: true
+    entrypoint: bash /app/static_route.sh
+    privileged: true
+    networks:
+      network_1:
+        ipv4_address: 10.1.1.2
+      network_4:
+        ipv4_address: 10.4.1.1
+  s2_1:
+    build: ./dockerfiles/haproxy/
+    volumes:
+      - ./codes/s2_1:/app
+      - ./configs/s2_1/haproxy.cfg:/etc/haproxy/haproxy.cfg
+    tty: true
+    entrypoint: bash /app/static_route.sh
+    privileged: true
+    networks:
+      network_2:
+        ipv4_address: 10.2.1.1
+      network_5:
+        ipv4_address: 10.5.1.2
+  s2_2:
+    build: ./dockerfiles/router/
+    volumes:
+      - ./codes/s2_2:/app
+    tty: true
+    entrypoint: bash /app/static_route.sh
+    privileged: true
+    networks:
+      network_2:
+        ipv4_address: 10.2.1.2
+      network_4:
+        ipv4_address: 10.4.1.2
+  s3_1:
+    build: ./dockerfiles/haproxy/
+    volumes:
+      - ./codes/s3_1:/app
+      - ./configs/s3_1/haproxy.cfg:/etc/haproxy/haproxy.cfg
+    tty: true
+    entrypoint: bash /app/static_route.sh
+    privileged: true
+    networks:
+      network_3:
+        ipv4_address: 10.3.1.1
+      network_5:
+        ipv4_address: 10.5.1.3
+  s3_2:
+    build: ./dockerfiles/router/
+    volumes:
+      - ./codes/s3_2:/app
+    tty: true
+    entrypoint: bash /app/static_route.sh
+    privileged: true
+    networks:
+      network_3:
+        ipv4_address: 10.3.1.2
+      network_4:
+        ipv4_address: 10.4.1.3
+  e1:
+    build: ./dockerfiles/haproxy/
+    volumes:
+      - ./codes/e1:/app
+      - ./configs/e1/haproxy.cfg:/etc/haproxy/haproxy.cfg
+    tty: true
+    entrypoint: bash /app/static_route.sh
+    privileged: true
+    networks:
+      network_4:
+        ipv4_address: 10.4.1.4
+  client1:
+    build: ./dockerfiles/host/
+    volumes:
+      - ./codes/client1:/app
+    tty: true
+    entrypoint: bash
+    privileged: true
+    networks:
+      network_5:
+        ipv4_address: 10.5.1.4
+      network_6:
+        ipv4_address: 10.6.1.1
+  server1:
+    build: ./dockerfiles/host/
+    volumes:
+      - ./codes/server1:/app
+    tty: true
+    entrypoint: bash
+    privileged: true
+    networks:
+      network_4:
+        ipv4_address: 10.4.1.5
+      network_6:
+        ipv4_address: 10.6.1.2
+        
+# Network
+networks:
+  network_1:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.1.1.0/24
+          gateway: 10.1.1.254
+  network_2:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.2.1.0/24
+          gateway: 10.2.1.254
+  network_3:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.3.1.0/24
+          gateway: 10.3.1.254
+  network_4:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.4.1.0/24
+          gateway: 10.4.1.254
+  network_5:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.5.1.0/24
+          gateway: 10.5.1.254
+  network_6:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.6.1.0/24
+          gateway: 10.6.1.254
