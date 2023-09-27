@@ -36,10 +36,10 @@ if __name__ == "__main__":
     cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
 
     send_data("10.5.1.1",80,cipher_bytes_1)
-    time.sleep(0.001)
+    time.sleep(0.00005)
     send_data("10.5.1.2",80,cipher_bytes_2)
-    time.sleep(0.001)
+    time.sleep(0.00005)
     send_data("10.5.1.3",80,cipher_bytes_3)
 
-    total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=0.002)
+    total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=0.0001)
     print("Total time：", (total_end_time - start_time).total_seconds() ,"sec")
