@@ -9,7 +9,7 @@ from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 
 #20231029
-
+#fixed
 if __name__ == "__main__":
     datasize_mb = int(input("[Client] Data Size MB: "))
     data_byte_size = 1024*datasize_mb
