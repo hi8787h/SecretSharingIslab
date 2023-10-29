@@ -42,7 +42,6 @@ if __name__ == "__main__":
     cipher_bytes_4 = json.dumps(part_4).encode('utf-8')
     cipher_bytes_5 = json.dumps(part_5).encode('utf-8')
 
-<<<<<<< HEAD
     cb_gzip1 = gzip.compress(cipher_bytes_1)
     cb_gzip2 = gzip.compress(cipher_bytes_2)
     cb_gzip3 = gzip.compress(cipher_bytes_3)
@@ -63,4 +62,3 @@ if __name__ == "__main__":
 
     total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=0.04)
     print("Total time：", (total_end_time - start_time).total_seconds() ,"sec")
-
