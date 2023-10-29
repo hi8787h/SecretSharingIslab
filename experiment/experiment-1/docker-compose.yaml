@@ -86,6 +86,7 @@ services:
       network_4:
         ipv4_address: 10.4.1.4
   client1:
+    working_dir: /app
     build: ./dockerfiles/host/
     volumes:
       - ./codes/client1:/app
@@ -98,6 +99,7 @@ services:
       network_6:
         ipv4_address: 10.6.1.1
   server1:
+    working_dir: /app
     build: ./dockerfiles/host/
     volumes:
       - ./codes/server1:/app

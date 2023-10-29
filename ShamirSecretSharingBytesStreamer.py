@@ -25,17 +25,16 @@ class ShamirSecretSharingBytesStreamer:
         
     # Encrypt
     def zero_byte_padding(self,data:bytes)->bytes:
-        data_length_diff:int = 16 - len(data)
-        for i in range(data_length_diff):
-            data += b'\0'
+        while len(data)%16 != 0:
+            data = b'\x00' + data
         return data
     
     def split_data(self, data:bytes)->list:
         sqeuence_start = 0
         sqeuence_end = 16
+        data = self.zero_byte_padding(data)
         for i in range(self.chuncks_number):
             data_chunk:bytes = data[sqeuence_start:sqeuence_end]
-            data_chunk = self.zero_byte_padding(data_chunk) if len(data_chunk) < 16 else data_chunk
             self.data_chunk_list.append(data_chunk)
             sqeuence_start += 16
             sqeuence_end += 16
@@ -64,6 +63,17 @@ class ShamirSecretSharingBytesStreamer:
         return self.shares_list
 
     # Decrypt
+    def count_chunks_amount(self)->int:
+        # Count chunks number from self.chunks_shares_ciphertext
+        chunks_number = 0
+        for chunk_id in self.chunks_shares_ciphertext:
+            chunks_number += 1
+        # Check All chunk exist
+        for i in range(1,chunks_number+1):
+            if i not in self.chunks_shares_ciphertext:
+                raise Exception("Chunk " + str(i) + " not exist")
+        return chunks_number
+
     def save_chunk_shares(self, chunk_id:int, share_id:int,share_data_base64:str):
         share_data_bytes = base64.b64decode(share_data_base64.encode("utf-8"))
         self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data_bytes))
@@ -79,10 +89,12 @@ class ShamirSecretSharingBytesStreamer:
     def combine_chunks(self)->bytes:
         result_padding = bytes()
         padding_null_bytes_number:int = 0
-        for chunk_ciphertext_index in self.chunks_shares_ciphertext:
-            chunk_result = Shamir.combine(self.chunks_shares_ciphertext[chunk_ciphertext_index])
-            result_padding += chunk_result        
-        for i in reversed(range(len(result_padding))):
+        #Count and check chunks number
+        chunk_number    = self.count_chunks_amount()
+        for i in range(1,chunk_number+1):
+            chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
+            result_padding += chunk_result                    
+        for i in range(len(result_padding)):
             if result_padding[i] == 0 :
                 padding_null_bytes_number += 1
             else:
@@ -90,7 +102,21 @@ class ShamirSecretSharingBytesStreamer:
         result = result_padding[:-padding_null_bytes_number] if padding_null_bytes_number > 0 else result_padding
         return result
             
+    def remove_zero_padding(self,data:bytes)->bytes:
+        # Remove header zero padding of bytes
+        zero_padding_number = 0
+        for i in range(len(data)):
+            if data[i] == 0:
+                zero_padding_number += 1
+            else:
+                break
+        return data[zero_padding_number:]
+
     def combine_shares(self, data_list:list)->bytes:
         self.collect_chunks(data_list)
         result = self.combine_chunks()
+        result = self.remove_zero_padding(result)
         return result
+
+if __name__ == "__main__":
+    pass
