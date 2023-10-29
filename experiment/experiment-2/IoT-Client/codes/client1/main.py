@@ -38,11 +38,11 @@ if __name__ == "__main__":
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
-    SocketConnection.send_data("10.5.1.1",80,cipher_bytes_1)
+    SocketConnection.send_data("10.18.173.78",10001,cipher_bytes_1)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.5.1.2",80,cipher_bytes_2)
+    SocketConnection.send_data("10.18.173.78",10002,cipher_bytes_2)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.5.1.3",80,cipher_bytes_3)
+    SocketConnection.send_data("10.18.173.78",10003,cipher_bytes_3)
 
     total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=pause_time*2)
     print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
