@@ -1,2 +1,0 @@
-echo "Set route"
-bash

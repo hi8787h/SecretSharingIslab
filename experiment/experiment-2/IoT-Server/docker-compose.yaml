@@ -1,0 +1,11 @@
+services:
+  server1:
+    working_dir: /app
+    build: ./dockerfiles/host/
+    volumes:
+      - ./codes/server1:/app
+    tty: true
+    entrypoint: bash
+    privileged: true
+    ports:
+      - 8081:80
