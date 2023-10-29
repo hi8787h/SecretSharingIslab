@@ -4,10 +4,6 @@ from ShamirSecretSharingBytesStreamer import ShamirSecretSharingBytesStreamer
 import json
 import datetime
 import time
-import os
-
-#gzip
-import gzip
 
 HOST = "0.0.0.0"
 PORT = 80
@@ -26,9 +22,7 @@ def receive_data():
                 if not temp_data:
                     break
         print("[Server] Data length: ", len(data))
-
-        data_de = gzip.decompress(data)
-        return data_de
+        return data
 
 if __name__ == "__main__":
     while True:
@@ -41,16 +35,10 @@ if __name__ == "__main__":
         data3 = receive_data().decode('utf-8')
         part3 = json.loads(data3)
 
-        data4 = receive_data().decode('utf-8')
-        part4 = json.loads(data4)
-
-        data5 = receive_data().decode('utf-8')
-        part5 = json.loads(data5)
-
-        data = part1 + part2 + part3 + part4 + part5
+        data = part1 + part2 + part3
 
         sssbs = ShamirSecretSharingBytesStreamer()
-
+        
         start_decryption_time =  datetime.datetime.now()
         recover_text = sssbs.combine_shares(data)
         end_decryption_time =  datetime.datetime.now()
