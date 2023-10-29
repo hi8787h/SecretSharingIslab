@@ -13,7 +13,7 @@ services:
       network_1:
         ipv4_address: 10.1.1.1
   s1_2:
-    build: ./dockerfiles/router/
+    build: ./dockerfiles/haproxy/
     volumes:
       - ./codes/s1_2:/app
     tty: true
@@ -38,7 +38,7 @@ services:
       network_2:
         ipv4_address: 10.2.1.1
   s2_2:
-    build: ./dockerfiles/router/
+    build: ./dockerfiles/haproxy/
     volumes:
       - ./codes/s2_2:/app
     tty: true
@@ -63,7 +63,7 @@ services:
       network_3:
         ipv4_address: 10.3.1.1
   s3_2:
-    build: ./dockerfiles/router/
+    build: ./dockerfiles/haproxy/
     volumes:
       - ./codes/s3_2:/app
     tty: true
