@@ -25,5 +25,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 bin_len = 128
                 s = random.choices("01",k=bin_len)
                 print(s)
+                r = random.choices("01",k=bin_len)
+                print(r)
 
         #LRrecover
