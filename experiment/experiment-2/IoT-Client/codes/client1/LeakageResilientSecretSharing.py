@@ -12,7 +12,8 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
         """
         Leakage Resilient Secret Sharing
         Author: NCYU ISlab
-        This class inherits from ShamirSecretSharingBytesStreamer
+        This class inherits from ShamirSecretSharingBytesStreamer.
+        That will improve secure of system!
         """
 
         def __init__(self):
