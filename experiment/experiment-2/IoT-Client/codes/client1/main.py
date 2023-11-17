@@ -8,7 +8,7 @@ import time
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 
-#20231029
+#Hi
 #fixed
 if __name__ == "__main__":
     datasize_mb = int(input("[Client] Data Size MB: "))
