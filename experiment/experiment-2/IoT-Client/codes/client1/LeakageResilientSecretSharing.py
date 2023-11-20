@@ -18,14 +18,38 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
         def __init__(self):
                 super().__init__(self)
+                
+                #For encrypt
+                self.data = bytes()
+                self.message_length = 0
+                self.data_chunk_list = []
+                self.shares_list = []
+                
+                #For decrypt
+                self.chunks_shares_ciphertext = dict()
 
+        #set parameters s, r, w
+        def chosing_para(self):
+                bin_len = 128
+                n = 3
+                w = [] 
+
+                s = random.choices("01",k=bin_len)
+                #test
+                print(s)
+                
+                r = random.choices("01",k=bin_len)
+                #test
+                print(r)
+                
+                for i in range(n):
+                        w.append(random.choices("01",k=bin_len)) 
+                        #test
+                        print(w[i])
 
         #LRshare
-        def chosing_s_and_r(self):
-                bin_len = 128
-                s = random.choices("01",k=bin_len)
-                print(s)
-                r = random.choices("01",k=bin_len)
-                print(r)
-
+        
         #LRrecover
+
+if __name__ == "__main__":
+        pass
