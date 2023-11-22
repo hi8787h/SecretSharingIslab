@@ -1,6 +1,6 @@
 # Client
 import os
-from ShamirSecretSharingBytesStreamer import ShamirSecretSharingBytesStreamer
+from LeakageResilientSecretSharing import LeakageResilientSecretSharing
 import json
 import random
 import datetime
@@ -19,10 +19,10 @@ if __name__ == "__main__":
     print("[Client] Data SHA256: ",end =" ")
     HashFunction.print_sha256(data)
 
-    sssbs = ShamirSecretSharingBytesStreamer()
+    lrss = LeakageResilientSecretSharing()
 
     start_time =  datetime.datetime.now() 
-    cipher_list = sssbs.genarate_shares(2,4,data)
+    cipher_list = lrss.genarate_shares(2,4,data)
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Encrypt time：", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
@@ -37,6 +37,8 @@ if __name__ == "__main__":
     cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
     cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
     cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
+
+    
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
