@@ -10,7 +10,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
         """
 
         def __init__(self):
-                super().__init__(self)
+                super().__init__()
                 self.bin_len = 128
                 self.n = 3
                 self.w = []
@@ -19,26 +19,23 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
         #LRshare
 
         #set parameters
-        def set_s(self):
+        def set_s(self) -> list :
                 s = random.choices("01",k=self.bin_len)
     
-                #return a binary list
                 return s
 
-        def set_r(self):
+        def set_r(self) -> list :
                 r = random.choices("01",k=self.bin_len)
 
-                #return a binary list
                 return r
 
-        def set_w(self):
+        def set_w(self) -> list :
                 binW = random.choices("01",k=self.bin_len)
     
-                #return a binary list
                 return binW
         
         #compute inner product
-        def xor(self, str1, str2):
+        def xor(self, str1, str2) -> list :
                 xor_bin = []
 
                 for i in range(self.bin_len):
@@ -47,10 +44,10 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                         xor_int = int1^int2
                         xor_bin.append(str(xor_int))
 
-                #return a binary list
                 return xor_bin
 
-        #LRrecover
+        def genarate_shares(self, k: int, n: int, data: bytes) -> list:
+                return super().genarate_shares(k, n, data)
 
 if __name__ == "__main__":
         pass
