@@ -22,7 +22,7 @@ if __name__ == "__main__":
     lrss = LeakageResilientSecretSharing()
 
     start_time =  datetime.datetime.now() 
-    cipher_list = lrss.genarate_shares(2,4,data)
+    cipher_list = lrss.genarate_shares(2,3,data)
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Encrypt time：", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
