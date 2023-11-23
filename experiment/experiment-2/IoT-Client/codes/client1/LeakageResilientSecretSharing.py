@@ -1,4 +1,5 @@
 import random
+import json
 from ShamirSecretSharingBytesStreamer import ShamirSecretSharingBytesStreamer
 
 class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
@@ -90,7 +91,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 self.S_list = self.genarate_shares(2,3, sr)
 
                 # Output share
-
+                # (Need modify)
 
 if __name__ == "__main__":
         pass
