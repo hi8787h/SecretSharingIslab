@@ -21,17 +21,20 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 self.LRshare_list = []
                 self.S_list = []
         
-        def set_s(self) -> list :
-                s = random.choices("01",k=self.bin_len)
-                return s
+        def set_s(self) -> bytes :
+                s = random.choices("01",k=self.bin_len*3)
+                combined_s = ''.join(s).encode('utf-8')
+                return combined_s
 
-        def set_r(self) -> list :
+        def set_r(self) -> bytes :
                 r = random.choices("01",k=self.bin_len)
-                return r
+                combined_r = ''.join(r).encode('utf-8')
+                return combined_r
 
-        def set_w(self) -> list :
-                w = random.choices("01",k=self.bin_len)
-                return w
+        def set_w(self) -> bytes :
+                w = random.choices("01",k=self.bin_len*3)
+                combined_w = ''.join(w).encode('utf-8')
+                return combined_w
         
         # Compute inner product
         # (Need modify)
@@ -52,6 +55,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 return result_bin
 
         # XOR
+        # (Need modify)
         def xor(self, str1, str2) -> list :
                 xor_bin = []
 
@@ -68,12 +72,11 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
         def leakage_resilient(self, cbytes):
                 share_pri = []
-                sr = self.s + self.r
-                
                 # Set s, r
                 self.s = self.set_s()
                 self.r = self.set_r()
-
+                
+                sr = self.s + self.r # 128*3+128 = 512 bits
                 # Set each wi
                 for i in range(self.n):
                         self.w.append(self.set_w)
@@ -87,7 +90,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 self.S_list = self.genarate_shares(2,3, sr)
 
                 # Output share
-                
+
 
 if __name__ == "__main__":
         pass
