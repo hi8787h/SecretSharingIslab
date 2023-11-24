@@ -8,31 +8,31 @@ import time
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 
-#Hi
-#fixed
 if __name__ == "__main__":
     datasize_mb = int(input("[Client] Data Size MB: "))
-    data_byte_size = 1024*datasize_mb
+    data_byte_size = 1024 * datasize_mb
     print("[Client] Sending data size:", data_byte_size, "bytes")
     data = os.urandom(data_byte_size)
 
-    print("[Client] Data SHA256: ",end =" ")
+    print("[Client] Data SHA256: ", end =" ")
     HashFunction.print_sha256(data)
 
     lrss = LeakageResilientSecretSharing()
 
     start_time =  datetime.datetime.now() 
-    cipher_list = lrss.genarate_shares(2,3,data)
+    share_list = lrss.genarate_shares(2, 3, data)
+    # Use leakage resilient algorithm on shares
+    lrss_list = lrss.leakage_resilient(share_list)
     encrypt_end_time =  datetime.datetime.now()
-    print("[Client] Encrypt time：", (encrypt_end_time - start_time).total_seconds() ,"sec")
+    print("[Client] Encrypt time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
-    random.shuffle(cipher_list)
-    cipher_list_length:int = len(cipher_list)
-    cipher_list_part_length:int = cipher_list_length//3 +1
+    random.shuffle(lrss_list)
+    lrss_list_length: int = len(lrss_list)
+    lrss_list_part_length: int = lrss_list_length//3 + 1
     
-    part_1 = lrss.leakage_resilient(cipher_list[:cipher_list_part_length])
-    part_2 = lrss.leakage_resilient(cipher_list[cipher_list_part_length:2*cipher_list_part_length])
-    part_3 = lrss.leakage_resilient(cipher_list[2*cipher_list_part_length:])
+    part_1 = lrss_list[: lrss_list_part_length]
+    part_2 = lrss_list[lrss_list_part_length: 2 * lrss_list_part_length]
+    part_3 = lrss_list[2 * lrss_list_part_length: ]
 
     cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
     cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
