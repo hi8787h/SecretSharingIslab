@@ -30,15 +30,13 @@ if __name__ == "__main__":
     cipher_list_length:int = len(cipher_list)
     cipher_list_part_length:int = cipher_list_length//3 +1
     
-    part_1 = cipher_list[:cipher_list_part_length]
-    part_2 = cipher_list[cipher_list_part_length:2*cipher_list_part_length]
-    part_3 = cipher_list[2*cipher_list_part_length:]
+    part_1 = lrss.leakage_resilient(cipher_list[:cipher_list_part_length])
+    part_2 = lrss.leakage_resilient(cipher_list[cipher_list_part_length:2*cipher_list_part_length])
+    part_3 = lrss.leakage_resilient(cipher_list[2*cipher_list_part_length:])
 
     cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
     cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
     cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
-
-    
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
