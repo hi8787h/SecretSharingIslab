@@ -38,46 +38,40 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 return combined_w
         
         # Compute inner product
-        # (Need modify)
-        def get_inner_product(self, vec1:list, vec2:list, modulus) -> str:
-                if len(vec1) != len(vec2):
+        def get_inner_product(self, byte1:bytes, byte2:bytes, modulus) -> bytes:
+                if len(byte1) != len(byte2):
                         raise ValueError("Vectors must have the same length.")
                 
-                int_v1 = []
-                int_v2 = []
-                for i in range(len(vec1)):
-                        int_v1.append(int(vec1[i]))
-                        int_v2.append(int(vec2[i]))
+                # Change datatype from bytes to int, and compute inner product
+                int_1 = int.from_bytes(byte1, byteorder='big')
+                int_2 = int.from_bytes(byte2, byteorder='big')
 
-                inner = sum(x * y for x, y in zip(int_v1, int_v2))
-                result_mod = inner % modulus
-                result_bin = bin(result_mod)[2:].zfill(128)
+                inner_product = int_1 * int_2
+                inner_mod = inner_product % modulus
 
-                return result_bin
+                inner_bin:bytes = bin(inner_mod)[2:].zfill(128)
+                return inner_bin
 
         # XOR
         # (Need modify)
-        def xor(self, str1, str2) -> list :
-                xor_bin = []
-
-                for i in range(self.bin_len):
-                        int1 = int(str1[i],2)
-                        int2 = int(str2[i],2)
-                        xor_int = int1^int2
-                        xor_bin.append(str(xor_int))
-
-                return xor_bin
+        def xor(self, byte1, byte2) -> bytes :
+                if len(byte1) != len(byte2):
+                        raise ValueError("Bytes objects must have the same length.")
+                
+                xor_bytes = bytes(x^y for x,y in zip(byte1, byte2))
+                return xor_bytes
 
         def genarate_shares(self, k: int, n: int, data: bytes) -> list:
                 return super().genarate_shares(k, n, data)
 
-        def leakage_resilient(self, cbytes):
+        # Leakage resilient algorithm implementation
+        def leakage_resilient(self, cipher_list:list):
                 share_pri = []
+                lr_share_list = []
                 # Set s, r
                 self.s = self.set_s()
                 self.r = self.set_r()
                 
-                sr = self.s + self.r # 128*3+128 = 512 bits
                 # Set each wi
                 for i in range(self.n):
                         self.w.append(self.set_w)
@@ -85,13 +79,27 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
                         Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
-                        share_pri.append(self.xor(cbytes, Ext))
+                        cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
+                        share_pri.append(self.xor(cipher_bytes, Ext))
                 
                 # obtain S1 to Sn
+                sr = self.s + self.r # 128*3+128 = 512 bits
+
                 self.S_list = self.genarate_shares(2,3, sr)
 
                 # Output share
-                # (Need modify)
+                for i in range(len(self.S_list)):
+                        sh_xor_r = self.xor(share_pri[i], self.r)
+                        lr_share_list.append(self.combine_share(self.w[i], sh_xor_r, self.S_list[i]))
+
+                return lr_share_list
+
+        # Combine (wi, sh' xor r, si) to a list
+        def combine_share(self, byteW:bytes, sh_pri:bytes, shareSR:bytes) -> list:
+                combined_sh_pri = []
+                combined_sh_pri.append([byteW, sh_pri, shareSR])
+
+                return combined_sh_pri
 
 if __name__ == "__main__":
         pass
