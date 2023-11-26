@@ -7,16 +7,37 @@ import datetime
 import time
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
+# Get temperature of IoT
+import os
+import subprocess
 
 if __name__ == "__main__":
     datasize_mb = int(input("[Client] Data Size MB: "))
     data_byte_size = 1024 * datasize_mb
     print("[Client] Sending data size:", data_byte_size, "bytes")
-    data = os.urandom(data_byte_size)
 
+    # Add temperature into the first N bytes of data
+    temp_bytes = bytes()
+
+    CheckTemp = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
+    if CheckTemp.returncode == 0:
+        t = CheckTemp.stdout.strip()
+        temp_str = t.split('=')[1].split("'")[0]
+
+        temp_int = round(float(temp_str))
+        temp_bin = bin(temp_int)
+        temp_bytes = temp_bin[2:].encode('utf-8')
+
+    else:
+        print(f"error: {CheckTemp.stderr}")
+
+    data = temp_bytes + os.urandom(data_byte_size - len(temp_bytes))
+
+    # Hash
     print("[Client] Data SHA256: ", end =" ")
     HashFunction.print_sha256(data)
 
+    # Secret sharing begins
     lrss = LeakageResilientSecretSharing()
 
     start_time =  datetime.datetime.now() 
@@ -26,6 +47,7 @@ if __name__ == "__main__":
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Encrypt time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
+    # Shuffle the order of shares, send by 3 paths
     random.shuffle(lrss_list)
     lrss_list_length: int = len(lrss_list)
     lrss_list_part_length: int = lrss_list_length//3 + 1
