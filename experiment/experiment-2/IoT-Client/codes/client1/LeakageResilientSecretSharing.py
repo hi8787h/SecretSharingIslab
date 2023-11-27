@@ -21,6 +21,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 self.LRshare = []
                 self.LRshare_list = []
                 self.S_list = []
+                self.Ext = bytes()
         
         def set_s(self) -> bytes :
                 s = random.choices("01",k=self.bin_len*3)
@@ -53,7 +54,6 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 return inner_bin
 
         # XOR
-        # (Need modify)
         def xor(self, byte1, byte2) -> bytes :
                 if len(byte1) != len(byte2):
                         raise ValueError("Bytes objects must have the same length.")
@@ -78,9 +78,9 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
-                        Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
-                        cipher_bytes = json.dumps(cipher_list).encode('utf-8')
-                        share_pri.append(self.xor(cipher_bytes, Ext))
+                        self.Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
+                        cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
+                        share_pri.append(self.xor(cipher_bytes, self.Ext))
                 
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
@@ -100,6 +100,9 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 combined_sh_pri.append([byteW, sh_pri, shareSR])
 
                 return combined_sh_pri
+        
+        #LRRec
+        
 
 if __name__ == "__main__":
         pass
