@@ -20,6 +20,11 @@ if __name__ == "__main__":
         data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
         part3 = json.loads(data3)
 
+        # Check recieved shares
+        print(part1)
+        print(part2)
+        print(part3)
+
         data = part1 + part2 + part3
 
         sssbs = ShamirSecretSharingBytesStreamer()

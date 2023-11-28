@@ -60,6 +60,11 @@ if __name__ == "__main__":
     cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
     cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
 
+    # Check shares
+    print(cipher_bytes_1)
+    print(cipher_bytes_2)
+    print(cipher_bytes_3)
+
     print("[Client] Sending data to servers...")
     pause_time = 0.1
     SocketConnection.send_data("10.18.173.78",10001,cipher_bytes_1)
