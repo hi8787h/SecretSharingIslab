@@ -90,19 +90,12 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 # Output share
                 for i in range(len(self.S_list)):
                         sh_xor_r = self.xor(share_pri[i], self.r)
-                        lr_share_list.append(self.combine_share(self.w[i], sh_xor_r, self.S_list[i]))
+                        # Combine (wi, sh' xor r, si) to a list
+                        lr_share_list.append([self.w[i], sh_xor_r, self.S_list[i]])
 
                 return lr_share_list
-
-        # Combine (wi, sh' xor r, si) to a list
-        def combine_share(self, byteW:bytes, sh_pri:bytes, shareSR:bytes) -> list:
-                combined_sh_pri = []
-                combined_sh_pri.append([byteW, sh_pri, shareSR])
-
-                return combined_sh_pri
         
         #LRRec
-        
 
 if __name__ == "__main__":
         pass
