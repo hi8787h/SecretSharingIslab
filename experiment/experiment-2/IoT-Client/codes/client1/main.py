@@ -19,7 +19,7 @@ if __name__ == "__main__":
     # Add temperature into the first N bytes of data
     temp_bytes = bytes()
 
-    CheckTemp = subprocess.run(['vcgencmd', 'measure_temp'], capture_output=True, text=True)
+    CheckTemp = subprocess.run(['/usr/bin/vcgencmd', 'measure_temp'], capture_output=True, text=True)
     if CheckTemp.returncode == 0:
         t = CheckTemp.stdout.strip()
         temp_str = t.split('=')[1].split("'")[0]

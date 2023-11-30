@@ -34,7 +34,7 @@ if __name__ == "__main__":
         #sssbs = ShamirSecretSharingBytesStreamer()
         lrss = LeakageResilientSecretSharing()
 
-        start_decryption_time =  datetime.datetime.now()
+        start_decryption_time = datetime.datetime.now()
 
         #recover_data = sssbs.combine_shares(data)
         recovered_secret = lrss.leakage_resilient_recovery(data_list)
