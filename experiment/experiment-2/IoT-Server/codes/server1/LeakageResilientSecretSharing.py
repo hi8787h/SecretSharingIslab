@@ -39,9 +39,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
         
         # Compute inner product
         def get_inner_product(self, byte1:bytes, byte2:bytes, modulus) -> bytes:
-                if len(byte1) != len(byte2):
-                        raise ValueError("Vectors must have the same length.")
-                
+                                
                 # Change datatype from bytes to int, and compute inner product
                 int_1 = int.from_bytes(byte1, byteorder='big')
                 int_2 = int.from_bytes(byte2, byteorder='big')
@@ -54,8 +52,6 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
         # XOR
         def xor(self, byte1, byte2) -> bytes :
-                if len(byte1) != len(byte2):
-                        raise ValueError("Bytes objects must have the same length.")
                 
                 xor_bytes = bytes(x^y for x,y in zip(byte1, byte2))
                 return xor_bytes
