@@ -14,24 +14,27 @@ if __name__ == "__main__":
     while True:
         data_list = []
         
+        data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+        
         try : 
-            data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part1 = json.loads(data1)
             data_list.append(part1)
             break
         except Exception:
             pass
 
-        try : 
-            data2 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+        data2 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+
+        try :
             part2 = json.loads(data2)
             data_list.append(part2)
             break
         except Exception:
             pass
         
+        data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+        
         try : 
-            data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part3 = json.loads(data3)
             data_list.append(part3)
             break
