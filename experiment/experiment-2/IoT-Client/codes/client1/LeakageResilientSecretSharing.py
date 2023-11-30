@@ -73,7 +73,8 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
-                        self.Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
+                        wi:bytes = self.w[i]
+                        self.Ext = self.get_inner_product(wi, self.s, self.modulus)
                         cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
                         share_pri.append(self.xor(cipher_bytes, self.Ext))
                 
