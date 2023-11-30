@@ -9,39 +9,33 @@ from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 # Get temperature of IoT
 import os
-import subprocess
+from gpiozero import CPUTemperature
+import psutil
 
 if __name__ == "__main__":
-    datasize_mb = int(input("[Client] Data Size MB: "))
-    data_byte_size = 1024 * datasize_mb
-    print("[Client] Sending data size:", data_byte_size, "bytes")
+    
+    IoT_Info = dict()
+    # Temperature
+    cpu = CPUTemperature()    
+    IoT_Info['Temperature'] = cpu.temperature
 
-    # Add temperature into the first N bytes of data
-    temp_bytes = bytes()
+    # CPU & RAM usage
+    IoT_Info['CPU_usage'] = psutil.cpu_percent()
+    IoT_Info['RAM_usage'] = psutil.virtual_memory().percent
 
-    CheckTemp = subprocess.run(['/usr/bin/vcgencmd', 'measure_temp'], capture_output=True, text=True)
-    if CheckTemp.returncode == 0:
-        t = CheckTemp.stdout.strip()
-        temp_str = t.split('=')[1].split("'")[0]
+    Secret = json.dumps(IoT_Info).encode('utf-8')
 
-        temp_int = round(float(temp_str))
-        temp_bin = bin(temp_int)
-        temp_bytes = temp_bin[2:].encode('utf-8')
-
-    else:
-        print(f"error: {CheckTemp.stderr}")
-
-    data = temp_bytes + os.urandom(data_byte_size - len(temp_bytes))
+    print("[Client] Sending data size:", len(Secret), "bytes")
 
     # Hash
     print("[Client] Data SHA256: ", end =" ")
-    HashFunction.print_sha256(data)
+    HashFunction.print_sha256(Secret)
 
     # Secret sharing begins
     lrss = LeakageResilientSecretSharing()
 
     start_time =  datetime.datetime.now() 
-    share_list = lrss.genarate_shares(2, 3, data)
+    share_list = lrss.genarate_shares(2, 3, Secret)
     # Use leakage resilient algorithm on shares
     lrss_list = lrss.leakage_resilient(share_list)
     encrypt_end_time =  datetime.datetime.now()
