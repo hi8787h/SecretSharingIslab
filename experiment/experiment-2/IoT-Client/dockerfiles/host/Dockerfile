@@ -4,6 +4,6 @@ RUN apt-get update -y
 RUN apt-get install -y iputils-ping net-tools
 
 RUN pip install pycryptodome
-
 # check temperature of IoT
-RUN apk add raspberrypi
+RUN pip install gpiozero
+RUN pip install psutil
