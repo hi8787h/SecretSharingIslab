@@ -12,29 +12,39 @@ PORT = 80
 
 if __name__ == "__main__":
     while True:
-        data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
-        part1 = json.loads(data1)
+        data_list = []
+        
+        try : 
+            data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+            part1 = json.loads(data1)
+            data_list.append(part1)
+            break
+        except Exception:
+            pass
 
-        data2 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
-        part2 = json.loads(data2)
-
-        data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
-        part3 = json.loads(data3)
-
-        # Check recieved shares
-        print(part1)
-        print(part2)
-        print(part3)
-
-        data = part1 + part2 + part3
+        try : 
+            data2 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+            part2 = json.loads(data2)
+            data_list.append(part2)
+            break
+        except Exception:
+            pass
+        
+        try : 
+            data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+            part3 = json.loads(data3)
+            data_list.append(part3)
+            break
+        except Exception:
+            pass
 
         #sssbs = ShamirSecretSharingBytesStreamer()
-        lrss_receiver = LeakageResilientSecretSharingReceiver()
+        lrss = LeakageResilientSecretSharingReceiver()
 
         start_decryption_time =  datetime.datetime.now()
 
         #recover_data = sssbs.combine_shares(data)
-        recovered_secret = lrss_receiver.leakage_resilient_recovery(data)
+        recovered_secret = lrss.leakage_resilient_recovery(data_list)
 
         end_decryption_time =  datetime.datetime.now()
 

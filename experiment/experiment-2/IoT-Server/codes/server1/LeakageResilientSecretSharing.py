@@ -94,17 +94,17 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 return lr_share_list
         
         def leakage_resilient_recovery(self, shares_list:list):
-                share_list_rec = [shares_list[0][2], shares_list[0][2]]
-                sr = ShamirSecretSharingBytesStreamer().combine_shares(share_list_rec)# recover s r 512
-                self.s = sr[0:384] # s 為128*3 
-                self.r = sr[384: ] # r 128
+                share_list_rec = [shares_list[0][2], shares_list[1][2]]
+                sr_rec = self.combine_shares(share_list_rec)# recover s r 512
+                s_rec = sr_rec[0: 3*self.bin_len] # 3*128 
+                r_rec = sr_rec[3*self.bin_len: ] # 128
 
                 recovered_secret = []
                 share_pri = []
 
                 for i in share_list_rec :
-                        #計算sh0i
-                        Sh0i = self.xor(share_list_rec[i][1], self.r)
+                        #計算sh'i
+                        Sh0i = self.xor(share_list_rec[i][1], r_rec)
 
                         #計算shi
                         self.Ext = self.get_inner_product(share_list_rec[i][0], self.s, self.modulus)
