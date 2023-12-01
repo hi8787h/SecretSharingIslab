@@ -95,6 +95,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 S_bytes = [S1_bytes, S2_bytes, S3_bytes]
                 # test
                 print(len(S_bytes))
+                print(S_bytes[0])
 
                 # Output share
                 for i in range(self.n):
