@@ -99,9 +99,9 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 for i in range(self.n):
                         sh_xor_r = self.xor(share_pri[i], self.r)
                         
-                        w_base64 = base64.b64encode(self.w[i])
-                        sh_xor_r_base64 = base64.b64encode(sh_xor_r)
-                        S_base64 = base64.b64encode(S_bytes[i])
+                        w_base64 = base64.b64encode(self.w[i]).decode('utf-8')
+                        sh_xor_r_base64 = base64.b64encode(sh_xor_r).decode('utf-8')
+                        S_base64 = base64.b64encode(S_bytes[i]).decode('utf-8')
                         # Store (wi, sh' xor r, si) to a dictionary
                         secret_dict = dict()
                         secret_dict = {
