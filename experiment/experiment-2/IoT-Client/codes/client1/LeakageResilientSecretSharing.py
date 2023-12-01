@@ -1,5 +1,6 @@
 import random
 import json
+import random
 from ShamirSecretSharingBytesStreamer import ShamirSecretSharingBytesStreamer
 
 class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
@@ -67,7 +68,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 # Set s, r
                 self.s = self.set_s()
                 self.r = self.set_r()
-                
+                S_bytes = []
                 # Set each wi
                 for i in range(self.n):
                         self.w.append(self.set_w())
@@ -82,12 +83,22 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 sr = self.s + self.r # 128*3+128 = 512 bits
 
                 self.S_list = self.genarate_shares(2,self.n, sr)
+                random.shuffle(self.S_list)
+                S1 = self.S_list[: len(self.S_list)//3]
+                S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
+                S3 = self.S_list[2*len(self.S_list)//3: ]
+
+                S1_bytes = json.dumps(S1).encode('utf-8')
+                S2_bytes = json.dumps(S2).encode('utf-8')
+                S3_bytes = json.dumps(S3).encode('utf-8')
+                S_bytes.append([S1_bytes, S2_bytes, S3_bytes])
 
                 # Output share
                 for i in range(self.n):
                         sh_xor_r = self.xor(share_pri[i], self.r)
+                        
                         # Combine (wi, sh' xor r, si) to a list
-                        lr_share_list.append([self.w[i], sh_xor_r, self.S_list[i]])
+                        lr_share_list.append([self.w[i], sh_xor_r, S_bytes[i]])
 
                 return lr_share_list
         
