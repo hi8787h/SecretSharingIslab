@@ -52,37 +52,21 @@ if __name__ == "__main__":
     
     #test output
     P1 = part_1[0]
-    print(P1)
-    print(len(P1))
-    print('part1[0]: ', type(P1[0]), '\npart1[1]: ', type(P1[1]), '\npart1[2]: ', type(P1[2]))
-    
     P2 = part_2[0]
-    print(P2)
-    print(len(P2))
-    print('part2[0]: ', type(P2[0]), '\npart2[1]: ', type(P2[1]), '\npart2[2]: ', type(P2[2]))
-
+    P3 = str(part_3[0])
     
-    P3 = part_3[0]
-    print(P3)
-    print(len(P3))
-    print('part3[0]: ', type(P3[0]), '\npart3[1]: ', type(P3[1]), '\npart3[2]: ', type(P3[2]))
-
-    cipher_bytes_1 = json.dumps(P1).encode('utf-8')
-    cipher_bytes_2 = json.dumps(P2).encode('utf-8')
-    cipher_bytes_3 = json.dumps(P3).encode('utf-8')
-
     # Check shares
-    print("part_1: ", cipher_bytes_1)
-    print("part_2: ", cipher_bytes_2)
-    print("part_3: ", cipher_bytes_3)
+    print("part_1: ", P1)
+    print("part_2: ", P2)
+    print("part_3: ", P3)
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
-    SocketConnection.send_data("10.18.173.78",10001,cipher_bytes_1)
+    SocketConnection.send_data("10.18.173.78",10001, P1)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10002,cipher_bytes_2)
+    SocketConnection.send_data("10.18.173.78",10002, P2)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10003,cipher_bytes_3)
+    SocketConnection.send_data("10.18.173.78",10003, P3)
 
     total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=pause_time*2)
     print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
