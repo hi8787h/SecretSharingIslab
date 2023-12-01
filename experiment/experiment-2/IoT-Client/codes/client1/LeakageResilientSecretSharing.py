@@ -1,6 +1,7 @@
 import random
 import json
 import random
+import base64
 from ShamirSecretSharingBytesStreamer import ShamirSecretSharingBytesStreamer
 
 class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
@@ -77,6 +78,12 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                         self.Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
                         cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
                         share_pri.append(self.xor(cipher_bytes, self.Ext))
+                        # store Ext and share_pri in dict
+                        dict_xor = dict()
+                        dict_xor = {
+                                "Ext": self.Ext, 
+                                "Sh_prime": share_pri
+                        }
                 
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
@@ -98,8 +105,10 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 for i in range(self.n):
                         sh_xor_r = self.xor(share_pri[i], self.r)
                         
+                        w_base64 = base64.b64encode(self.w[i])
+                        sh_xor_r_base64 = base64.b64encode(sh_xor_r)
                         # Combine (wi, sh' xor r, si) to a list
-                        lr_share_list.append([self.w[i], sh_xor_r, S_bytes[i]])
+                        lr_share_list.append([w_base64, sh_xor_r_base64, S_bytes[i]])
 
                 return lr_share_list
         
