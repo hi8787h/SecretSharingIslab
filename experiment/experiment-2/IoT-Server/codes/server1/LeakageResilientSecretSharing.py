@@ -69,7 +69,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 
                 # Set each wi
                 for i in range(self.n):
-                        self.w.append(self.set_w)
+                        self.w.append(self.set_w())
 
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
@@ -109,7 +109,6 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                         Shi = self.xor(Sh0i, self.Ext)
 
                         recovered_secret.append(Shi)
-
 
                 # 運行 Shamir 的恢復函數
                 secret = Shamir.combine(recovered_secret)
