@@ -38,7 +38,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 return combined_w
         
         # Compute inner product
-        def get_inner_product(self, byte1:bytes, byte2:bytes, modulus) -> bytes:
+        def get_inner_product(self, byte1:bytes, byte2:bytes, modulus:int) -> bytes:
                                 
                 # Change datatype from bytes to int, and compute inner product
                 int_1 = int.from_bytes(byte1, byteorder='big')
@@ -47,11 +47,12 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 inner_product = int_1 * int_2
                 inner_mod = inner_product % modulus
 
-                inner_bin:bytes = bin(inner_mod)[2:].zfill(128)
-                return inner_bin
+                inner_bin = bin(inner_mod)[2:].zfill(128)
+                inner_byte = bytes(inner_bin)
+                return inner_byte
 
         # XOR
-        def xor(self, byte1, byte2) -> bytes :
+        def xor(self, byte1:bytes, byte2:bytes) -> bytes :
                 
                 xor_bytes = bytes(x^y for x,y in zip(byte1, byte2))
                 return xor_bytes
