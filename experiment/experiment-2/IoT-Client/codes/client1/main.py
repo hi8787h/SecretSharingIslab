@@ -47,26 +47,29 @@ if __name__ == "__main__":
     lrss_list_part_length: int = lrss_list_length//3
     
     part_1 = lrss_list[: lrss_list_part_length]
-    #test output
-    print(part_1)
-    print(len(part_1))
-    print('part1[0]: ', type(part_1[0]), '\npart1[1]: ', type(part_1[1]), '\npart1[2]: ', type(part_1[2]))
-
     part_2 = lrss_list[lrss_list_part_length: 2*lrss_list_part_length]
-    #test output
-    print(part_2)
-    print(len(part_2))
-    print('part2[0]: ', type(part_2[0]), '\npart2[1]: ', type(part_2[1]), '\npart2[2]: ', type(part_2[2]))
-
     part_3 = lrss_list[2*lrss_list_part_length: ]
+    
     #test output
-    print(part_3)
-    print(len(part_3))
-    print('part3[0]: ', type(part_3[0]), '\npart3[1]: ', type(part_3[1]), '\npart3[2]: ', type(part_3[2]))
+    P1 = part_1[0]
+    print(P1)
+    print(len(P1))
+    print('part1[0]: ', type(P1[0]), '\npart1[1]: ', type(P1[1]), '\npart1[2]: ', type(P1[2]))
+    
+    P2 = part_2[0]
+    print(P2)
+    print(len(P2))
+    print('part2[0]: ', type(P2[0]), '\npart2[1]: ', type(P2[1]), '\npart2[2]: ', type(P2[2]))
 
-    cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
-    cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
-    cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
+    
+    P3 = part_3[0]
+    print(P3)
+    print(len(P3))
+    print('part3[0]: ', type(P3[0]), '\npart3[1]: ', type(P3[1]), '\npart3[2]: ', type(P3[2]))
+
+    cipher_bytes_1 = json.dumps(P1).encode('utf-8')
+    cipher_bytes_2 = json.dumps(P2).encode('utf-8')
+    cipher_bytes_3 = json.dumps(P3).encode('utf-8')
 
     # Check shares
     print("part_1: ", cipher_bytes_1)
