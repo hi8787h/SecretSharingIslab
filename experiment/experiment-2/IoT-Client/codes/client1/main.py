@@ -55,11 +55,6 @@ if __name__ == "__main__":
     part_2 = b"".join(P2)
     part_3 = b"".join(P3)
 
-    # Check shares
-    print("part_1: ", part_1)
-    print("part_2: ", part_2)
-    print("part_3: ", part_3)
-
     print("[Client] Sending data to servers...")
     pause_time = 0.1
     SocketConnection.send_data("10.18.173.78",10001, part_1)

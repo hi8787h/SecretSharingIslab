@@ -15,21 +15,21 @@ if __name__ == "__main__":
         data_list = []
         
         data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+        # test
+        print(data1)
         part1 = json.loads(data1)
 
         data2 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+        # test
+        print(data2)
         part2 = json.loads(data2)
         
         data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
+        # test
+        print(data3)
         part3 = json.loads(data3)
 
         data_list.append([part1, part2, part3])
-
-        # test received data
-        print("part1: ", part1)
-        print("part2: ", part2)
-        print("part3: ", part3)
-        print("combine: ", data_list)
         
         #sssbs = ShamirSecretSharingBytesStreamer()
         lrss = LeakageResilientSecretSharing()
