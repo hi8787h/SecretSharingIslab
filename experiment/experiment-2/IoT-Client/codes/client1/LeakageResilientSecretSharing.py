@@ -68,7 +68,6 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 # Set s, r
                 self.s = self.set_s()
                 self.r = self.set_r()
-                S_bytes = []
                 # Set each wi
                 for i in range(self.n):
                         self.w.append(self.set_w())
@@ -93,7 +92,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 S1_bytes = json.dumps(S1).encode('utf-8')
                 S2_bytes = json.dumps(S2).encode('utf-8')
                 S3_bytes = json.dumps(S3).encode('utf-8')
-                S_bytes.append([S1_bytes, S2_bytes, S3_bytes])
+                S_bytes = [S1_bytes, S2_bytes, S3_bytes]
 
                 # Output share
                 for i in range(self.n):
