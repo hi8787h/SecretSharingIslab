@@ -46,27 +46,27 @@ if __name__ == "__main__":
     lrss_list_length: int = len(lrss_list)
     lrss_list_part_length: int = lrss_list_length//3
     
-    part_1 = lrss_list[: lrss_list_part_length]
-    part_2 = lrss_list[lrss_list_part_length: 2*lrss_list_part_length]
-    part_3 = lrss_list[2*lrss_list_part_length: ]
+    p1 = lrss_list[: lrss_list_part_length]
+    p2 = lrss_list[lrss_list_part_length: 2*lrss_list_part_length]
+    p3 = lrss_list[2*lrss_list_part_length: ]
     
-    #test output
-    P1 = part_1[0]
-    P2 = part_2[0]
-    P3 = part_3[0]
-    
+    P1, P2, P3 = p1[0], p2[0], p3[0]
+    part_1 = b"".join(P1)
+    part_2 = b"".join(P2)
+    part_3 = b"".join(P3)
+
     # Check shares
-    print("part_1: ", P1)
-    print("part_2: ", P2)
-    print("part_3: ", P3)
+    print("part_1: ", part_1)
+    print("part_2: ", part_2)
+    print("part_3: ", part_3)
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
-    SocketConnection.send_data("10.18.173.78",10001, P1)
+    SocketConnection.send_data("10.18.173.78",10001, part_1)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10002, P2)
+    SocketConnection.send_data("10.18.173.78",10002, part_2)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10003, P3)
+    SocketConnection.send_data("10.18.173.78",10003, part_3)
 
     total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=pause_time*2)
     print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
