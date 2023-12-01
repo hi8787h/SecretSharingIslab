@@ -116,11 +116,12 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 return lr_share_list
         
         def leakage_resilient_recovery(self, shares_list:list):
+                
+                # test
+                print(shares_list[0])
+                
                 # Get two S to recover (s,r)
                 self.share_list_rec.append([shares_list[0], shares_list[1]])
-
-                # test
-                print(self.share_list_rec)
 
                 sr_rec = self.combine_shares(self.share_list_rec)
                 
