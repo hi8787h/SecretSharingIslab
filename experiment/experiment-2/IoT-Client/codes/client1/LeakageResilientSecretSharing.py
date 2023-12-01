@@ -81,10 +81,10 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
 
-                self.S_list = self.genarate_shares(2,3, sr)
+                self.S_list = self.genarate_shares(2,self.n, sr)
 
                 # Output share
-                for i in range(len(self.S_list)):
+                for i in range(len(self.n)):
                         sh_xor_r = self.xor(share_pri[i], self.r)
                         # Combine (wi, sh' xor r, si) to a list
                         lr_share_list.append([self.w[i], sh_xor_r, self.S_list[i]])
