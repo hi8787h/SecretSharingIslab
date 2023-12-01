@@ -31,6 +31,9 @@ if __name__ == "__main__":
 
         data_list.append([part1, part2, part3])
         
+        # Check combined data
+        print(data_list)
+        
         #sssbs = ShamirSecretSharingBytesStreamer()
         lrss = LeakageResilientSecretSharing()
 
