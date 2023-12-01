@@ -18,6 +18,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 self.modulus = 2 ** self.bin_len
                 self.s = []
                 self.r = []
+                self.k = 2
                 self.n = 3
                 self.w = []
                 self.S_list = []
@@ -82,7 +83,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
 
-                self.S_list = self.genarate_shares(2,self.n, sr)
+                self.S_list = self.genarate_shares(self.k, self.n, sr)
                 
                 # Shuffle the order of parameter s and r
                 random.shuffle(self.S_list)
@@ -115,27 +116,39 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 return lr_share_list
         
         def leakage_resilient_recovery(self, shares_list:list):
-                self.share_list_rec.append([shares_list[0][2], shares_list[1][2]])
-                sr_rec = self.combine_shares(self.share_list_rec)# recover s r 512
-                s_rec = sr_rec[0: 3*self.bin_len] # 3*128 
-                r_rec = sr_rec[3*self.bin_len: ] # 128
+                # Get two S to recover (s,r)
+                self.share_list_rec.append([shares_list[0], shares_list[1]])
 
-                recovered_secret = []
-                share_pri = []
+                # test
+                print(self.share_list_rec)
 
-                for i in self.share_list_rec :
-                        #計算sh'i
-                        Sh0i = self.xor(self.share_list_rec[i][1], r_rec)
+                sr_rec = self.combine_shares(self.share_list_rec)
+                
+                # test
+                print(sr_rec)
 
-                        #計算shi
-                        self.Ext = self.get_inner_product(self.share_list_rec[i][0], self.s, self.modulus)
+                s_rec = sr_rec[0: 3*self.bin_len]
+                r_rec = sr_rec[3*self.bin_len: ]
 
-                        Shi = self.xor(Sh0i, self.Ext)
+                # check s, r
+                print(s_rec)
+                print(r_rec)
 
-                        recovered_secret.append(Shi)
+                secret_rec = []
+
+                for i in range(self.k) :
+                        # Get sh'i
+                        share_pri_rec = self.xor(self.share_list_rec[i]['sh_pri_xor_r'], r_rec)
+
+                        # Get shi
+                        self.Ext = self.get_inner_product(self.share_list_rec[i]['wi'], self.s, self.modulus)
+
+                        Sh = self.xor(share_pri_rec, self.Ext)
+
+                        secret_rec.append(Sh)
 
                 # 運行 Shamir 的恢復函數
-                secret = Shamir.combine(recovered_secret)
+                secret = Shamir.combine(secret_rec)
 
                 return secret
 
