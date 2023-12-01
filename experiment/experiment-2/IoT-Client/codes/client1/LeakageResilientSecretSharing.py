@@ -93,6 +93,8 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 S2_bytes = json.dumps(S2).encode('utf-8')
                 S3_bytes = json.dumps(S3).encode('utf-8')
                 S_bytes = [S1_bytes, S2_bytes, S3_bytes]
+                # test
+                print(len(S_bytes))
 
                 # Output share
                 for i in range(self.n):
