@@ -83,6 +83,8 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 sr = self.s + self.r # 128*3+128 = 512 bits
 
                 self.S_list = self.genarate_shares(2,self.n, sr)
+                
+                # Shuffle the order of parameter s and r
                 random.shuffle(self.S_list)
                 S1 = self.S_list[: len(self.S_list)//3]
                 S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
