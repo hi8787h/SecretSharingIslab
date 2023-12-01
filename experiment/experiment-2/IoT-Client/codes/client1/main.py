@@ -53,7 +53,7 @@ if __name__ == "__main__":
     #test output
     P1 = part_1[0]
     P2 = part_2[0]
-    P3 = str(part_3[0])
+    P3 = part_3[0]
     
     # Check shares
     print("part_1: ", P1)
