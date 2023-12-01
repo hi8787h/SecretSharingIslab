@@ -89,14 +89,14 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
                 S3 = self.S_list[2*len(self.S_list)//3: ]
 
-                S1_bytes = json.dumps(S1).encode('utf-8')
-                S2_bytes = json.dumps(S2).encode('utf-8')
-                S3_bytes = json.dumps(S3).encode('utf-8')
-                S_bytes = [S1_bytes, S2_bytes, S3_bytes]
+                #S1 = json.dumps(S1).encode('utf-8')
+                #S2 = json.dumps(S2).encode('utf-8')
+                #S3 = json.dumps(S3).encode('utf-8')
+                S_bytes = [S1, S2, S3]
                 # test
-                print(S1_bytes)
-                print(S2_bytes)
-                print(S3_bytes)
+                print(S1)
+                print(S2)
+                print(S3)
                 #print(len(S_bytes))
                 #print(S_bytes[0])
 
