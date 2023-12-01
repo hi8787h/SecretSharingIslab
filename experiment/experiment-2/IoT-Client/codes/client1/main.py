@@ -47,8 +47,16 @@ if __name__ == "__main__":
     lrss_list_part_length: int = lrss_list_length//3 + 1
     
     part_1 = lrss_list[: lrss_list_part_length]
-    part_2 = lrss_list[lrss_list_part_length: 2 * lrss_list_part_length]
-    part_3 = lrss_list[2 * lrss_list_part_length: ]
+    #test output
+    print(part_1)
+
+    part_2 = lrss_list[lrss_list_part_length: 2*lrss_list_part_length]
+    #test output
+    print(part_2)
+
+    part_3 = lrss_list[2*lrss_list_part_length: ]
+    #test output
+    print(part_3)
 
     cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
     cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
