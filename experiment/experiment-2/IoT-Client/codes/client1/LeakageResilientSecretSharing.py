@@ -48,7 +48,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 inner_mod = inner_product % modulus
 
                 inner_bin = bin(inner_mod)[2:].zfill(128)
-                inner_byte = bytes(inner_bin)
+                inner_byte = bytes(inner_bin, 'utf-8')
                 return inner_byte
 
         # XOR
