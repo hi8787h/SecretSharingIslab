@@ -124,15 +124,19 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 chunks_sr_1 = base64.b64decode(shares_list[0][0]['S'])
                 chunks_sr_2 = base64.b64decode(shares_list[1][0]['S'])
 
+                # Check chunks
+                print('chunks_sr_1:', chunks_sr_1)
+                print('chunks_sr_2:', chunks_sr_2)
+
                 # Combine two 
                 chunk_sr_list = [chunks_sr_1, chunks_sr_2]
 
-                # test
+                # Check chunk_sr_list
                 print('chunk_sr_list:', chunk_sr_list)
 
                 sr_rec = self.combine_shares(chunk_sr_list)
                 
-                # test
+                # Check sr_rec
                 print('sr_rec:', sr_rec)
 
                 s_rec = sr_rec[0: 3*self.bin_len]
