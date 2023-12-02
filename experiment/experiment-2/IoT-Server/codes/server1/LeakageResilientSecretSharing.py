@@ -129,7 +129,8 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 json_sr_2 = json.loads(sr_2)
                 
                 # Combine two 
-                json_sr_list.append(json_sr_1, json_sr_2)
+                json_sr_list.append(json_sr_1)
+                json_sr_list.append(json_sr_2)
 
                 # Check chunk_sr_list
                 print('json_sr:', json_sr_list)
