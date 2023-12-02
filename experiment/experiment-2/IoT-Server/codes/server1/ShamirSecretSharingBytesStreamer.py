@@ -78,6 +78,8 @@ class ShamirSecretSharingBytesStreamer:
         # check duplicate shares
         for _, existing_share_data in self.chunks_shares_ciphertext.get(chunk_id, []):
             if existing_share_data == new_share_data:
+                # check result
+                print('Same share data exists!')
                 return True
         return False
     
@@ -105,8 +107,8 @@ class ShamirSecretSharingBytesStreamer:
         result = bytes()
         padding_null_bytes_number:int = 0
         #Count and check chunks number
-        chunk_number    = self.count_chunks_amount()
-        for i in range(1,chunk_number+1):
+        chunk_number = self.count_chunks_amount()
+        for i in range(1, chunk_number+1):
             chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
             result += chunk_result
         return result
