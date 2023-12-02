@@ -74,11 +74,23 @@ class ShamirSecretSharingBytesStreamer:
                 raise Exception("Chunk " + str(i) + " not exist")
         return chunks_number
 
-    def save_chunk_shares(self, chunk_id:int, share_id:int,share_data_base64:str):
-        share_data_bytes = base64.b64decode(share_data_base64.encode("utf-8"))
-        self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data_bytes))
+    def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
+        # check duplicate shares
+        for _, existing_share_data in self.chunks_shares_ciphertext.get(chunk_id, []):
+            if existing_share_data == new_share_data:
+                return True
+        return False
+    
+    def save_chunk_shares(self, chunk_id:int, share_id:int, share_data_base64:str):
+        share_data = base64.b64decode(share_data_base64.encode("utf-8"))
         
-        # check duplicate chunks
+        if self.check_duplicate_shares(chunk_id, share_data):
+            print(f"Duplicate share_data for chunk_id {chunk_id}, share_id {share_id}")
+        
+        else:
+            self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data))
+        
+        # test
         print(chunk_id, ':', self.chunks_shares_ciphertext[chunk_id])
         
     def collect_chunks(self, data_list:list):
