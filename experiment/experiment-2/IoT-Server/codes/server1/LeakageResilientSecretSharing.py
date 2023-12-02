@@ -141,16 +141,21 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
         def leakage_resilient_recovery(self, shares_list:list):
                 
+                chunk_sr_list = []
                 # Get two shares to recover (s,r)
-                share_list_rec = [shares_list[0], shares_list[1]]
+                #share_list_rec = [shares_list[0], shares_list[1]]
 
-                # Extract two Si to a list
-                sr_list = [shares_list[0][0]['S'], shares_list[1][0]['S']]
-                
+                # Decode S to [chunk id, share id, share data]
+                chunks_sr_1 = base64.b64decode(shares_list[0][0]['S'])
+                chunks_sr_2 = base64.b64decode(shares_list[1][0]['S'])
+
+                # Combine two 
+                chunk_sr_list = [chunks_sr_1, chunks_sr_2]
+
                 # test
-                print('sr_list:', sr_list)
+                print('chunk_sr_list:', chunk_sr_list)
 
-                sr_rec = self.combine_shares(sr_list)
+                sr_rec = self.combine_shares(chunk_sr_list)
                 
                 # test
                 print('sr_rec:', sr_rec)
@@ -166,12 +171,31 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
                 for i in range(self.k) :
                         # Get sh'i
-                        share_pri_rec = self.xor(share_list_rec[i]['sh_pri_xor_r'], r_rec)
+                        sh_pri_xor_r_decode = base64.b64decode(shares_list[i][0]['sh_pri_xor_r'])
+
+                        # Check shi'_xor_r
+                        print('shi_pri_xor_r:', sh_pri_xor_r_decode)
+
+                        share_pri_rec = self.xor(sh_pri_xor_r_decode, r_rec)
+                        
+                        # Check share_pri
+                        print('share_pri:', share_pri_rec)
 
                         # Get shi
-                        self.Ext = self.get_inner_product(share_list_rec[i]['wi'], self.s, self.modulus)
+                        wi_decode = base64.b64decode(shares_list[i][0]['wi'])
 
-                        Sh = self.xor(share_pri_rec, self.Ext)
+                        # Check wi
+                        print('wi:', wi_decode)
+
+                        Ext_rec = self.get_inner_product(wi_decode, self.s, self.modulus)
+
+                        # Check Ext
+                        print('Ext_rec:', Ext_rec)
+
+                        Sh = self.xor(share_pri_rec, Ext_rec)
+
+                        # Check Sh
+                        print('Sh:', Sh)
 
                         secret_rec.append(Sh)
 
