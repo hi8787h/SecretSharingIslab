@@ -123,19 +123,19 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 sr_list = [share_list_rec[0]['S'], share_list_rec[1]['S']]
                 
                 # test
-                print(sr_list)
+                print('sr_list:', sr_list)
 
                 sr_rec = self.combine_shares(sr_list)
                 
                 # test
-                print(sr_rec)
+                print('sr_rec:', sr_rec)
 
                 s_rec = sr_rec[0: 3*self.bin_len]
                 r_rec = sr_rec[3*self.bin_len: ]
 
                 # check s, r
-                print(s_rec)
-                print(r_rec)
+                print('s_rec:', s_rec)
+                print('r_rec:',r_rec)
 
                 secret_rec = []
 
