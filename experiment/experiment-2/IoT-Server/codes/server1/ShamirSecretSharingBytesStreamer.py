@@ -77,6 +77,9 @@ class ShamirSecretSharingBytesStreamer:
     def collect_chunks(self, data_list:list):
         chunk_id_list = []
         for data in data_list:
+            #check output
+            print('data:', data)
+
             if data['ChunkID'] not in chunk_id_list:
                 chunk_id_list.append(data['ChunkID'])
                 self.chunks_shares_ciphertext[data['ChunkID']] = []
