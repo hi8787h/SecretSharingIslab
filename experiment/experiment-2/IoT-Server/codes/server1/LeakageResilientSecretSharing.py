@@ -114,13 +114,38 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
                 return lr_share_list
         
+        def save_chunk_shares(self, wi:str, sh_xor_r:str, S:str):
+                share_data_bytes = base64.b64decode(share_data_base64.encode("utf-8"))
+                self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data_bytes))
+
+        def collect_chunks(self, data_list:list):
+                chunk_id_list = []
+                for data in data_list:
+                        if data['ChunkID'] not in chunk_id_list:
+                                chunk_id_list.append(data['ChunkID'])
+                                self.chunks_shares_ciphertext[data['ChunkID']] = []
+                        self.save_chunk_shares(data['ChunkID'], data['ShareIndex'],data['ShareData'])
+                
+        def combine_chunks(self)->bytes:
+                result = bytes()
+                padding_null_bytes_number:int = 0
+                #Count and check chunks number
+                chunk_number = self.count_chunks_amount()
+                for i in range(1,chunk_number+1):
+                        chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
+                        result += chunk_result
+                return result
+
+        def combine_sr(self, ):
+                temp
+
         def leakage_resilient_recovery(self, shares_list:list):
                 
                 # Get two shares to recover (s,r)
                 share_list_rec = [shares_list[0], shares_list[1]]
 
                 # Extract two Si to a list
-                sr_list = [share_list_rec[0]['S'], share_list_rec[1]['S']]
+                sr_list = [shares_list[0][0]['S'], shares_list[1][0]['S']]
                 
                 # test
                 print('sr_list:', sr_list)
@@ -141,10 +166,10 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
                 for i in range(self.k) :
                         # Get sh'i
-                        share_pri_rec = self.xor(self.share_list_rec[i]['sh_pri_xor_r'], r_rec)
+                        share_pri_rec = self.xor(share_list_rec[i]['sh_pri_xor_r'], r_rec)
 
                         # Get shi
-                        self.Ext = self.get_inner_product(self.share_list_rec[i]['wi'], self.s, self.modulus)
+                        self.Ext = self.get_inner_product(share_list_rec[i]['wi'], self.s, self.modulus)
 
                         Sh = self.xor(share_pri_rec, self.Ext)
 
