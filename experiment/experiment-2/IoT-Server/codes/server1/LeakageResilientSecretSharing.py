@@ -114,31 +114,6 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
                 return lr_share_list
         
-        def save_chunk_shares(self, wi:str, sh_xor_r:str, S:str):
-                share_data_bytes = base64.b64decode(share_data_base64.encode("utf-8"))
-                self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data_bytes))
-
-        def collect_chunks(self, data_list:list):
-                chunk_id_list = []
-                for data in data_list:
-                        if data['ChunkID'] not in chunk_id_list:
-                                chunk_id_list.append(data['ChunkID'])
-                                self.chunks_shares_ciphertext[data['ChunkID']] = []
-                        self.save_chunk_shares(data['ChunkID'], data['ShareIndex'],data['ShareData'])
-                
-        def combine_chunks(self)->bytes:
-                result = bytes()
-                padding_null_bytes_number:int = 0
-                #Count and check chunks number
-                chunk_number = self.count_chunks_amount()
-                for i in range(1,chunk_number+1):
-                        chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
-                        result += chunk_result
-                return result
-
-        def combine_sr(self, ):
-                temp
-
         def leakage_resilient_recovery(self, shares_list:list):
                 
                 chunk_sr_list = []
