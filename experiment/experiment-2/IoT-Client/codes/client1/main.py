@@ -18,13 +18,11 @@ if __name__ == "__main__":
     # Temperature
     cpu = CPUTemperature()    
     IoT_Info['Temperature'] = cpu.temperature
-
     # CPU & RAM usage
     IoT_Info['CPU_usage'] = psutil.cpu_percent()
     IoT_Info['RAM_usage'] = psutil.virtual_memory().percent
 
     Secret = json.dumps(IoT_Info).encode('utf-8')
-
     print("[Client] Sending data size:", len(Secret), "bytes")
 
     # Hash

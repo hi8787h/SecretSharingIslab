@@ -78,6 +78,7 @@ class ShamirSecretSharingBytesStreamer:
         chunk_id_list = []
         for data in data_list:
             #check output
+            print('type:', type(data))
             print('data:', data)
 
             if data['ChunkID'] not in chunk_id_list:

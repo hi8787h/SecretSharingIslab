@@ -117,16 +117,18 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
         def leakage_resilient_recovery(self, shares_list:list):
                 
                 chunk_sr_list = []
-                # Get two shares to recover (s,r)
-                #share_list_rec = [shares_list[0], shares_list[1]]
-
+                # share_list: [data1, data2, data3]
+                
                 # Decode S to [chunk id, share id, share data]
-                chunks_sr_1 = base64.b64decode(shares_list[0][0]['S'])
-                chunks_sr_2 = base64.b64decode(shares_list[1][0]['S'])
+                
+                chunk_sr_1 = shares_list[0][0]['S']
+                chunk_sr_2 = shares_list[1][0]['S']
+                sr_1 = base64.b64decode(chunk_sr_1.encode('utf-8'))
+                sr_2 = base64.b64decode(chunk_sr_2.encode('utf-8'))
 
                 # Combine two 
-                chunk_sr_list.append(chunks_sr_1)
-                chunk_sr_list.append(chunks_sr_2)
+                chunk_sr_list.append(sr_1)
+                chunk_sr_list.append(sr_2)
 
                 # Check chunk_sr_list
                 print('chunk_sr_list:', chunk_sr_list)
