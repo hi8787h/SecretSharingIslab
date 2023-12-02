@@ -127,8 +127,7 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 sr_2 = chunks_sr_2.decode('utf-8')
                 json_sr_1 = json.loads(sr_1)
                 json_sr_2 = json.loads(sr_2)
-                
-                # Combine two 
+                # Combine 
                 json_sr_list = json_sr_1 + json_sr_2
 
                 # Check chunk_sr_list
