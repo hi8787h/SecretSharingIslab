@@ -13,12 +13,14 @@ PORT = 80
 if __name__ == "__main__":
     while True:
         data_list = []
+        received_data_count = 0
         
         try:
             data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part1 = json.loads(data1)
             print("data 1 received.")
             data_list.append(part1)
+            received_data_count += 1
         except Exception:
             pass
 
@@ -27,6 +29,7 @@ if __name__ == "__main__":
             part2 = json.loads(data2)
             print("data 2 received.")
             data_list.append(part2)
+            received_data_count += 1
         except Exception:
             pass
 
@@ -35,11 +38,17 @@ if __name__ == "__main__":
             part3 = json.loads(data3)
             print("data 3 received.")
             data_list.append(part3)
+            received_data_count += 1
         except Exception:
             pass
         
         # Check combined data
         print('Received:', data_list)
+
+         # If not received enough data to recover secret 
+        if received_data_count < 2 :
+            print("No enough data to recover the secret !")
+            continue
         
         #sssbs = ShamirSecretSharingBytesStreamer()
         lrss = LeakageResilientSecretSharing()

@@ -21,9 +21,8 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 self.k = 2
                 self.n = 3
                 self.w = []
-                self.S_list = []
                 self.Ext = bytes()
-                self.share_list_rec = []
+                self.sr_shares_ciphertext = dict()
         
         def set_s(self) -> bytes :
                 s = random.choices("01",k=self.bin_len*3)
@@ -83,13 +82,13 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
 
-                self.S_list = self.genarate_shares(self.k, self.n, sr)
+                S_list = self.genarate_shares(self.k, self.n, sr)
                 
                 # Shuffle the order of parameter s and r
-                random.shuffle(self.S_list)
-                S1 = self.S_list[: len(self.S_list)//3]
-                S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
-                S3 = self.S_list[2*len(self.S_list)//3: ]
+                random.shuffle(S_list)
+                S1 = S_list[: len(S_list)//3]
+                S2 = S_list[len(S_list)//3: 2*len(S_list)//3]
+                S3 = S_list[2*len(S_list)//3: ]
 
                 S1 = json.dumps(S1).encode('utf-8')
                 S2 = json.dumps(S2).encode('utf-8')
@@ -117,13 +116,16 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
         
         def leakage_resilient_recovery(self, shares_list:list):
                 
-                # test
-                print(shares_list[0])
-                
-                # Get two S to recover (s,r)
-                self.share_list_rec.append([shares_list[0], shares_list[1]])
+                # Get two shares to recover (s,r)
+                share_list_rec = [shares_list[0], shares_list[1]]
 
-                sr_rec = self.combine_shares(self.share_list_rec)
+                # Extract two Si to a list
+                sr_list = [share_list_rec[0]['S'], share_list_rec[1]['S']]
+                
+                # test
+                print(sr_list)
+
+                sr_rec = self.combine_shares(sr_list)
                 
                 # test
                 print(sr_rec)
