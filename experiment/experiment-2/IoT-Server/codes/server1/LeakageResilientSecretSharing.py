@@ -155,6 +155,5 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
 
                 return secret
 
-
 if __name__ == "__main__":
         pass
