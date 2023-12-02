@@ -55,6 +55,10 @@ class ShamirSecretSharingBytesStreamer:
                     "ShareData": share_data
                 }
                 self.shares_list.append(share_dict)
+
+                # check chunks
+                print(share_dict)
+
             chunk_id += 1
         return self.shares_list
 
