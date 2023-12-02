@@ -74,13 +74,12 @@ class ShamirSecretSharingBytesStreamer:
         share_data_bytes = base64.b64decode(share_data_base64.encode("utf-8"))
         self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data_bytes))
         
+        # check duplicate chunks
+        print(chunk_id, ':', self.chunks_shares_ciphertext[chunk_id])
+        
     def collect_chunks(self, data_list:list):
         chunk_id_list = []
         for data in data_list:
-            #check output
-            print('type:', type(data))
-            print('data:', data)
-
             if data['ChunkID'] not in chunk_id_list:
                 chunk_id_list.append(data['ChunkID'])
                 self.chunks_shares_ciphertext[data['ChunkID']] = []
