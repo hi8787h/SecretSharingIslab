@@ -32,10 +32,10 @@ class LeakageResilientSecretSharing():
                 self.S_list = []
                 #For decrypt
                 self.chunks_shares_ciphertext = dict()
-                
 
-                # Use to check entry times
-                self.check_generate = 0
+                # check entry times
+                self.check_generate_shares = 0
+                self.check_generate_S = 0
         
         def set_s(self) -> bytes :
                 s = random.choices("01",k=self.bin_len*3)
@@ -89,8 +89,8 @@ class LeakageResilientSecretSharing():
 
         def genarate_shares(self, k:int, n:int, secret:bytes)->list:
                 # check entry times
-                self.check_generate += 1
-                print('Entried times:', self.check_generate)
+                self.check_generate_shares += 1
+                print('Genarate shares entried times:', self.check_generate_shares)
 
                 self.split_data(secret)
                 chunk_id = 1
@@ -114,8 +114,8 @@ class LeakageResilientSecretSharing():
         
         def genarate_S(self, k:int, n:int, data:bytes)->list:
                 # check entry times
-                self.check_generate += 1
-                print('Entried times:', self.check_generate)
+                self.check_generate_S += 1
+                print('Genarate S entried times:', self.check_generate_S)
 
                 self.split_data(data)
                 sr_id = 1
