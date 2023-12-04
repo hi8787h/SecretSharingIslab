@@ -33,6 +33,9 @@ class LeakageResilientSecretSharing():
                 self.shares_list = []
                 #For decrypt
                 self.chunks_shares_ciphertext = dict()
+
+                # Use to check entry times
+                self.check_generate = 0
         
         def set_s(self) -> bytes :
                 s = random.choices("01",k=self.bin_len*3)
@@ -50,8 +53,7 @@ class LeakageResilientSecretSharing():
                 return combined_w
         
         # Compute inner product
-        def get_inner_product(self, byte1:bytes, byte2:bytes, modulus:int) -> bytes:
-                                
+        def get_inner_product(self, byte1:bytes, byte2:bytes, modulus:int) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
                 int_1 = int.from_bytes(byte1, byteorder='big')
                 int_2 = int.from_bytes(byte2, byteorder='big')
@@ -86,6 +88,10 @@ class LeakageResilientSecretSharing():
                         sqeuence_end += 16
 
         def genarate_shares(self, k:int, n:int, data:bytes)->list:
+                # check entry times
+                self.check_generate += 1
+                print('Entried times:', self.check_generate)
+
                 self.data = data
                 self.message_length = len(self.data)
                 self.split_data(data)
