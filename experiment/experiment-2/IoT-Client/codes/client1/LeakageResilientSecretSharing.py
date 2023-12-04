@@ -117,6 +117,7 @@ class LeakageResilientSecretSharing():
                 self.check_generate_S += 1
                 print('Genarate S entried times:', self.check_generate_S)
 
+                S_list = []
                 self.split_data(data)
                 sr_id = 1
                 for data_chunk in self.data_chunk_list:
@@ -130,12 +131,12 @@ class LeakageResilientSecretSharing():
                                 "ShareIndex": share_index,
                                 "ShareData": share_data
                                 }
-                                self.shares_list.append(share_dict)
+                                S_list.append(share_dict)
                                 # check chunks
                                 print(sr_id, ':', share_dict)
                         sr_id += 1
 
-                return self.shares_list
+                return S_list
 
         def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
                 # check duplicate shares
@@ -222,7 +223,6 @@ class LeakageResilientSecretSharing():
 
                 return result
 
-        # Leakage resilient algorithm implementation
         def leakage_resilient(self, cipher_list:list):
                 share_pri = []
                 lr_share_list = []
@@ -242,7 +242,7 @@ class LeakageResilientSecretSharing():
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
 
-                S_list = self.genarate_S(self.k, self.n, sr)
+                self.S_list = self.genarate_S(self.k, self.n, sr)
                 
                 # Shuffle the order of parameter s and r
                 random.shuffle(S_list)
