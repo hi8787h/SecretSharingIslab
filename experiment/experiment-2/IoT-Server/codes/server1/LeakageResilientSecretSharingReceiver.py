@@ -40,7 +40,7 @@ class LeakageResilientSecretSharingReceiver:
     def leakage_resilient_recovery(self, shares_list:list):
         #parsed_shares = [self.parse_share(share) for share in shares_list]#回傳wi  Sh0i  Si 
         
-        self.shares_list = [shares_list[0][2], shares_list[0][2]]
+        self.shares_list = shares_list[0][2] 
         #print(self.shares_list)
         sr = ShamirSecretSharingBytesStreamer().combine_shares(self.shares_list)# recover s r 512
         #print(sr)
