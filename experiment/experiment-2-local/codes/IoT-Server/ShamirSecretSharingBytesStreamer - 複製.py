@@ -41,6 +41,7 @@ class ShamirSecretSharingBytesStreamer:
         self.data = data
         self.message_length = len(self.data)
         self.split_data(data)
+        shares_number = len(self.data_chunk_list)
         chunk_id = 1
         for data_chunk in self.data_chunk_list:
             shares = Shamir.split(k, n, data_chunk)

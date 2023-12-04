@@ -9,18 +9,18 @@ from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 # Get temperature of IoT
 import os
-from gpiozero import CPUTemperature
-import psutil
+#from gpiozero import CPUTemperature
+#import psutil
 
 if __name__ == "__main__":
     
     IoT_Info = dict()
     # Temperature
-    cpu = CPUTemperature()    
-    IoT_Info['Temperature'] = cpu.temperature
+    #cpu = CPUTemperature()    
+    IoT_Info['Temperature'] = 37.5 #cpu.temperature
     # CPU & RAM usage
-    IoT_Info['CPU_usage'] = psutil.cpu_percent()
-    IoT_Info['RAM_usage'] = psutil.virtual_memory().percent
+    IoT_Info['CPU_usage'] = 40.3 #psutil.cpu_percent()
+    IoT_Info['RAM_usage'] = 61.7 #psutil.virtual_memory().percent
 
     Secret = json.dumps(IoT_Info).encode('utf-8')
     print("[Client] Sending data size:", len(Secret), "bytes")
@@ -59,11 +59,11 @@ if __name__ == "__main__":
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
-    SocketConnection.send_data("10.18.173.78",10001, cipher_bytes_1)
+    SocketConnection.send_data("10.5.1.1",80,cipher_bytes_1)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10002, cipher_bytes_2)
+    SocketConnection.send_data("10.5.1.2",80,cipher_bytes_2)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10003, cipher_bytes_3)
+    SocketConnection.send_data("10.5.1.3",80,cipher_bytes_3)
 
     total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=pause_time*2)
     print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
