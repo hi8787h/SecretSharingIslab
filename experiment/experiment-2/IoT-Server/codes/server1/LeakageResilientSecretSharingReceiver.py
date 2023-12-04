@@ -15,7 +15,7 @@ class LeakageResilientSecretSharingReceiver:
 
 
 
-    @staticmethod
+    
     def xor(byte1, byte2) -> bytes:
         if len(byte1) != len(byte2):
             raise ValueError("Bytes objects must have the same length.")
@@ -41,9 +41,9 @@ class LeakageResilientSecretSharingReceiver:
         #parsed_shares = [self.parse_share(share) for share in shares_list]#回傳wi  Sh0i  Si 
         
         self.shares_list = [shares_list[0][2], shares_list[0][2]]
-        print(self.shares_list)
+        #print(self.shares_list)
         sr = ShamirSecretSharingBytesStreamer().combine_shares(self.shares_list)# recover s r 512
-        print(sr)
+        #print(sr)
         self.s = sr[0:384] # s 為128*3 
         self.r = sr[384: ] # r 128z
         #self.s_r_shares = [(share[2][0], share[2][1]) for share in parsed_shares]
