@@ -1,5 +1,4 @@
 # Server
-from ShamirSecretSharingBytesStreamer import ShamirSecretSharingBytesStreamer
 import json
 import datetime
 import time

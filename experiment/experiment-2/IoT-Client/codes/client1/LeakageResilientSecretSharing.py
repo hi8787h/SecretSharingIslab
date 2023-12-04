@@ -2,13 +2,16 @@ import random
 import json
 import random
 import base64
-from ShamirSecretSharingBytesStreamer import ShamirSecretSharingBytesStreamer
+from binascii import hexlify
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+from Crypto.Protocol.SecretSharing import Shamir
 
-class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
+class LeakageResilientSecretSharing():
         """
         Leakage Resilient Secret Sharing
         Author: NCYU ISlab
-        This class inherits from ShamirSecretSharingBytesStreamer.
+        This class can implement encryption & decryption using Shamir Secret Sharing with leakage resilient.
         That will improve secure of system!
         """
 
@@ -22,7 +25,14 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 self.n = 3
                 self.w = []
                 self.Ext = bytes()
-                self.sr_shares_ciphertext = dict()
+                
+                #For encrypt
+                self.data = bytes()
+                self.message_length = 0
+                self.data_chunk_list = []
+                self.shares_list = []
+                #For decrypt
+                self.chunks_shares_ciphertext = dict()
         
         def set_s(self) -> bytes :
                 s = random.choices("01",k=self.bin_len*3)
@@ -59,8 +69,41 @@ class LeakageResilientSecretSharing(ShamirSecretSharingBytesStreamer):
                 xor_bytes = bytes(x^y for x,y in zip(byte1, byte2))
                 return xor_bytes
 
-        def genarate_shares(self, k: int, n: int, data: bytes) -> list:
-                return super().genarate_shares(k, n, data)
+        # Encrypt
+        def zero_byte_padding(self,data:bytes)->bytes:
+                while len(data)%16 != 0:
+                        data = b'\x00' + data
+                return data
+
+        def split_data(self, data:bytes)->list:
+                sqeuence_start = 0
+                sqeuence_end = 16
+                data = self.zero_byte_padding(data)
+                for i in range(len(data)//16):
+                        data_chunk:bytes = data[sqeuence_start:sqeuence_end]
+                        self.data_chunk_list.append(data_chunk)
+                        sqeuence_start += 16
+                        sqeuence_end += 16
+
+        def genarate_shares(self, k:int, n:int, data:bytes)->list:
+                self.data = data
+                self.message_length = len(self.data)
+                self.split_data(data)
+                chunk_id = 1
+                for data_chunk in self.data_chunk_list:
+                        shares = Shamir.split(k, n, data_chunk)
+                        for share in shares:
+                                share_dict = dict()
+                                share_index = share[0] 
+                                share_data = base64.b64encode(share[1]).decode('utf-8')
+                                share_dict = {
+                                "ChunkID": chunk_id,
+                                "ShareIndex": share_index,
+                                "ShareData": share_data
+                                }
+                                self.shares_list.append(share_dict)
+                        chunk_id += 1
+                return self.shares_list
 
         # Leakage resilient algorithm implementation
         def leakage_resilient(self, cipher_list:list):
