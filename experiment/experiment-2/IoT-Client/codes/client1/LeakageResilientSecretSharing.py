@@ -363,6 +363,9 @@ class LeakageResilientSecretSharing():
                 # 運行 Shamir 的恢復函數
                 secret = Shamir.combine(secret_rec)
 
+                # check result
+                print('Recoverd Secret:', secret)
+
                 return secret
 
 if __name__ == "__main__":
