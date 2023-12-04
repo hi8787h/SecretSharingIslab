@@ -5,7 +5,7 @@ import datetime
 import time
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
-from LeakageResilientSecretSharingReceiver import LeakageResilientSecretSharingReceiver
+from LeakageResilientSecretSharing import LeakageResilientSecretSharing
 
 HOST = "0.0.0.0"
 PORT = 80
@@ -51,7 +51,7 @@ if __name__ == "__main__":
             continue
         
         #sssbs = ShamirSecretSharingBytesStreamer()
-        lrss = LeakageResilientSecretSharingReceiver()
+        lrss = LeakageResilientSecretSharing()
 
         start_decryption_time = datetime.datetime.now()
         recovered_secret = lrss.leakage_resilient_recovery(data_list)
