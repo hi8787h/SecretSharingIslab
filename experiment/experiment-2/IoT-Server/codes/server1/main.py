@@ -6,7 +6,7 @@ import time
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 from LeakageResilientSecretSharingReceiver import LeakageResilientSecretSharingReceiver
-
+#change
 HOST = "0.0.0.0"
 PORT = 80
 
