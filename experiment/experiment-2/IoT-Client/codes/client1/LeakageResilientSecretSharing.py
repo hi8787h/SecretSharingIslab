@@ -27,12 +27,12 @@ class LeakageResilientSecretSharing():
                 self.Ext = bytes()
                 
                 #For encrypt
-                self.data = bytes()
-                self.message_length = 0
                 self.data_chunk_list = []
                 self.shares_list = []
+                self.S_list = []
                 #For decrypt
                 self.chunks_shares_ciphertext = dict()
+                
 
                 # Use to check entry times
                 self.check_generate = 0
@@ -87,14 +87,12 @@ class LeakageResilientSecretSharing():
                         sqeuence_start += 16
                         sqeuence_end += 16
 
-        def genarate_shares(self, k:int, n:int, data:bytes)->list:
+        def genarate_shares(self, k:int, n:int, secret:bytes)->list:
                 # check entry times
                 self.check_generate += 1
                 print('Entried times:', self.check_generate)
 
-                self.data = data
-                self.message_length = len(self.data)
-                self.split_data(data)
+                self.split_data(secret)
                 chunk_id = 1
                 for data_chunk in self.data_chunk_list:
                         shares = Shamir.split(k, n, data_chunk)
@@ -108,13 +106,37 @@ class LeakageResilientSecretSharing():
                                 "ShareData": share_data
                                 }
                                 self.shares_list.append(share_dict)
-                                
                                 # check chunks
                                 print(chunk_id, ':', share_dict)
-
                         chunk_id += 1
+
                 return self.shares_list
         
+        def genarate_S(self, k:int, n:int, data:bytes)->list:
+                # check entry times
+                self.check_generate += 1
+                print('Entried times:', self.check_generate)
+
+                self.split_data(data)
+                sr_id = 1
+                for data_chunk in self.data_chunk_list:
+                        shares = Shamir.split(k, n, data_chunk)
+                        for share in shares:
+                                share_dict = dict()
+                                share_index = share[0] 
+                                share_data = base64.b64encode(share[1]).decode('utf-8')
+                                share_dict = {
+                                "ChunkID": sr_id,
+                                "ShareIndex": share_index,
+                                "ShareData": share_data
+                                }
+                                self.shares_list.append(share_dict)
+                                # check chunks
+                                print(sr_id, ':', share_dict)
+                        sr_id += 1
+
+                return self.shares_list
+
         def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
                 # check duplicate shares
                 print('checking new share data:', new_share_data)
@@ -220,7 +242,7 @@ class LeakageResilientSecretSharing():
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
 
-                S_list = self.genarate_shares(self.k, self.n, sr)
+                S_list = self.genarate_S(self.k, self.n, sr)
                 
                 # Shuffle the order of parameter s and r
                 random.shuffle(S_list)
