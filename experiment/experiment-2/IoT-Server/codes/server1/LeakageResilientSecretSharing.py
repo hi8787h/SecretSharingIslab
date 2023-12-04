@@ -245,10 +245,10 @@ class LeakageResilientSecretSharing():
                 self.S_list = self.genarate_S(self.k, self.n, sr)
                 
                 # Shuffle the order of parameter s and r
-                random.shuffle(S_list)
-                S1 = S_list[: len(S_list)//3]
-                S2 = S_list[len(S_list)//3: 2*len(S_list)//3]
-                S3 = S_list[2*len(S_list)//3: ]
+                random.shuffle(self.S_list)
+                S1 = self.S_list[: len(self.S_list)//3]
+                S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
+                S3 = self.S_list[2*len(self.S_list)//3: ]
 
                 S1 = json.dumps(S1).encode('utf-8')
                 S2 = json.dumps(S2).encode('utf-8')
