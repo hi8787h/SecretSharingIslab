@@ -28,6 +28,7 @@ class LeakageResilientSecretSharing():
                 
                 #For encrypt
                 self.data_chunk_list = []
+                self.S_chunk_list = []
                 self.shares_list = []
                 self.S_list = []
                 #For decrypt
@@ -87,6 +88,16 @@ class LeakageResilientSecretSharing():
                         sqeuence_start += 16
                         sqeuence_end += 16
 
+        def split_S(self, data:bytes)->list:
+                sqeuence_start = 0
+                sqeuence_end = 16
+                data = self.zero_byte_padding(data)
+                for i in range(len(data)//16):
+                        S_chunk:bytes = data[sqeuence_start:sqeuence_end]
+                        self.S_chunk_list.append(S_chunk)
+                        sqeuence_start += 16
+                        sqeuence_end += 16
+
         def genarate_shares(self, k:int, n:int, secret:bytes)->list:
                 # check entry times
                 self.check_generate_shares += 1
@@ -118,10 +129,10 @@ class LeakageResilientSecretSharing():
                 print('Genarate S entried times:', self.check_generate_S)
 
                 S_list = []
-                self.split_data(data)
+                self.split_S(data)
                 sr_id = 1
-                for data_chunk in self.data_chunk_list:
-                        shares = Shamir.split(k, n, data_chunk)
+                for S_chunk in self.S_chunk_list:
+                        shares = Shamir.split(k, n, S_chunk)
                         for share in shares:
                                 share_dict = dict()
                                 share_index = share[0] 
@@ -228,16 +239,29 @@ class LeakageResilientSecretSharing():
                 lr_share_list = []
                 # Set s, r
                 self.s = self.set_s()
+                # check s
+                print('s:', self.s)
+
                 self.r = self.set_r()
+                # check r
+                print('r:', self.r)
+                
                 # Set each wi
                 for i in range(self.n):
                         self.w.append(self.set_w())
-
+                        # check each w
+                        print('w', i+1, ':', self.w)
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
                         self.Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
+                        # check each Ext
+                        print('Ext', i+1, ':', self.Ext)
+
                         cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
                         share_pri.append(self.xor(cipher_bytes, self.Ext))
+                        # check each Ext
+                        print('share_pri', i+1, ':', share_pri[i])
+
                 
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
@@ -306,7 +330,6 @@ class LeakageResilientSecretSharing():
                 print('r_rec:',r_rec)
 
                 secret_rec = []
-
                 for i in range(self.k) :
                         # Get sh'i
                         sh_pri_xor_r_decode = base64.b64decode(shares_list[i][0]['sh_pri_xor_r'])
