@@ -270,7 +270,7 @@ class LeakageResilientSecretSharing():
                 for i in range(len(self.S_list)):
                         print('S',i,':',self.S_list[i])
                 
-                check_rec = self.combine_chunks(self.S_list)
+                check_rec = self.combine_shares(self.S_list)
                 print('check_rec is = ',check_rec)
 
                 # Shuffle the order of parameter s and r
