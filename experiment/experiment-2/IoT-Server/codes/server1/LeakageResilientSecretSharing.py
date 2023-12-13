@@ -209,46 +209,54 @@ class LeakageResilientSecretSharing():
 
                 return result_rzp
 
+        # modify the order of list
+        def shuffle(self, object_list, shareID:int):
+                new_list = []
+                for share in object_list:
+                        if share['ShareIndex'] == shareID :
+                                new_list.append(share)
+
+                return new_list
+
         def leakage_resilient(self, cipher_list:list):
                 share_pri = []
                 lr_share_list = []
                 # Set s, r
                 self.s = self.set_s()
                 # check s
-                print('s:', self.s, 'length:', len(self.s))
+                print('s:', self.s)
 
                 self.r = self.set_r()
                 # check r
-                print('r:', self.r, 'length:', len(self.r))
+                print('r:', self.r)
                 
                 # Set each w
                 for i in range(self.n):
                         self.w.append(self.set_w())
                         # check each w
-                        print('w', i+1, ':', self.w[i], 'length:', len(self.w[i]))
+                        print('w', i+1, ':', self.w[i])
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
                         self.Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
                         # check each Ext
-                        print('Ext', i+1, ':', self.Ext, 'length:', len(self.Ext))
+                        print('Ext', i+1, ':', self.Ext)
 
                         cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
+                        # check cipher list size
+                        print('share length:', len(cipher_list[i]))
+
                         share_pri.append(self.xor(cipher_bytes, self.Ext))
                         # check each Ext
                         print('share_pri', i+1, ':', share_pri[i], 'length:', len(share_pri[i]))
-
                 
                 # obtain S1 to Sn
-                sr = self.s + self.r # 128*3+128 = 512 bits
-                print("s+r is =", sr)
+                sr = self.s + self.r # 128*3 + 128 = 512 bits
                 self.S_list = self.genarate_S(self.k, self.n, sr)
                  
-                # Shuffle the order of parameter s and r
-                random.shuffle(self.S_list)
-                print('after shuffle:', self.S_list )
-                S1 = self.S_list[: len(self.S_list)//3]
-                S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
-                S3 = self.S_list[2*len(self.S_list)//3: ]
+                # Shuffle the order of S list
+                S1 = self.shuffle(self.S_list, 1)
+                S2 = self.shuffle(self.S_list, 2)
+                S3 = self.shuffle(self.S_list, 3)
 
                 print('S1=', S1)
                 print('S2=', S2)
