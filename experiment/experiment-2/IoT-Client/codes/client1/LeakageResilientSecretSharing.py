@@ -271,9 +271,8 @@ class LeakageResilientSecretSharing():
 
                 # test whether any two shares can recover full sr
                 S_12 = S1 + S2
-                S_12_bytes = json.dumps(S_12).encode('utf-8')
-                print('S1 + S2 =', S_12_bytes)
-                check_sr_rec = self.combine_shares(S_12_bytes)
+                print('S1 + S2 =', S_12)
+                check_sr_rec = self.combine_shares(S_12)
                 print('check_sr_rec:', check_sr_rec)
                 
                 S1_bytes = json.dumps(S1).encode('utf-8')
