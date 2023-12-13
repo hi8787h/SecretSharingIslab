@@ -38,16 +38,19 @@ class LeakageResilientSecretSharing():
                 self.check_generate_shares = 0
                 self.check_generate_S = 0
         
+        # set parameter s
         def set_s(self) -> bytes :
                 s = random.choices("01",k=self.bin_len*3)
                 combined_s = ''.join(s).encode('utf-8')
                 return combined_s
-
+        
+        # set parameter r
         def set_r(self) -> bytes :
                 r = random.choices("01",k=self.bin_len)
                 combined_r = ''.join(r).encode('utf-8')
                 return combined_r
 
+        # set each w
         def set_w(self) -> bytes :
                 w = random.choices("01",k=self.bin_len*3)
                 combined_w = ''.join(w).encode('utf-8')
@@ -265,20 +268,34 @@ class LeakageResilientSecretSharing():
                 
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
-
+                print("s+r is = ",sr)
                 self.S_list = self.genarate_S(self.k, self.n, sr)
+                for i in range(len(self.S_list)):
+                        print('S',i,':',self.S_list[i])
                 
+                check_rec = self.combine_shares(self.S_list)
+                print('check_rec is = ',check_rec)
+
                 # Shuffle the order of parameter s and r
                 random.shuffle(self.S_list)
+                print('after shuffle',self.S_list )
                 S1 = self.S_list[: len(self.S_list)//3]
                 S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
                 S3 = self.S_list[2*len(self.S_list)//3: ]
 
+                print('S1',S1)
+                print('S2=',S2)
+                print('S3=',S3)
+
                 S1 = json.dumps(S1).encode('utf-8')
                 S2 = json.dumps(S2).encode('utf-8')
                 S3 = json.dumps(S3).encode('utf-8')
-                S_bytes = [S1, S2, S3]
 
+                print('S1',S1)
+                print('S2=',S2)
+                print('S3=',S3)
+                S_bytes = [S1, S2, S3]
+                
                 # Output share
                 for i in range(self.n):
                         sh_xor_r = self.xor(share_pri[i], self.r)
