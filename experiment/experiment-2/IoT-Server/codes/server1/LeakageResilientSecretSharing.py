@@ -33,24 +33,17 @@ class LeakageResilientSecretSharing():
                 self.S_list = []
                 #For decrypt
                 self.chunks_shares_ciphertext = dict()
-
-                # check entry times
-                self.check_generate_shares = 0
-                self.check_generate_S = 0
         
-        # set parameter s
         def set_s(self) -> bytes :
                 s = random.choices("01",k=self.bin_len*3)
                 combined_s = ''.join(s).encode('utf-8')
                 return combined_s
-        
-        # set parameter r
+
         def set_r(self) -> bytes :
                 r = random.choices("01",k=self.bin_len)
                 combined_r = ''.join(r).encode('utf-8')
                 return combined_r
 
-        # set each w
         def set_w(self) -> bytes :
                 w = random.choices("01",k=self.bin_len*3)
                 combined_w = ''.join(w).encode('utf-8')
@@ -102,10 +95,6 @@ class LeakageResilientSecretSharing():
                         sqeuence_end += 16
 
         def genarate_shares(self, k:int, n:int, secret:bytes)->list:
-                # check entry times
-                self.check_generate_shares += 1
-                print('Genarate shares entried times:', self.check_generate_shares)
-
                 self.split_data(secret)
                 chunk_id = 1
                 for data_chunk in self.data_chunk_list:
@@ -127,10 +116,6 @@ class LeakageResilientSecretSharing():
                 return self.shares_list
         
         def genarate_S(self, k:int, n:int, data:bytes)->list:
-                # check entry times
-                self.check_generate_S += 1
-                print('Genarate S entried times:', self.check_generate_S)
-
                 S_list = []
                 self.split_S(data)
                 sr_id = 1
@@ -226,16 +211,16 @@ class LeakageResilientSecretSharing():
 
         def combine_shares(self, data_list:list)->bytes:
                 self.collect_chunks(data_list)
-                result = self.combine_chunks()
+                result_cc = self.combine_chunks()
                 
                 # check combine_chunks
-                print('combine_chunks:', result)
+                print('combine_chunks:', result_cc)
 
-                result = self.remove_zero_padding(result)
+                result_rzp = self.remove_zero_padding(result_cc)
                 # check remove_zero_padding
-                print('remove_zero_padding:', result)
+                print('remove_zero_padding:', result_rzp)
 
-                return result
+                return result_rzp
 
         def leakage_resilient(self, cipher_list:list):
                 share_pri = []
@@ -243,58 +228,63 @@ class LeakageResilientSecretSharing():
                 # Set s, r
                 self.s = self.set_s()
                 # check s
-                print('s:', self.s)
+                print('s:', self.s, 'length:', len(self.s))
 
                 self.r = self.set_r()
                 # check r
-                print('r:', self.r)
+                print('r:', self.r, 'length:', len(self.r))
                 
-                # Set each wi
+                # Set each w
                 for i in range(self.n):
                         self.w.append(self.set_w())
                         # check each w
-                        print('w', i+1, ':', self.w)
+                        print('w', i+1, ':', self.w[i], 'length:', len(self.w[i]))
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
                         self.Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
                         # check each Ext
-                        print('Ext', i+1, ':', self.Ext)
+                        print('Ext', i+1, ':', self.Ext, 'length:', len(self.Ext))
 
                         cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
                         share_pri.append(self.xor(cipher_bytes, self.Ext))
                         # check each Ext
-                        print('share_pri', i+1, ':', share_pri[i])
+                        print('share_pri', i+1, ':', share_pri[i], 'length:', len(share_pri[i]))
 
                 
                 # obtain S1 to Sn
                 sr = self.s + self.r # 128*3+128 = 512 bits
-                print("s+r is = ",sr)
+                print("s+r is =", sr)
                 self.S_list = self.genarate_S(self.k, self.n, sr)
                 for i in range(len(self.S_list)):
-                        print('S',i,':',self.S_list[i])
-                
-                check_rec = self.combine_shares(self.S_list)
-                print('check_rec is = ',check_rec)
-
+                        print('S', i, ':', self.S_list[i])
+                 
                 # Shuffle the order of parameter s and r
                 random.shuffle(self.S_list)
-                print('after shuffle',self.S_list )
+                print('after shuffle:', self.S_list )
                 S1 = self.S_list[: len(self.S_list)//3]
                 S2 = self.S_list[len(self.S_list)//3: 2*len(self.S_list)//3]
                 S3 = self.S_list[2*len(self.S_list)//3: ]
 
-                print('S1',S1)
-                print('S2=',S2)
-                print('S3=',S3)
+                print('S1=', S1)
+                print('S2=', S2)
+                print('S3=', S3)
 
-                S1 = json.dumps(S1).encode('utf-8')
-                S2 = json.dumps(S2).encode('utf-8')
-                S3 = json.dumps(S3).encode('utf-8')
+                # test whether any two shares can recover full sr
+                S_12 = S1 + S2
+                S_12_bytes = json.dumps(S_12).encode('utf-8')
+                print('S1 + S2 =', S_12_bytes)
+                check_sr_rec = self.combine_shares(S_12_bytes)
+                print('check_sr_rec:', check_sr_rec)
+                
+                S1_bytes = json.dumps(S1).encode('utf-8')
+                S2_bytes = json.dumps(S2).encode('utf-8')
+                S3_bytes = json.dumps(S3).encode('utf-8')
 
-                print('S1',S1)
-                print('S2=',S2)
-                print('S3=',S3)
-                S_bytes = [S1, S2, S3]
+                print('S1 bytes =', S1_bytes)
+                print('S2 bytes =', S2_bytes)
+                
+                print('S3 bytes =', S3_bytes)
+                S_bytes = [S1_bytes, S2_bytes, S3_bytes]
                 
                 # Output share
                 for i in range(self.n):
