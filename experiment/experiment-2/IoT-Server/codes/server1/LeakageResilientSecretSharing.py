@@ -110,7 +110,7 @@ class LeakageResilientSecretSharing():
                                 }
                                 self.shares_list.append(share_dict)
                                 # check chunks
-                                print(chunk_id, ':', share_dict)
+                                print('share', chunk_id, ':', share_dict)
                         chunk_id += 1
 
                 return self.shares_list
@@ -132,21 +132,16 @@ class LeakageResilientSecretSharing():
                                 }
                                 S_list.append(share_dict)
                                 # check chunks
-                                print(sr_id, ':', share_dict)
+                                print('sr', sr_id, ':', share_dict)
                         sr_id += 1
 
                 return S_list
 
         def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
                 # check duplicate shares
-                print('checking new share data:', new_share_data)
-
                 for _, existing_share_data in self.chunks_shares_ciphertext.get(chunk_id, []):
                         if existing_share_data == new_share_data:
-                                print('Same share data exists:', existing_share_data)
                                 return True
-                
-                print('It is a new share data !')
                 return False
 
         def save_chunk_shares(self, chunk_id:int, share_id:int, share_data_base64:str):
@@ -172,9 +167,6 @@ class LeakageResilientSecretSharing():
                 chunks_number = 0
                 for chunk_id in self.chunks_shares_ciphertext:
                         chunks_number += 1        
-                # check chunks_number
-                print('chunks_number in count_chunks_amount():', chunks_number)
-
                 # Check All chunk exist
                 for i in range(1,chunks_number+1):
                         if i not in self.chunks_shares_ciphertext:
@@ -187,16 +179,14 @@ class LeakageResilientSecretSharing():
                 chunk_number = self.count_chunks_amount()
 
                 # check chunk number
-                print('chunk number in combine_chunks():', chunk_number)
+                print('Total chunk number:', chunk_number)
 
                 for i in range(1, chunk_number+1):
                         chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
                         # check chunk result
-                        print('chunk_result:', chunk_result)
+                        print('chunk_result', i+1, ':', chunk_result)
 
-                        result += chunk_result
-                # check result
-                print('result of combine_chunks():', result)    
+                        result += chunk_result    
                 return result
         
         def remove_zero_padding(self,data:bytes)->bytes:
@@ -213,12 +203,9 @@ class LeakageResilientSecretSharing():
                 self.collect_chunks(data_list)
                 result_cc = self.combine_chunks()
                 
-                # check combine_chunks
-                print('combine_chunks:', result_cc)
-
                 result_rzp = self.remove_zero_padding(result_cc)
                 # check remove_zero_padding
-                print('remove_zero_padding:', result_rzp)
+                print('recovered secret:', result_rzp)
 
                 return result_rzp
 
@@ -255,8 +242,6 @@ class LeakageResilientSecretSharing():
                 sr = self.s + self.r # 128*3+128 = 512 bits
                 print("s+r is =", sr)
                 self.S_list = self.genarate_S(self.k, self.n, sr)
-                for i in range(len(self.S_list)):
-                        print('S', i, ':', self.S_list[i])
                  
                 # Shuffle the order of parameter s and r
                 random.shuffle(self.S_list)
@@ -279,10 +264,6 @@ class LeakageResilientSecretSharing():
                 S2_bytes = json.dumps(S2).encode('utf-8')
                 S3_bytes = json.dumps(S3).encode('utf-8')
 
-                print('S1 bytes =', S1_bytes)
-                print('S2 bytes =', S2_bytes)
-                
-                print('S3 bytes =', S3_bytes)
                 S_bytes = [S1_bytes, S2_bytes, S3_bytes]
                 
                 # Output share
