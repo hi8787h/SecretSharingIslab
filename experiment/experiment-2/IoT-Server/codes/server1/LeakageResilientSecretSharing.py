@@ -95,6 +95,16 @@ class LeakageResilientSecretSharing():
                         sqeuence_start += 16
                         sqeuence_end += 16
 
+        def split_new_data(self, new_data: bytes) -> list:
+                sqeuence_start = 0
+                sqeuence_end = 16
+                data = self.zero_byte_padding(new_data)
+                for i in range(len(data) // 16):
+                        S_chunk: bytes = data[sqeuence_start: sqeuence_end]
+                        self.new_chunk_list.append(S_chunk)
+                        sqeuence_start += 16
+                        sqeuence_end += 16
+        
         def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
                 # check duplicate shares
                 for _, existing_share_data in self.chunks_shares_ciphertext.get(chunk_id, []):
@@ -112,7 +122,6 @@ class LeakageResilientSecretSharing():
 
         def collect_chunks(self, data_list: list):
                 chunk_id_list = []
-                print('chunk_id_list_size:', len(chunk_id_list))
                 for data in data_list:
                         if data['ChunkID'] not in chunk_id_list:
                                 chunk_id_list.append(data['ChunkID'])
@@ -222,11 +231,11 @@ class LeakageResilientSecretSharing():
         
         def genarate_new_shares(self, k: int, n: int, new_secret: bytes):
                 new_share_list = []
-                self.split_sr(new_secret)
+                self.split_new_data(new_secret)
                 new_id = 1
                 for new_chunk in self.new_chunk_list:
-                        sr_shares = Shamir.split(k, n, new_chunk)
-                        for share in sr_shares:
+                        new_shares = Shamir.split(k, n, new_chunk)
+                        for share in new_shares:
                                 share_dict = dict()
                                 share_index = share[0] 
                                 share_data = base64.b64encode(share[1]).decode('utf-8')
@@ -304,7 +313,7 @@ class LeakageResilientSecretSharing():
                 
                 new_secret = json.dumps(new_share_list).encode('utf-8')
                 # print('new_secret:', new_secret)
-                self.new_shares_list = self.genarate_new_shares(self.k, self.n, new_secret)
+                self.new_shares_list = self.genarate_original_shares(self.k, self.n, new_secret)
                 # print('lrss shares:', self.shares_list)
                 
                 share_1 = self.shuffle_shares(self.new_shares_list, 1)
@@ -313,7 +322,7 @@ class LeakageResilientSecretSharing():
 
                 # test whether any two shares can recover
                 share_12 = share_1 + share_2
-                #print('share1 + share2 =', share_12)
+                print('share1 + share2 =', share_12)
                 check_share_rec = self.combine_shares(share_12)
                 print('check_share_rec:', check_share_rec)
 
