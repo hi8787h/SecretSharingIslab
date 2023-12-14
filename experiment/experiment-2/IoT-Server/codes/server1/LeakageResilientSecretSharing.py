@@ -243,8 +243,6 @@ class LeakageResilientSecretSharing():
                                 "ShareData": share_data
                                 }
                                 new_share_list.append(share_dict)
-                                # check
-                                print('new share', new_id, ':', share_dict)
                         new_id += 1
 
                 return new_share_list
@@ -348,6 +346,9 @@ class LeakageResilientSecretSharing():
                 rec_sr_1 = json.loads(rec_sr_byte_1)
                 rec_sr_2 = json.loads(rec_sr_byte_2)
                 rec_sr_3 = json.loads(rec_sr_byte_3)
+                print('rec sr 1:', rec_sr_1)
+                print('rec sr 2:', rec_sr_2)
+                print('rec sr 3:', rec_sr_3)
                 
                 rec_sr_list = rec_sr_1 + rec_sr_2 + rec_sr_3
                 # recover (s,r)
