@@ -13,7 +13,6 @@ if __name__ == "__main__":
     while True:
         data_list = []
         received_data_count = 0
-        
         try:
             data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part1 = json.loads(data1)
