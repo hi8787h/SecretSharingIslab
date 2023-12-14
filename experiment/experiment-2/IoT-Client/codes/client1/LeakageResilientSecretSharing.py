@@ -90,7 +90,7 @@ class LeakageResilientSecretSharing():
                 data = self.zero_byte_padding(data)
                 for i in range(len(data) // 16):
                         S_chunk: bytes = data[sqeuence_start: sqeuence_end]
-                        self.S_chunk_list.append(S_chunk)
+                        self.sr_chunk_list.append(S_chunk)
                         sqeuence_start += 16
                         sqeuence_end += 16
 
