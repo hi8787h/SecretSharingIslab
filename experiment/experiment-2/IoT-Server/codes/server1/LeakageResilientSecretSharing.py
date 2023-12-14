@@ -112,6 +112,7 @@ class LeakageResilientSecretSharing():
 
         def collect_chunks(self, data_list: list):
                 chunk_id_list = []
+                print('chunk_id_list_size:', len(chunk_id_list))
                 for data in data_list:
                         if data['ChunkID'] not in chunk_id_list:
                                 chunk_id_list.append(data['ChunkID'])

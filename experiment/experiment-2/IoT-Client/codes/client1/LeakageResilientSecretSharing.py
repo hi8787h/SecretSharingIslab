@@ -96,7 +96,6 @@ class LeakageResilientSecretSharing():
                         sqeuence_end += 16
 
         def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
-                # check duplicate shares
                 for _, existing_share_data in self.chunks_shares_ciphertext.get(chunk_id, []):
                         if existing_share_data == new_share_data:
                                 return True
@@ -112,6 +111,7 @@ class LeakageResilientSecretSharing():
 
         def collect_chunks(self, data_list: list):
                 chunk_id_list = []
+                print('chunk_id_list_size:', len(chunk_id_list))
                 for data in data_list:
                         if data['ChunkID'] not in chunk_id_list:
                                 chunk_id_list.append(data['ChunkID'])
@@ -139,9 +139,6 @@ class LeakageResilientSecretSharing():
 
                 for i in range(1, chunk_number+1):
                         chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
-                        # check chunk result
-                        print('chunk_result', i+1, ':', chunk_result)
-
                         result += chunk_result    
                 return result
         
@@ -153,7 +150,7 @@ class LeakageResilientSecretSharing():
                                 zero_padding_number += 1
                         else:
                                 break
-                return data[zero_padding_number:]
+                return data[zero_padding_number: ]
 
         def combine_shares(self, data_list: list) -> bytes:
                 self.collect_chunks(data_list)
