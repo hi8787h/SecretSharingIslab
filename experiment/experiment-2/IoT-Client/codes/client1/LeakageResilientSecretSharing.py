@@ -170,8 +170,6 @@ class LeakageResilientSecretSharing():
                 result_cc = self.combine_chunks()
                 
                 result_rzp = self.remove_zero_padding(result_cc)
-                # check remove_zero_padding
-                print('recovered secret:', result_rzp)
 
                 return result_rzp
         
@@ -285,8 +283,8 @@ class LeakageResilientSecretSharing():
                 # test whether any two shares can recover full sr
                 sr_part_12 = sr_part1 + sr_part2
                 print('sr_part1 + sr_part2 =', sr_part_12)
-                check_sr_rec = self.combine_shares(sr_part_12)
-                print('check_sr_rec:', check_sr_rec)
+                sr_rec = self.combine_shares(sr_part_12)
+                print('sr_rec:', sr_rec)
 
                 sr_byte1 = json.dumps(sr_part1).encode('utf-8')
                 sr_byte2 = json.dumps(sr_part2).encode('utf-8')
@@ -323,34 +321,9 @@ class LeakageResilientSecretSharing():
                 # test whether any two shares can recover
                 share_12 = share_1 + share_2
                 print('share1 + share2 =', share_12)
-                share_rec = self.combine_shares(share_12)
-                print('check_share_rec:', share_rec)
-
-                bytes_rec = share_rec[share_rec.index(b'['): ]
-                new_share_rec = json.loads(bytes_rec)
-
-                # check (w, sh' xor r, sr)
-                rec_w1 = base64.b64decode(new_share_rec[0]['w'])
-                rec_w2 = base64.b64decode(new_share_rec[1]['w'])
-                rec_w3 = base64.b64decode(new_share_rec[2]['w'])
-                rec_sh_xor_r_1 = base64.b64decode(new_share_rec[0]['share_pri_xor_r'])
-                rec_sh_xor_r_2 = base64.b64decode(new_share_rec[1]['share_pri_xor_r'])
-                rec_sh_xor_r_3 = base64.b64decode(new_share_rec[2]['share_pri_xor_r'])
-                rec_sr_1 = base64.b64decode(new_share_rec[0]['sr'])
-                rec_sr_2 = base64.b64decode(new_share_rec[1]['sr'])
-                rec_sr_3 = base64.b64decode(new_share_rec[2]['sr'])
-                print('recovered w1:', rec_w1)
-                print('recovered w2:', rec_w2)
-                print('recovered w3:', rec_w3)
-                print('recovered sh\'1 xor r:', rec_sh_xor_r_1)
-                print('recovered sh\'2 xor r:', rec_sh_xor_r_2)
-                print('recovered sh\'3 xor r:', rec_sh_xor_r_3)
-                print('recovered sr part1:', rec_sr_1)
-                print('recovered sr part2:', rec_sr_2)
-                print('recovered sr part3:', rec_sr_3)
 
                 # test recover
-                # self.recover_lrShare(self.shares_list)
+                self.recover_lrShare(share_12)
                 
                 return self.new_shares_list
 
@@ -358,6 +331,38 @@ class LeakageResilientSecretSharing():
                 # extract shares: (w, sh' xor r, sr)
                 shares_rec = self.combine_shares(shares_list)
                 print('shares_rec:', shares_rec)
+
+                bytes_rec = shares_rec[shares_rec.index(b'['): ]
+                new_share_rec = json.loads(bytes_rec)
+                # check (w, sh' xor r, sr)
+                rec_w1 = base64.b64decode(new_share_rec[0]['w'])
+                rec_w2 = base64.b64decode(new_share_rec[1]['w'])
+                rec_w3 = base64.b64decode(new_share_rec[2]['w'])
+
+                rec_sh_pri_xor_r_1 = base64.b64decode(new_share_rec[0]['share_pri_xor_r'])
+                rec_sh_pri_xor_r_2 = base64.b64decode(new_share_rec[1]['share_pri_xor_r'])
+                rec_sh_pri_xor_r_3 = base64.b64decode(new_share_rec[2]['share_pri_xor_r'])
+                rec_sr_byte_1 = base64.b64decode(new_share_rec[0]['sr'])
+                rec_sr_byte_2 = base64.b64decode(new_share_rec[1]['sr'])
+                rec_sr_byte_3 = base64.b64decode(new_share_rec[2]['sr'])
+                rec_sr_1 = json.loads(rec_sr_byte_1)
+                rec_sr_2 = json.loads(rec_sr_byte_2)
+                rec_sr_3 = json.loads(rec_sr_byte_3)
+                print('rec sr1:', rec_sr_1)
+                print('rec sr2:', rec_sr_2)
+                print('rec sr3:', rec_sr_3)
+
+                # recover (s,r)
+                #rec_sr = self.combine_shares(rec_sr_list)
+                #print('recovered sr:', rec_sr)
+
+                rec_sh_pri1 = self.xor(rec_sh_pri_xor_r_1, self.r)
+                rec_sh_pri2 = self.xor(rec_sh_pri_xor_r_2, self.r)
+                rec_sh_pri3 = self.xor(rec_sh_pri_xor_r_3, self.r)
+                # rec_Ext1 = self.get_inner_product(rec_w1, rec_s)
+                print('rec_sh_pri 1', rec_sh_pri1)
+                print('rec_sh_pri 2', rec_sh_pri2)
+                print('rec_sh_pri 3', rec_sh_pri3)
 
 if __name__ == "__main__":
         pass
