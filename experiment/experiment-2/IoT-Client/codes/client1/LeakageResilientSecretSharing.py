@@ -313,7 +313,7 @@ class LeakageResilientSecretSharing():
                 
                 new_secret = json.dumps(new_share_list).encode('utf-8')
                 # print('new_secret:', new_secret)
-                self.new_shares_list = self.genarate_original_shares(self.k, self.n, new_secret)
+                self.new_shares_list = self.genarate_new_shares(self.k, self.n, new_secret)
                 # print('lrss shares:', self.shares_list)
                 
                 share_1 = self.shuffle_shares(self.new_shares_list, 1)
