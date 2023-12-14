@@ -49,9 +49,9 @@ if __name__ == "__main__":
     cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
 
     # Check sending data
-    print('data_1:', cipher_bytes_1)
-    print('data_2:', cipher_bytes_2)
-    print('data_3:', cipher_bytes_3)
+    #print('data_1:', cipher_bytes_1)
+    #print('data_2:', cipher_bytes_2)
+    #print('data_3:', cipher_bytes_3)
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1

@@ -29,7 +29,8 @@ class LeakageResilientSecretSharing():
                 #For encrypt
                 self.data_chunk_list = []
                 self.sr_chunk_list = []
-                self.shares_list = []
+                self.new_chunk_list = []
+                self.new_shares_list = []
                 self.sr_list = []
                 #For decrypt
                 self.chunks_shares_ciphertext = dict()
@@ -174,7 +175,7 @@ class LeakageResilientSecretSharing():
                 return new_list
 
         # generate original share
-        def genarate_shares(self, k: int, n: int, secret: bytes) -> list:
+        def genarate_original_shares(self, k: int, n: int, secret: bytes) -> list:
                 original_share_list = []
                 self.split_data(secret)
                 chunk_id = 1
@@ -218,9 +219,31 @@ class LeakageResilientSecretSharing():
 
                 return sr_list
         
+        def genarate_new_shares(self, k: int, n: int, new_secret: bytes):
+                new_share_list = []
+                self.split_sr(new_secret)
+                new_id = 1
+                for new_chunk in self.new_chunk_list:
+                        sr_shares = Shamir.split(k, n, new_chunk)
+                        for share in sr_shares:
+                                share_dict = dict()
+                                share_index = share[0] 
+                                share_data = base64.b64encode(share[1]).decode('utf-8')
+                                share_dict = {
+                                "ChunkID": new_id,
+                                "ShareIndex": share_index,
+                                "ShareData": share_data
+                                }
+                                new_share_list.append(share_dict)
+                                # check
+                                print('new share', new_id, ':', share_dict)
+                        new_id += 1
+
+                return new_share_list
+        
         def generate_lrShare(self, secret: bytes) -> list:
                 share_pri = []
-                original_sharelist = self.genarate_shares(self.k, self.n, secret)
+                original_sharelist = self.genarate_original_shares(self.k, self.n, secret)
                 new_share_list = []
                 # set s, r, w (and check parameters)
                 self.s = self.set_s()
@@ -249,6 +272,12 @@ class LeakageResilientSecretSharing():
                 sr_part2 = self.shuffle_shares(self.sr_list, 2)
                 sr_part3 = self.shuffle_shares(self.sr_list, 3)
 
+                # test whether any two shares can recover full sr
+                sr_part_12 = sr_part1 + sr_part2
+                print('sr_part1 + sr_part2 =', sr_part_12)
+                check_sr_rec = self.combine_shares(sr_part_12)
+                print('check_sr_rec:', check_sr_rec)
+
                 sr_byte1 = json.dumps(sr_part1).encode('utf-8')
                 sr_byte2 = json.dumps(sr_part2).encode('utf-8')
                 sr_byte3 = json.dumps(sr_part3).encode('utf-8')
@@ -273,22 +302,24 @@ class LeakageResilientSecretSharing():
                         new_share_list.append(new_share)
                 
                 new_secret = json.dumps(new_share_list).encode('utf-8')
-                self.shares_list = self.genarate_shares(self.k, self.n, new_secret)
-                print('lrss shares:', self.shares_list)
+                # print('new_secret:', new_secret)
+                self.new_shares_list = self.genarate_new_shares(self.k, self.n, new_secret)
+                # print('lrss shares:', self.shares_list)
                 
-                share_1 = self.shuffle_shares(self.shares_list, 1)
-                share_2 = self.shuffle_shares(self.shares_list, 2)
-                share_3 = self.shuffle_shares(self.shares_list, 3)
+                share_1 = self.shuffle_shares(self.new_shares_list, 1)
+                share_2 = self.shuffle_shares(self.new_shares_list, 2)
+                share_3 = self.shuffle_shares(self.new_shares_list, 3)
 
                 # test whether any two shares can recover
                 share_12 = share_1 + share_2
-                print('share1 + share2 =', share_12)
+                #print('share1 + share2 =', share_12)
                 check_share_rec = self.combine_shares(share_12)
                 print('check_share_rec:', check_share_rec)
+
                 # test recover
                 # self.recover_lrShare(self.shares_list)
                 
-                return self.shares_list
+                return self.new_shares_list
 
         def recover_lrShare(self, shares_list: list):
                 # extract shares: (w, sh' xor r, sr)
