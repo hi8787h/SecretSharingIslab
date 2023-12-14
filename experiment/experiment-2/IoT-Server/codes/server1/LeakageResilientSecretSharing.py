@@ -165,7 +165,7 @@ class LeakageResilientSecretSharing():
                 return result_rzp
         
         # shuffle the order of list
-        def shuffle_sr(self, object_list: list, shareID: int) -> list:
+        def shuffle_shares(self, object_list: list, shareID: int) -> list:
                 new_list = []
                 for share in object_list:
                         if share['ShareIndex'] == shareID :
@@ -245,9 +245,9 @@ class LeakageResilientSecretSharing():
                 sr = self.s + self.r
                 self.sr_list = self.generate_sr_shares(self.k, self.n, sr)
                 
-                sr_part1 = self.shuffle_sr(self.sr_list, 1)
-                sr_part2 = self.shuffle_sr(self.sr_list, 2)
-                sr_part3 = self.shuffle_sr(self.sr_list, 3)
+                sr_part1 = self.shuffle_shares(self.sr_list, 1)
+                sr_part2 = self.shuffle_shares(self.sr_list, 2)
+                sr_part3 = self.shuffle_shares(self.sr_list, 3)
 
                 sr_byte1 = json.dumps(sr_part1).encode('utf-8')
                 sr_byte2 = json.dumps(sr_part2).encode('utf-8')
@@ -269,9 +269,17 @@ class LeakageResilientSecretSharing():
                 new_secret = json.dumps(new_share_list).encode('utf-8')
                 self.shares_list = self.genarate_shares(self.k, self.n, new_secret)
                 print('lrss shares:', self.shares_list)
+                share_1 = self.shuffle_shares(self.shares_list, 1)
+                share_2 = self.shuffle_shares(self.shares_list, 2)
+                share_3 = self.shuffle_shares(self.shares_list, 3)
 
+                # test whether any two shares can recover
+                share_12 = share_1 + share_2
+                print('share1 + share2 =', share_12)
+                check_share_rec = self.combine_shares(share_12)
+                print('check_share_rec:', check_share_rec)
                 # test recover
-                self.recover_lrShare(self.shares_list)
+                # self.recover_lrShare(self.shares_list)
                 
                 return self.shares_list
 
