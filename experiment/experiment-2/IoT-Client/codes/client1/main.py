@@ -41,13 +41,9 @@ if __name__ == "__main__":
     print("[Client] Encrypt time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
     # Shuffle the order of shares, send by 3 paths
-    random.shuffle(lrss_list)
-    lrss_list_length: int = len(lrss_list)
-    lrss_list_part_length: int = lrss_list_length//3
-    
-    part_1 = lrss_list[: lrss_list_part_length]
-    part_2 = lrss_list[lrss_list_part_length: 2*lrss_list_part_length]
-    part_3 = lrss_list[2*lrss_list_part_length: ]
+    part_1 = lrss.shuffle(lrss_list, 1)
+    part_2 = lrss.shuffle(lrss_list, 2)
+    part_3 = lrss.shuffle(lrss_list, 3)
     
     cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
     cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
@@ -60,11 +56,11 @@ if __name__ == "__main__":
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
-    SocketConnection.send_data("10.18.173.78",10001, cipher_bytes_1)
+    SocketConnection.send_data("10.18.173.78", 10001, cipher_bytes_1)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10002, cipher_bytes_2)
+    SocketConnection.send_data("10.18.173.78", 10002, cipher_bytes_2)
     time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78",10003, cipher_bytes_3)
+    SocketConnection.send_data("10.18.173.78", 10003, cipher_bytes_3)
 
-    total_end_time = datetime.datetime.now() - datetime.timedelta(seconds=pause_time*2)
+    total_end_time = datetime.datetime.now() - datetime.timedelta(seconds = pause_time*2)
     print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")

@@ -35,22 +35,22 @@ class LeakageResilientSecretSharing():
                 self.chunks_shares_ciphertext = dict()
         
         def set_s(self) -> bytes :
-                s = random.choices("01",k=self.bin_len*3)
+                s = random.choices("01", k=self.bin_len*3)
                 combined_s = ''.join(s).encode('utf-8')
                 return combined_s
 
         def set_r(self) -> bytes :
-                r = random.choices("01",k=self.bin_len)
+                r = random.choices("01", k=self.bin_len)
                 combined_r = ''.join(r).encode('utf-8')
                 return combined_r
 
         def set_w(self) -> bytes :
-                w = random.choices("01",k=self.bin_len*3)
+                w = random.choices("01", k=self.bin_len*3)
                 combined_w = ''.join(w).encode('utf-8')
                 return combined_w
-        
+
         # Compute inner product
-        def get_inner_product(self, byte1:bytes, byte2:bytes, modulus:int) -> bytes:          
+        def get_inner_product(self, byte1: bytes, byte2: bytes, modulus: int) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
                 int_1 = int.from_bytes(byte1, byteorder='big')
                 int_2 = int.from_bytes(byte2, byteorder='big')
@@ -58,43 +58,43 @@ class LeakageResilientSecretSharing():
                 inner_product = int_1 * int_2
                 inner_mod = inner_product % modulus
 
-                inner_bin = bin(inner_mod)[2:].zfill(128)
+                inner_bin = bin(inner_mod)[2: ].zfill(128)
                 inner_byte = bytes(inner_bin, 'utf-8')
                 return inner_byte
 
         # XOR
-        def xor(self, byte1:bytes, byte2:bytes) -> bytes :
+        def xor(self, byte1: bytes, byte2: bytes) -> bytes :
                 
                 xor_bytes = bytes(x^y for x,y in zip(byte1, byte2))
                 return xor_bytes
 
         # Encrypt
-        def zero_byte_padding(self,data:bytes)->bytes:
-                while len(data)%16 != 0:
+        def zero_byte_padding(self, data: bytes) -> bytes:
+                while len(data) % 16 != 0:
                         data = b'\x00' + data
                 return data
 
-        def split_data(self, data:bytes)->list:
+        def split_data(self, data: bytes) -> list:
                 sqeuence_start = 0
                 sqeuence_end = 16
                 data = self.zero_byte_padding(data)
-                for i in range(len(data)//16):
-                        data_chunk:bytes = data[sqeuence_start:sqeuence_end]
+                for i in range(len(data) // 16):
+                        data_chunk: bytes = data[sqeuence_start: sqeuence_end]
                         self.data_chunk_list.append(data_chunk)
                         sqeuence_start += 16
                         sqeuence_end += 16
 
-        def split_S(self, data:bytes)->list:
+        def split_S(self, data: bytes) -> list:
                 sqeuence_start = 0
                 sqeuence_end = 16
                 data = self.zero_byte_padding(data)
-                for i in range(len(data)//16):
-                        S_chunk:bytes = data[sqeuence_start:sqeuence_end]
+                for i in range(len(data) // 16):
+                        S_chunk: bytes = data[sqeuence_start: sqeuence_end]
                         self.S_chunk_list.append(S_chunk)
                         sqeuence_start += 16
                         sqeuence_end += 16
 
-        def genarate_shares(self, k:int, n:int, secret:bytes)->list:
+        def genarate_shares(self, k: int, n: int, secret: bytes) -> list:
                 self.split_data(secret)
                 chunk_id = 1
                 for data_chunk in self.data_chunk_list:
@@ -144,36 +144,36 @@ class LeakageResilientSecretSharing():
                                 return True
                 return False
 
-        def save_chunk_shares(self, chunk_id:int, share_id:int, share_data_base64:str):
+        def save_chunk_shares(self, chunk_id: int, share_id: int, share_data_base64: str):
                 share_data = base64.b64decode(share_data_base64.encode("utf-8"))
                 
                 if self.check_duplicate_shares(chunk_id, share_data):
                         print(f"Duplicate share_data for chunk_id {chunk_id}, share_id {share_id}")
                 else:
-                        self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data))
+                        self.chunks_shares_ciphertext[chunk_id].append((share_id, share_data))
                 # check saved chunk shares
                 print(chunk_id, ':', self.chunks_shares_ciphertext[chunk_id])
 
-        def collect_chunks(self, data_list:list):
+        def collect_chunks(self, data_list: list):
                 chunk_id_list = []
                 for data in data_list:
                         if data['ChunkID'] not in chunk_id_list:
                                 chunk_id_list.append(data['ChunkID'])
                                 self.chunks_shares_ciphertext[data['ChunkID']] = []
-                        self.save_chunk_shares(data['ChunkID'], data['ShareIndex'],data['ShareData'])
+                        self.save_chunk_shares(data['ChunkID'], data['ShareIndex'], data['ShareData'])
         
-        def count_chunks_amount(self)->int:
+        def count_chunks_amount(self) -> int:
                 # Count chunks number from self.chunks_shares_ciphertext
                 chunks_number = 0
                 for chunk_id in self.chunks_shares_ciphertext:
                         chunks_number += 1        
                 # Check All chunk exist
-                for i in range(1,chunks_number+1):
+                for i in range(1, chunks_number + 1):
                         if i not in self.chunks_shares_ciphertext:
                                 raise Exception("Chunk " + str(i) + " not exist")
                 return chunks_number
 
-        def combine_chunks(self)->bytes:
+        def combine_chunks(self) -> bytes:
                 result = bytes()
                 #Count and check chunks number
                 chunk_number = self.count_chunks_amount()
@@ -189,7 +189,7 @@ class LeakageResilientSecretSharing():
                         result += chunk_result    
                 return result
         
-        def remove_zero_padding(self,data:bytes)->bytes:
+        def remove_zero_padding(self, data: bytes) -> bytes:
                 # Remove header zero padding of bytes
                 zero_padding_number = 0
                 for i in range(len(data)):
@@ -199,7 +199,7 @@ class LeakageResilientSecretSharing():
                                 break
                 return data[zero_padding_number:]
 
-        def combine_shares(self, data_list:list)->bytes:
+        def combine_shares(self, data_list: list) -> bytes:
                 self.collect_chunks(data_list)
                 result_cc = self.combine_chunks()
                 
@@ -208,9 +208,9 @@ class LeakageResilientSecretSharing():
                 print('recovered secret:', result_rzp)
 
                 return result_rzp
-
-        # modify the order of list
-        def shuffle(self, object_list, shareID:int):
+        
+        # shuffle the order of list
+        def shuffle(self, object_list: list, shareID: int) -> list:
                 new_list = []
                 for share in object_list:
                         if share['ShareIndex'] == shareID :
@@ -218,7 +218,7 @@ class LeakageResilientSecretSharing():
 
                 return new_list
 
-        def leakage_resilient(self, cipher_list:list):
+        def leakage_resilient(self, cipher_list: list) -> list:
                 share_pri = []
                 lr_share_list = []
                 # Set s, r
@@ -293,7 +293,7 @@ class LeakageResilientSecretSharing():
 
                 return lr_share_list
         
-        def leakage_resilient_recovery(self, shares_list:list):
+        def leakage_resilient_recovery(self, shares_list: list):
                 
                 json_sr_list = []
                 # Get two shares to recover (s,r)
