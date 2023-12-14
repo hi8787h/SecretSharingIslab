@@ -257,18 +257,25 @@ class LeakageResilientSecretSharing():
                 
                 # generate new shares (w, sh' xor r, sr)
                 for i in range(self.n):
+                        # change type of (w, sh' xor r, sr) from bytes to string
+                        # because json dumps can't have type bytes
+                        w_b64 = base64.b64encode(self.w[i]).decode('utf-8')
                         sh_xor_r = self.xor(share_pri[i], self.r)
+                        sh_xor_r_b64 = base64.b64encode(sh_xor_r).decode('utf-8')
+                        sr_b64 = base64.b64encode(sr_bytes[i]).decode('utf-8')
+
                         new_share = dict()
                         new_share = {
-                                "w": self.w[i],
-                                "share_pri_xor_r": sh_xor_r,
-                                "sr": sr_bytes[i]
+                                "w": w_b64,
+                                "share_pri_xor_r": sh_xor_r_b64,
+                                "sr": sr_b64
                         }
                         new_share_list.append(new_share)
                 
                 new_secret = json.dumps(new_share_list).encode('utf-8')
                 self.shares_list = self.genarate_shares(self.k, self.n, new_secret)
                 print('lrss shares:', self.shares_list)
+                
                 share_1 = self.shuffle_shares(self.shares_list, 1)
                 share_2 = self.shuffle_shares(self.shares_list, 2)
                 share_3 = self.shuffle_shares(self.shares_list, 3)
