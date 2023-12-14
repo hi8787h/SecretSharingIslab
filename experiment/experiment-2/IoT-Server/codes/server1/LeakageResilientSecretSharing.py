@@ -323,8 +323,22 @@ class LeakageResilientSecretSharing():
                 # test whether any two shares can recover
                 share_12 = share_1 + share_2
                 print('share1 + share2 =', share_12)
-                check_share_rec = self.combine_shares(share_12)
-                print('check_share_rec:', check_share_rec)
+                share_rec = self.combine_shares(share_12)
+                print('check_share_rec:', share_rec)
+
+                bytes_rec = share_rec[share_rec.index(b'['): ]
+                new_share_rec = json.loads(bytes_rec)
+
+                # check (w, sh' xor r, sr)
+                print('recovered w1:', new_share_rec[0]['w'])
+                print('recovered w2:', new_share_rec[1]['w'])
+                print('recovered w3:', new_share_rec[2]['w'])
+                print('recovered sh\'1 xor r:', new_share_rec[0]['share_pri_xor_r'])
+                print('recovered sh\'2 xor r:', new_share_rec[1]['share_pri_xor_r'])
+                print('recovered sh\'3 xor r:', new_share_rec[2]['share_pri_xor_r'])
+                print('recovered sr part1:', new_share_rec[0]['sr'])
+                print('recovered sr part2:', new_share_rec[1]['sr'])
+                print('recovered sr part3:', new_share_rec[2]['sr'])
 
                 # test recover
                 # self.recover_lrShare(self.shares_list)
@@ -333,7 +347,7 @@ class LeakageResilientSecretSharing():
 
         def recover_lrShare(self, shares_list: list):
                 # extract shares: (w, sh' xor r, sr)
-                shares_rec = self.combine_shares()
+                shares_rec = self.combine_shares(shares_list)
                 print('shares_rec:', shares_rec)
 
 if __name__ == "__main__":
