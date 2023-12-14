@@ -349,7 +349,7 @@ class LeakageResilientSecretSharing():
                 rec_sr_2 = json.loads(rec_sr_byte_2)
                 rec_sr_3 = json.loads(rec_sr_byte_3)
                 
-                rec_sr_list = rec_sr_1 + rec_sr_2
+                rec_sr_list = rec_sr_1 + rec_sr_2 + rec_sr_3
                 # recover (s,r)
                 rec_sr = self.combine_shares(rec_sr_list)
                 print('recovered sr:', rec_sr)
