@@ -343,17 +343,14 @@ class LeakageResilientSecretSharing():
                 rec_sr_byte_1 = base64.b64decode(new_share_rec[0]['sr'])
                 rec_sr_byte_2 = base64.b64decode(new_share_rec[1]['sr'])
                 rec_sr_byte_3 = base64.b64decode(new_share_rec[2]['sr'])
-                rec_sr_1 = json.loads(rec_sr_byte_1)
-                rec_sr_2 = json.loads(rec_sr_byte_2)
-                rec_sr_3 = json.loads(rec_sr_byte_3)
-                print('rec sr 1:', rec_sr_1)
-                print('rec sr 2:', rec_sr_2)
-                print('rec sr 3:', rec_sr_3)
+                print('rec sr 1:', rec_sr_byte_1)
+                print('rec sr 2:', rec_sr_byte_2)
+                print('rec sr 3:', rec_sr_byte_3)
                 
-                rec_sr_list = rec_sr_1 + rec_sr_2 + rec_sr_3
+                #rec_sr_list = rec_sr_1 + rec_sr_2 + rec_sr_3
                 # recover (s,r)
-                rec_sr = self.combine_shares(rec_sr_list)
-                print('recovered sr:', rec_sr)
+                #rec_sr = self.combine_shares(rec_sr_list)
+                #print('recovered sr:', rec_sr)
 
                 # Sh' = S' xor r
                 rec_sh_pri1 = self.xor(rec_sh_pri_xor_r_1, self.r)
