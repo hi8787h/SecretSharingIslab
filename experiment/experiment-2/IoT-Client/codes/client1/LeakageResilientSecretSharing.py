@@ -328,10 +328,11 @@ class LeakageResilientSecretSharing():
         def recover_lrShare(self, shares_list: list):
                 # extract shares: (w, sh' xor r, sr)
                 shares_rec = self.combine_shares(shares_list)
-                print('shares_rec:', shares_rec)
 
                 bytes_rec = shares_rec[shares_rec.index(b'['): ]
+                print('bytes_rec:', bytes_rec)
                 new_share_rec = json.loads(bytes_rec)
+                print('new_share_rec:', new_share_rec)
                 # check (w, sh' xor r, sr)
                 rec_w1 = base64.b64decode(new_share_rec[0]['w'])
                 rec_w2 = base64.b64decode(new_share_rec[1]['w'])
@@ -343,11 +344,18 @@ class LeakageResilientSecretSharing():
                 rec_sr_byte_1 = base64.b64decode(new_share_rec[0]['sr'])
                 rec_sr_byte_2 = base64.b64decode(new_share_rec[1]['sr'])
                 rec_sr_byte_3 = base64.b64decode(new_share_rec[2]['sr'])
-                print('rec sr 1:', rec_sr_byte_1)
-                print('rec sr 2:', rec_sr_byte_2)
-                print('rec sr 3:', rec_sr_byte_3)
+                print('rec sr byte1:', rec_sr_byte_1)
+                print('rec sr byte2:', rec_sr_byte_2)
+                print('rec sr byte3:', rec_sr_byte_3)
+                rec_sr_1 = json.loads(rec_sr_byte_1)
+                rec_sr_2 = json.loads(rec_sr_byte_2)
+                rec_sr_3 = json.loads(rec_sr_byte_3)
+                print('rec sr1:', rec_sr_1)
+                print('rec sr2:', rec_sr_2)
+                print('rec sr3:', rec_sr_3)
                 
-                #rec_sr_list = rec_sr_1 + rec_sr_2 + rec_sr_3
+                rec_sr_list = rec_sr_1 + rec_sr_2 + rec_sr_3
+                print('rec sr list:', rec_sr_list)
                 # recover (s,r)
                 #rec_sr = self.combine_shares(rec_sr_list)
                 #print('recovered sr:', rec_sr)
@@ -356,6 +364,9 @@ class LeakageResilientSecretSharing():
                 rec_sh_pri1 = self.xor(rec_sh_pri_xor_r_1, self.r)
                 rec_sh_pri2 = self.xor(rec_sh_pri_xor_r_2, self.r)
                 rec_sh_pri3 = self.xor(rec_sh_pri_xor_r_3, self.r)
+                print('rec_sh_pri1:', rec_sh_pri1)
+                print('rec_sh_pri2:', rec_sh_pri2)
+                print('rec_sh_pri3:', rec_sh_pri3)
 
 if __name__ == "__main__":
         pass
