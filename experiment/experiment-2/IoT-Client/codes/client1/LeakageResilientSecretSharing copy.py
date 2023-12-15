@@ -28,9 +28,10 @@ class LeakageResilientSecretSharing():
                 
                 #For encrypt
                 self.data_chunk_list = []
-                self.S_chunk_list = []
-                self.shares_list = []
-                self.S_list = []
+                self.sr_chunk_list = []
+                self.new_chunk_list = []
+                self.new_shares_list = []
+                self.sr_list = []
                 #For decrypt
                 self.chunks_shares_ciphertext = dict()
         
@@ -84,59 +85,26 @@ class LeakageResilientSecretSharing():
                         sqeuence_start += 16
                         sqeuence_end += 16
 
-        def split_S(self, data: bytes) -> list:
+        def split_sr(self, data: bytes) -> list:
                 sqeuence_start = 0
                 sqeuence_end = 16
                 data = self.zero_byte_padding(data)
                 for i in range(len(data) // 16):
                         S_chunk: bytes = data[sqeuence_start: sqeuence_end]
-                        self.S_chunk_list.append(S_chunk)
+                        self.sr_chunk_list.append(S_chunk)
                         sqeuence_start += 16
                         sqeuence_end += 16
 
-        def genarate_shares(self, k: int, n: int, secret: bytes) -> list:
-                self.split_data(secret)
-                chunk_id = 1
-                for data_chunk in self.data_chunk_list:
-                        shares = Shamir.split(k, n, data_chunk)
-                        for share in shares:
-                                share_dict = dict()
-                                share_index = share[0] 
-                                share_data = base64.b64encode(share[1]).decode('utf-8')
-                                share_dict = {
-                                "ChunkID": chunk_id,
-                                "ShareIndex": share_index,
-                                "ShareData": share_data
-                                }
-                                self.shares_list.append(share_dict)
-                                # check chunks
-                                print('share', chunk_id, ':', share_dict)
-                        chunk_id += 1
-
-                return self.shares_list
+        def split_new_data(self, new_data: bytes) -> list:
+                sqeuence_start = 0
+                sqeuence_end = 16
+                data = self.zero_byte_padding(new_data)
+                for i in range(len(data) // 16):
+                        S_chunk: bytes = data[sqeuence_start: sqeuence_end]
+                        self.new_chunk_list.append(S_chunk)
+                        sqeuence_start += 16
+                        sqeuence_end += 16
         
-        def genarate_S(self, k:int, n:int, data:bytes)->list:
-                S_list = []
-                self.split_S(data)
-                sr_id = 1
-                for S_chunk in self.S_chunk_list:
-                        shares = Shamir.split(k, n, S_chunk)
-                        for share in shares:
-                                share_dict = dict()
-                                share_index = share[0] 
-                                share_data = base64.b64encode(share[1]).decode('utf-8')
-                                share_dict = {
-                                "ChunkID": sr_id,
-                                "ShareIndex": share_index,
-                                "ShareData": share_data
-                                }
-                                S_list.append(share_dict)
-                                # check chunks
-                                print('sr', sr_id, ':', share_dict)
-                        sr_id += 1
-
-                return S_list
-
         def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
                 # check duplicate shares
                 for _, existing_share_data in self.chunks_shares_ciphertext.get(chunk_id, []):
@@ -151,8 +119,6 @@ class LeakageResilientSecretSharing():
                         print(f"Duplicate share_data for chunk_id {chunk_id}, share_id {share_id}")
                 else:
                         self.chunks_shares_ciphertext[chunk_id].append((share_id, share_data))
-                # check saved chunk shares
-                print(chunk_id, ':', self.chunks_shares_ciphertext[chunk_id])
 
         def collect_chunks(self, data_list: list):
                 chunk_id_list = []
@@ -173,6 +139,20 @@ class LeakageResilientSecretSharing():
                                 raise Exception("Chunk " + str(i) + " not exist")
                 return chunks_number
 
+        def count_sr_amount(self) -> int:
+                # Count chunks number from self.chunks_shares_ciphertext
+                sr_number = 0
+                for sr_id in self.chunks_sr_ciphertext:
+                        chunks_number += 1        
+                # Check All chunk exist
+                for i in range(1, chunks_number + 1):
+                        if i not in self.chunks_shares_ciphertext:
+                                raise Exception("Chunk " + str(i) + " not exist")
+                return chunks_number
+        
+        def combine_sr(self) -> bytes:
+                result = bytes()
+                
         def combine_chunks(self) -> bytes:
                 result = bytes()
                 #Count and check chunks number
@@ -184,7 +164,7 @@ class LeakageResilientSecretSharing():
                 for i in range(1, chunk_number+1):
                         chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
                         # check chunk result
-                        print('chunk_result', i+1, ':', chunk_result)
+                        print('chunk_result', i, ':', chunk_result)
 
                         result += chunk_result    
                 return result
@@ -204,176 +184,193 @@ class LeakageResilientSecretSharing():
                 result_cc = self.combine_chunks()
                 
                 result_rzp = self.remove_zero_padding(result_cc)
-                # check remove_zero_padding
-                print('recovered secret:', result_rzp)
 
                 return result_rzp
         
         # shuffle the order of list
-        def shuffle_sr(self, object_list: list, shareID: int) -> list:
+        def shuffle_shares(self, object_list: list, shareID: int) -> list:
                 new_list = []
                 for share in object_list:
                         if share['ShareIndex'] == shareID :
                                 new_list.append(share)
 
                 return new_list
-
-        # shuffle the order of list
-        def shuffle_share(self, object_list: list, shareID: int) -> list:
-                new_list = []
-                for share in object_list:
-                        if share['ShareIndex'] == shareID :
-                                new_list.append(share)
-
-                return new_list
-
-        def generate_lrShare(self, k:int, n:int, secret:bytes) -> list:
-                
         
-        def leakage_resilient(self, cipher_list: list) -> list:
-                share_pri = []
-                lr_share_list = []
-                # Set s, r
-                self.s = self.set_s()
-                # check s
-                print('s:', self.s)
+        def genarate_original_shares(self, k: int, n: int, secret: bytes) -> list:
+                original_share_list = []
+                self.split_data(secret)
+                chunk_id = 1
+                for data_chunk in self.data_chunk_list:
+                        shares = Shamir.split(k, n, data_chunk)
+                        for share in shares:
+                                share_dict = dict()
+                                share_index = share[0] 
+                                share_data = base64.b64encode(share[1]).decode('utf-8')
+                                share_dict = {
+                                "ChunkID": chunk_id,
+                                "ShareIndex": share_index,
+                                "ShareData": share_data
+                                }
+                                original_share_list.append(share_dict)
+                                # check chunks
+                                print('original share', chunk_id, ':', share_dict)
+                        chunk_id += 1
 
+                return original_share_list
+        
+        def generate_sr_shares(self, k: int, n: int, sr: bytes) -> list:
+                sr_list = []
+                self.split_sr(sr)
+                sr_id = 1
+                for sr_chunk in self.sr_chunk_list:
+                        sr_shares = Shamir.split(k, n, sr_chunk)
+                        for share in sr_shares:
+                                share_dict = dict()
+                                share_index = share[0] 
+                                share_data = base64.b64encode(share[1]).decode('utf-8')
+                                share_dict = {
+                                "ChunkID": sr_id,
+                                "ShareIndex": share_index,
+                                "ShareData": share_data
+                                }
+                                sr_list.append(share_dict)
+                                # check
+                                print('sr', sr_id, ':', share_dict)
+                        sr_id += 1
+
+                return sr_list
+        
+        def genarate_new_shares(self, k: int, n: int, new_secret: bytes):
+                new_share_list = []
+                self.split_new_data(new_secret)
+                new_id = 1
+                for new_chunk in self.new_chunk_list:
+                        new_shares = Shamir.split(k, n, new_chunk)
+                        for share in new_shares:
+                                share_dict = dict()
+                                share_index = share[0] 
+                                share_data = base64.b64encode(share[1]).decode('utf-8')
+                                share_dict = {
+                                "ChunkID": new_id,
+                                "ShareIndex": share_index,
+                                "ShareData": share_data
+                                }
+                                new_share_list.append(share_dict)
+                        new_id += 1
+
+                return new_share_list
+        
+        def generate_lrShare(self, secret: bytes) -> list:
+                share_pri = []
+                original_sharelist = self.genarate_original_shares(self.k, self.n, secret)
+                new_share_list = []
+                # set s, r, w (and check parameters)
+                self.s = self.set_s()
                 self.r = self.set_r()
-                # check r
+                print('s:', self.s)
                 print('r:', self.r)
-                
-                # Set each w
                 for i in range(self.n):
                         self.w.append(self.set_w())
-                        # check each w
                         print('w', i+1, ':', self.w[i])
+                
                 # Sh' = Sh XOR Ext(wi, s)
                 for i in range(self.n):
                         self.Ext = self.get_inner_product(self.w[i], self.s, self.modulus)
-                        # check each Ext
+                        original_share = json.dumps(original_sharelist[i]).encode('utf-8')
+                        share_pri.append(self.xor(original_share, self.Ext))
+                        # check
                         print('Ext', i+1, ':', self.Ext)
-
-                        cipher_bytes = json.dumps(cipher_list[i]).encode('utf-8')
-                        # check cipher list
-                        print('share:', cipher_list[i], 'length:', len(cipher_list[i]))
-
-                        share_pri.append(self.xor(cipher_bytes, self.Ext))
-                        # check each Ext
-                        print('share_pri', i+1, ':', share_pri[i], 'length:', len(share_pri[i]))
+                        print('share:', original_share, 'length:', len(original_share))
+                        print('Sh\'', i+1, ':', share_pri[i], 'length:', len(share_pri[i]))
                 
-                # obtain S1 to Sn
-                sr = self.s + self.r # 128*3 + 128 = 512 bits
-                self.S_list = self.genarate_S(self.k, self.n, sr)
-                 
-                # Shuffle the order of S list
-                S1 = self.shuffle_sr(self.S_list, 1)
-                S2 = self.shuffle_sr(self.S_list, 2)
-                S3 = self.shuffle_sr(self.S_list, 3)
-
-                print('S1=', S1)
-                print('S2=', S2)
-                print('S3=', S3)
+                # combine s and r, then obtain S1 to Sn
+                sr = self.s + self.r
+                self.sr_list = self.generate_sr_shares(self.k, self.n, sr)
+                
+                sr_part1 = self.shuffle_shares(self.sr_list, 1)
+                sr_part2 = self.shuffle_shares(self.sr_list, 2)
+                sr_part3 = self.shuffle_shares(self.sr_list, 3)
 
                 # test whether any two shares can recover full sr
-                S_12 = S1 + S2
-                print('S1 + S2 =', S_12)
-                check_sr_rec = self.combine_shares(S_12)
-                print('check_sr_rec:', check_sr_rec)
-                
-                S1_bytes = json.dumps(S1).encode('utf-8')
-                S2_bytes = json.dumps(S2).encode('utf-8')
-                S3_bytes = json.dumps(S3).encode('utf-8')
-
-                S_bytes = [S1_bytes, S2_bytes, S3_bytes]
-                
-                # Output share
-                for i in range(self.n):
-                        sh_xor_r = self.xor(share_pri[i], self.r)
-                        
-                        w_base64 = base64.b64encode(self.w[i]).decode('utf-8')
-                        sh_xor_r_base64 = base64.b64encode(sh_xor_r).decode('utf-8')
-                        S_base64 = base64.b64encode(S_bytes[i]).decode('utf-8')
-                        # Store (wi, sh' xor r, si) to a dictionary
-                        secret_dict = dict()
-                        secret_dict = {
-                                "wi": w_base64, 
-                                "sh_pri_xor_r": sh_xor_r_base64,
-                                "S": S_base64
-                        }
-                        # Combine 
-                        lr_share_list.append(secret_dict)
-
-                return lr_share_list
-        
-        def leakage_resilient_recovery(self, shares_list: list):
-                
-                json_sr_list = []
-                # Get two shares to recover (s,r)
-                #share_list_rec = [shares_list[0], shares_list[1]]
-
-                # Decode S to [chunk id, share id, share data]
-                chunks_sr_1 = base64.b64decode(shares_list[0][0]['S'])
-                chunks_sr_2 = base64.b64decode(shares_list[1][0]['S'])
-                sr_1 = chunks_sr_1.decode('utf-8')
-                sr_2 = chunks_sr_2.decode('utf-8')
-                json_sr_1 = json.loads(sr_1)
-                json_sr_2 = json.loads(sr_2)
-                # Combine 
-                json_sr_list = json_sr_1 + json_sr_2
-
-                # Check chunk_sr_list
-                print('json_sr:', json_sr_list)
-
-                sr_rec = self.combine_shares(json_sr_list)
-                
-                # Check sr_rec
+                sr_part_12 = sr_part1 + sr_part2
+                print('sr_part1 + sr_part2 =', sr_part_12)
+                sr_rec = self.combine_shares(sr_part_12)
                 print('sr_rec:', sr_rec)
 
-                s_rec = sr_rec[0: 3*self.bin_len]
-                r_rec = sr_rec[3*self.bin_len: ]
+                sr_byte1 = json.dumps(sr_part1).encode('utf-8')
+                sr_byte2 = json.dumps(sr_part2).encode('utf-8')
+                sr_byte3 = json.dumps(sr_part3).encode('utf-8')
 
-                # check s, r
-                print('s_rec:', s_rec)
-                print('r_rec:',r_rec)
+                sr_bytes = [sr_byte1, sr_byte2, sr_byte3]
+                
+                # generate new shares (w, sh' xor r, sr)
+                for i in range(self.n):
+                        # change type of (w, sh' xor r, sr) from bytes to string
+                        # because json dumps can't have type bytes
+                        w_b64 = base64.b64encode(self.w[i]).decode('utf-8')
+                        sh_xor_r = self.xor(share_pri[i], self.r)
+                        sh_xor_r_b64 = base64.b64encode(sh_xor_r).decode('utf-8')
+                        sr_b64 = base64.b64encode(sr_bytes[i]).decode('utf-8')
 
-                secret_rec = []
-                for i in range(self.k) :
-                        # Get sh'i
-                        sh_pri_xor_r_decode = base64.b64decode(shares_list[i][0]['sh_pri_xor_r'])
+                        new_share = dict()
+                        new_share = {
+                                "w": w_b64,
+                                "share_pri_xor_r": sh_xor_r_b64,
+                                "sr": sr_b64
+                        }
+                        new_share_list.append(new_share)
+                
+                new_secret = json.dumps(new_share_list).encode('utf-8')
+                # print('new_secret:', new_secret)
+                self.new_shares_list = self.genarate_new_shares(self.k, self.n, new_secret)
+                # print('lrss shares:', self.shares_list)
+                
+                share_1 = self.shuffle_shares(self.new_shares_list, 1)
+                share_2 = self.shuffle_shares(self.new_shares_list, 2)
+                share_3 = self.shuffle_shares(self.new_shares_list, 3)
 
-                        # Check shi'_xor_r
-                        print('shi_pri_xor_r:', sh_pri_xor_r_decode)
+                # test whether any two shares can recover
+                share_12 = share_1 + share_2
+                print('share1 + share2 =', share_12)
 
-                        share_pri_rec = self.xor(sh_pri_xor_r_decode, r_rec)
-                        
-                        # Check share_pri
-                        print('share_pri:', share_pri_rec)
+                # test recover
+                self.recover_lrShare(share_12)
+                
+                return self.new_shares_list
 
-                        # Get shi
-                        wi_decode = base64.b64decode(shares_list[i][0]['wi'])
+        def recover_lrShare(self, shares_list: list):
+                # extract shares: (w, sh' xor r, sr)
+                shares_rec = self.combine_shares(shares_list)
 
-                        # Check wi
-                        print('wi:', wi_decode)
+                bytes_rec = shares_rec[shares_rec.index(b'['): ]
+                print('bytes_rec:', bytes_rec)
+                new_share_rec = json.loads(bytes_rec)
+                print('new_share_rec:', new_share_rec)
+                # check (w, sh' xor r, sr)
+                rec_w1 = base64.b64decode(new_share_rec[0]['w'])
+                rec_w2 = base64.b64decode(new_share_rec[1]['w'])
+                rec_w3 = base64.b64decode(new_share_rec[2]['w'])
 
-                        Ext_rec = self.get_inner_product(wi_decode, self.s, self.modulus)
+                rec_sh_pri_xor_r_1 = base64.b64decode(new_share_rec[0]['share_pri_xor_r'])
+                rec_sh_pri_xor_r_2 = base64.b64decode(new_share_rec[1]['share_pri_xor_r'])
+                rec_sh_pri_xor_r_3 = base64.b64decode(new_share_rec[2]['share_pri_xor_r'])
+                rec_sr_byte_1 = base64.b64decode(new_share_rec[0]['sr'])
+                rec_sr_byte_2 = base64.b64decode(new_share_rec[1]['sr'])
+                rec_sr_byte_3 = base64.b64decode(new_share_rec[2]['sr'])
+                rec_sr_1 = json.loads(rec_sr_byte_1)
+                rec_sr_2 = json.loads(rec_sr_byte_2)
+                rec_sr_3 = json.loads(rec_sr_byte_3)
+                
+                rec_sr_list = rec_sr_1 + rec_sr_2 + rec_sr_3
+                print('rec sr list:', rec_sr_list)
+                # recover (s,r)
+                rec_sr = self.combine_shares(rec_sr_list)
+                print('recovered sr:', rec_sr)
 
-                        # Check Ext
-                        print('Ext_rec:', Ext_rec)
-
-                        Sh = self.xor(share_pri_rec, Ext_rec)
-
-                        # Check Sh
-                        print('Sh:', Sh)
-
-                        secret_rec.append(Sh)
-
-                # 運行 Shamir 的恢復函數
-                secret = Shamir.combine(secret_rec)
-
-                # check result
-                print('Recoverd Secret:', secret)
-
-                return secret
+                # Sh' = S' xor r
+                rec_sh_pri1 = self.xor(rec_sh_pri_xor_r_1, self.r)
+                rec_sh_pri2 = self.xor(rec_sh_pri_xor_r_2, self.r)
+                rec_sh_pri3 = self.xor(rec_sh_pri_xor_r_3, self.r)
 
 if __name__ == "__main__":
         pass
