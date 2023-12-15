@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     start_time =  datetime.datetime.now() 
     # Use leakage resilient algorithm on secret
-    lrss_list = lrss.generate_lrShare(Secret)
+    lrss_list = lrss.lrShare(Secret)
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Encrypt time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
