@@ -237,7 +237,7 @@ class LeakageResilientSecretSharing():
                 for i in range(self.k):
                         sh_pri_rec = self.xor(sh_pri_xor_r_reclist, r_rec)
                         print('sh_pri_rec:', sh_pri_rec)
-                        Ext_rec = self.get_inner_product(w_reclist[i], s_rec)
+                        Ext_rec: bytes = self.get_inner_product(w_reclist[i], s_rec)
                         print('Ext_rec:', Ext_rec)
                         
                         original_secret_rec = self.xor(sh_pri_rec, Ext_rec)
