@@ -163,7 +163,7 @@ class LeakageResilientSecretSharing():
                 # Sh' = Sh XOR Ext(wi, s)
                 share_pri = []
                 for i in range(self.n):
-                        self.Ext = self.get_inner_product(w_list[i], s, self.modulus)
+                        self.Ext = self.get_inner_product(w_list[i], s)
                         original_share = json.dumps(original_sharelist[i]).encode('utf-8')
                         share_pri.append(self.xor(original_share, self.Ext))
 
