@@ -151,6 +151,10 @@ class LeakageResilientSecretSharing():
         
         def lrShare(self, secret: bytes) -> list:
                 original_sharelist = self.genarate_original_shares(self.k, self.n, secret)
+                # just test output
+                for i in range(len(original_sharelist)):
+                        print('original_share', i+1, ':', original_sharelist[i])
+
                 # set parameters
                 s = self.set_s()
                 r = self.set_r()
@@ -159,15 +163,24 @@ class LeakageResilientSecretSharing():
 
                 w_list = []
                 for i in range(self.n):
-                        w_list.append(self.set_w())
+                        w = self.set_w()
+                        # just test output
+                        print('w', i+1, ':', w)
+                        w_list.append(w)
+                
                 # Sh' = Sh XOR Ext(wi, s)
-                share_pri = []
+                share_pri_list = []
                 for i in range(self.n):
-                        self.Ext = self.get_inner_product(w_list[i], s)
+                        Ext = self.get_inner_product(w_list[i], s)
+                        print('Ext', i+1, ':', Ext)
                         original_share = json.dumps(original_sharelist[i]).encode('utf-8')
-                        share_pri.append(self.xor(original_share, self.Ext))
-
-                        # combine s and r, then obtain S1 to Sn
+                        share_pri = self.xor(original_share, Ext)
+                        # just test output
+                        print('sh\'', i+1, ':', share_pri_list)
+                        
+                        share_pri_list.append(share_pri)
+                
+                # combine s and r, then obtain S1 to Sn
                 sr = s + r
                 sr_list = self.generate_sr_shares(self.k, self.n, sr)
                         
@@ -215,16 +228,18 @@ class LeakageResilientSecretSharing():
                 w_reclist = []
                 sh_pri_xor_r_reclist = []
                 sr_chunk_reclist = []
+
                 # check new_rec length
                 print('new_rec length:', len(new_rec))
 
                 for i in range(len(new_rec)):
                         w_rec = base64.b64decode(new_rec[i]['w'])
+                        # just test output
+                        print('recovered w', i+1, ':', w_rec)
                         w_reclist.append(w_rec)
                         sh_pri_xor_r_rec = base64.b64decode(new_rec[i]['share_pri_xor_r'])
-                        
-                        # check sh_pri_xor_r_reclist
-                        print('sh_pri_xor_r_rec', i+1, ':', sh_pri_xor_r_rec)
+                        # just test output
+                        print('recovered sh\' xor r', i+1, ':', sh_pri_xor_r_rec)
                         
                         sh_pri_xor_r_reclist.append(sh_pri_xor_r_rec)
                         chunk_rec = base64.b64decode(new_rec[i]['sr'])
@@ -234,10 +249,9 @@ class LeakageResilientSecretSharing():
                 # get two shares of (s,r), to combine full one
                 rec_sr_list = sr_chunk_reclist[0] + sr_chunk_reclist[1]
                 rec_sr = self.combine_shares(rec_sr_list, self.sr_share_chunk)
-                print('recovered sr:', rec_sr)
                 s_rec = rec_sr[0: 3*self.bin_len]
-                print('recovered s:', s_rec)
                 r_rec = rec_sr[3*self.bin_len: ]
+                print('recovered s:', s_rec)
                 print('recovered r:', r_rec)
 
                 recovered_result = bytes()
