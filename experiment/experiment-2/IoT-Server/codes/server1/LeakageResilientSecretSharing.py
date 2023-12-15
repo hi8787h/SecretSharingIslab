@@ -188,7 +188,7 @@ class LeakageResilientSecretSharing():
                         print('original_share', i+1, ':', original_bytes[i])
                         share_pri = self.xor(original_bytes[i], Ext)
                         # just test output
-                        print('sh\'', i+1, ':', share_pri_list[i])
+                        print('sh\'', i+1, ':', share_pri)
                         
                         share_pri_list.append(share_pri)
                 
