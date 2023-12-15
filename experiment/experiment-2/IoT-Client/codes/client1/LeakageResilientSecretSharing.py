@@ -100,7 +100,7 @@ class LeakageResilientSecretSharing():
         
         def generate_sr_shares(self, k: int, n: int, data: bytes) -> list:
                 sr_list = []
-                sr_chunklist = self.split_sr(data)
+                sr_chunklist = self.split_data(data)
                 chunk_id = 1
                 for sr_chunk in sr_chunklist:
                         sr_shares = Shamir.split(k, n, sr_chunk)
