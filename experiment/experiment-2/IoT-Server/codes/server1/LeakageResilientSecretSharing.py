@@ -200,7 +200,7 @@ class LeakageResilientSecretSharing():
                         # change type of (w, sh' xor r, sr) from bytes to string
                         # because json dumps can't have type bytes
                         w_b64 = base64.b64encode(w_list[i]).decode('utf-8')
-                        sh_xor_r = self.xor(share_pri[i], r)
+                        sh_xor_r = self.xor(share_pri_list[i], r)
                         sh_xor_r_b64 = base64.b64encode(sh_xor_r).decode('utf-8')
                         sr_b64 = base64.b64encode(sr_bytes[i]).decode('utf-8')
 
