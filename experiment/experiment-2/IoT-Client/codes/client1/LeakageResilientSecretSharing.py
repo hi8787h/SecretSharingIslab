@@ -150,11 +150,16 @@ class LeakageResilientSecretSharing():
                 return modified_list
         
         def lrShare(self, secret: bytes) -> list:
-                original_sharelist = self.genarate_original_shares(self.k, self.n, secret)
-                # just test output
-                for i in range(len(original_sharelist)):
-                        print('original_share', i+1, ':', original_sharelist[i])
+                original_chunklist = self.genarate_original_shares(self.k, self.n, secret)
 
+                original_share1 = self.shuffle_shares(original_chunklist, 1)
+                original_share2 = self.shuffle_shares(original_chunklist, 2)
+                original_share3 = self.shuffle_shares(original_chunklist, 3)
+                
+                original_sharelist = original_share1 + original_share2 + original_share3
+                # just test output
+                print('original share list :', original_sharelist)
+                
                 # set parameters
                 s = self.set_s()
                 r = self.set_r()
@@ -170,10 +175,13 @@ class LeakageResilientSecretSharing():
                 
                 # Sh' = Sh XOR Ext(wi, s)
                 share_pri_list = []
+                Ext_list = []
                 for i in range(self.n):
                         Ext = self.get_inner_product(w_list[i], s)
                         print('Ext', i+1, ':', Ext)
+                        Ext_list.append(Ext)
                         original_share = json.dumps(original_sharelist[i]).encode('utf-8')
+                        print('original_share', i+1, ':', original_share)
                         share_pri = self.xor(original_share, Ext)
                         # just test output
                         print('sh\'', i+1, ':', share_pri_list)
