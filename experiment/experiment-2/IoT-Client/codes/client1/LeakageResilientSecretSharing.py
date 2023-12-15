@@ -156,9 +156,13 @@ class LeakageResilientSecretSharing():
                 original_share2 = self.shuffle_shares(original_chunklist, 2)
                 original_share3 = self.shuffle_shares(original_chunklist, 3)
                 
-                original_sharelist = original_share1 + original_share2 + original_share3
+                original_share_byte1 = json.dumps(original_share1).encode('utf-8')
+                original_share_byte2 = json.dumps(original_share2).encode('utf-8')
+                original_share_byte3 = json.dumps(original_share3).encode('utf-8')
+                
+                original_bytes = [original_share_byte1, original_share_byte2, original_share_byte3]
                 # just test output
-                print('original share list :', original_sharelist)
+                print('original share list :', original_bytes)
                 
                 # set parameters
                 s = self.set_s()
@@ -180,11 +184,11 @@ class LeakageResilientSecretSharing():
                         Ext = self.get_inner_product(w_list[i], s)
                         print('Ext', i+1, ':', Ext)
                         Ext_list.append(Ext)
-                        original_share = json.dumps(original_sharelist[i]).encode('utf-8')
-                        print('original_share', i+1, ':', original_share)
-                        share_pri = self.xor(original_share, Ext)
+                        #original_share = json.dumps(original_bytes[i]).encode('utf-8')
+                        print('original_share', i+1, ':', original_bytes[i])
+                        share_pri = self.xor(original_bytes[i], Ext)
                         # just test output
-                        print('sh\'', i+1, ':', share_pri_list)
+                        print('sh\'', i+1, ':', share_pri_list[i])
                         
                         share_pri_list.append(share_pri)
                 
