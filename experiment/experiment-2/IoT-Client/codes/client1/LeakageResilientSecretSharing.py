@@ -114,8 +114,6 @@ class LeakageResilientSecretSharing():
                                 "ShareData": share_data
                                 }
                                 sr_list.append(share_dict)
-                                # check
-                                print('sr', chunk_id, ':', share_dict)
                         chunk_id += 1
 
                 return sr_list
@@ -173,8 +171,6 @@ class LeakageResilientSecretSharing():
                 w_list = []
                 for i in range(self.n):
                         w = self.set_w()
-                        # just test output
-                        print('w', i+1, ':', w)
                         w_list.append(w)
                 
                 # Sh' = Sh XOR Ext(wi, s)
@@ -184,13 +180,19 @@ class LeakageResilientSecretSharing():
                         Ext = self.get_inner_product(w_list[i], s)
                         print('Ext', i+1, ':', Ext)
                         Ext_list.append(Ext)
-                        #original_share = json.dumps(original_bytes[i]).encode('utf-8')
-                        print('original_share', i+1, ':', original_bytes[i])
-                        share_pri = self.xor(original_bytes[i], Ext)
-                        # just test output
-                        print('sh\'', i+1, ':', share_pri)
                         
-                        share_pri_list.append(share_pri)
+                        # get string, then we can capture 'ShareData' part
+                        original_bytes_dec = original_bytes[i].decode('utf-8')
+                        original_str = json.loads(original_bytes_dec)
+
+                        # for every share data, do XOR with Ext
+                        for sharedata in original_str:
+                                # turn to bytes because self.xor(bytes, bytes)
+                                share_data_b64 = base64.b64encode(sharedata['ShareData'])
+                                share_pri = self.xor(share_data_b64, Ext)
+                                # just test output
+                                print('sh\'', i+1, ':', share_pri)
+                                share_pri_list.append(share_pri)
                 
                 # combine s and r, then obtain S1 to Sn
                 sr = s + r
