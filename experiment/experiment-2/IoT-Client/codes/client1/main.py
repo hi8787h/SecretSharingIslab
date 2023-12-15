@@ -43,11 +43,14 @@ if __name__ == "__main__":
     part_1 = lrss.shuffle_shares(lrss_list, 1)
     part_2 = lrss.shuffle_shares(lrss_list, 2)
     part_3 = lrss.shuffle_shares(lrss_list, 3)
+    # test output
+    recovered_secret = lrss.recover_lrShare(part_1 + part_2)
+    print('recovered_secret:', recovered_secret)
     
     cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
     cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
     cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
-
+    
     # Check sending data
     #print('data_1:', cipher_bytes_1)
     #print('data_2:', cipher_bytes_2)

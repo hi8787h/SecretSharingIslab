@@ -18,7 +18,7 @@ class LeakageResilientSecretSharing():
                 self.modulus = 2 ** self.bin_len
                 self.k = 2
                 self.n = 3
-
+                # Recover
                 self.original_share_chunk = dict()
                 self.sr_share_chunk = dict()
                 self.new_share_chunk = dict()
@@ -149,7 +149,7 @@ class LeakageResilientSecretSharing():
 
                 return modified_list
         
-        def lrShare(self, secret: bytes):
+        def lrShare(self, secret: bytes) -> list:
                 original_sharelist = self.genarate_original_shares(self.k, self.n, secret)
                 # set parameters
                 s = self.set_s()
@@ -203,17 +203,48 @@ class LeakageResilientSecretSharing():
 
                 new_shares_list = self.genarate_new_shares(self.k, self.n, new_secret)
 
-                share_1 = self.shuffle_shares(new_shares_list, 1)
-                share_2 = self.shuffle_shares(new_shares_list, 2)
-                share_3 = self.shuffle_shares(new_shares_list, 3)
-
-                share_12 = share_1 + share_2
-                self.recover_lrShare(share_12)
+                return new_shares_list
 
         def recover_lrShare(self, sharelist: list):
                 # extract shares: (w, sh' xor r, sr)
-                new_secret = self.combine_shares(sharelist, self.new_share_chunk)
-                print('new secret:', new_secret)
+                new_secret_rec = self.combine_shares(sharelist, self.new_share_chunk)
+                new_bytes_rec = new_secret_rec[new_secret_rec.index(b'['): ]
+                new_rec = json.loads(new_bytes_rec)
+
+                # recover (w, sh' xor r, sr)
+                w_reclist = []
+                sh_pri_xor_r_reclist = []
+                sr_chunk_reclist = []
+                for i in range(len(new_rec)):
+                        w_rec = base64.b64decode(new_rec[i]['w'])
+                        w_reclist.append(w_rec)
+                        sh_pri_xor_r_rec = base64.b64decode(new_rec[i]['share_pri_xor_r'])
+                        sh_pri_xor_r_reclist.append(sh_pri_xor_r_rec)
+                        chunk_rec = base64.b64decode(new_rec[i]['sr'])
+                        sr_chunk_rec = json.loads(chunk_rec.decode('utf-8'))
+                        sr_chunk_reclist.append(sr_chunk_rec)
+
+                # get two shares of (s,r), to combine full one
+                rec_sr_list = sr_chunk_reclist[0] + sr_chunk_reclist[1]
+                rec_sr = self.combine_shares(rec_sr_list, self.sr_share_chunk)
+                print('recovered sr:', rec_sr)
+                s_rec = rec_sr[0: 3*self.bin_len]
+                print('recovered s:', s_rec)
+                r_rec = rec_sr[3*self.bin_len: ]
+                print('recovered r:', r_rec)
+
+                recovered_result = bytes()
+                for i in range(self.k):
+                        sh_pri_rec = self.xor(sh_pri_xor_r_reclist, r_rec)
+                        print('sh_pri_rec:', sh_pri_rec)
+                        Ext_rec = self.get_inner_product(w_reclist[i], s_rec)
+                        print('Ext_rec:', Ext_rec)
+                        
+                        original_secret_rec = self.xor(sh_pri_rec, Ext_rec)
+                        print('original_secret_rec:', original_secret_rec)
+                        recovered_result += original_secret_rec
+
+                return recovered_result
 
 # 12.14紀錄 : 將original, sr, new各用一個dict來收集chunk
 
