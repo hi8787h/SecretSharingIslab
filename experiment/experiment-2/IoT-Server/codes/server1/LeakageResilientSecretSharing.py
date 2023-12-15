@@ -41,13 +41,13 @@ class LeakageResilientSecretSharing():
 
                 return combined_w
         
-        def get_inner_product(self, byte1: bytes, byte2: bytes, modulus: int) -> bytes:          
+        def get_inner_product(self, byte1: bytes, byte2: bytes) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
                 int_1 = int.from_bytes(byte1, byteorder='big')
                 int_2 = int.from_bytes(byte2, byteorder='big')
 
                 inner_product = int_1 * int_2
-                inner_mod = inner_product % modulus
+                inner_mod = inner_product % self.modulus
 
                 inner_bin = bin(inner_mod)[2: ].zfill(128)
                 inner_byte = bytes(inner_bin, 'utf-8')
@@ -227,7 +227,6 @@ class LeakageResilientSecretSharing():
                 # get two shares of (s,r), to combine full one
                 rec_sr_list = sr_chunk_reclist[0] + sr_chunk_reclist[1]
                 rec_sr = self.combine_shares(rec_sr_list, self.sr_share_chunk)
-                print('recovered sr:', rec_sr)
                 s_rec = rec_sr[0: 3*self.bin_len]
                 print('recovered s:', s_rec)
                 r_rec = rec_sr[3*self.bin_len: ]

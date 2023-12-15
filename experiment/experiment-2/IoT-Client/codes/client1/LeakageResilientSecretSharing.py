@@ -41,13 +41,13 @@ class LeakageResilientSecretSharing():
 
                 return combined_w
         
-        def get_inner_product(self, byte1: bytes, byte2: bytes, modulus: int) -> bytes:          
+        def get_inner_product(self, byte1: bytes, byte2: bytes) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
                 int_1 = int.from_bytes(byte1, byteorder='big')
                 int_2 = int.from_bytes(byte2, byteorder='big')
 
                 inner_product = int_1 * int_2
-                inner_mod = inner_product % modulus
+                inner_mod = inner_product % self.modulus
 
                 inner_bin = bin(inner_mod)[2: ].zfill(128)
                 inner_byte = bytes(inner_bin, 'utf-8')
