@@ -191,10 +191,10 @@ class LeakageResilientSecretSharing():
                                 # turn to bytes because self.xor(bytes, bytes)
                                 share_data_b64 = base64.b64encode(sharedata['ShareData'].encode('utf-8'))
                                 share_pri = self.xor(share_data_b64, Ext_list[i])
-                                print('share_pri:', share_pri)
                                 
                                 combined_pri.append(share_pri)
-
+                                
+                        print('pri:', i+1, ':', combined_pri)
                         pri_list.append(combined_pri)
                 
                 # combine s and r, then obtain S1 to Sn
@@ -275,7 +275,7 @@ class LeakageResilientSecretSharing():
                 recovered_result = bytes()
                 for i in range(self.n):
                         sh_pri_rec = self.xor(priXr_reclist[i], r_rec)
-                        print('sh_pri_rec:', sh_pri_rec)
+                        print('sh_pri_rec:', i+1, ':', sh_pri_rec)
                         Ext_rec: bytes = self.get_inner_product(w_reclist[i], s_rec)
                         #print('Ext_rec', i+1, ':', Ext_rec)
                         
