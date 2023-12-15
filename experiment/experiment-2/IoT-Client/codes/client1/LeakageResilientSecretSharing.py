@@ -186,13 +186,16 @@ class LeakageResilientSecretSharing():
                         original_str = json.loads(original_bytes_dec)
 
                         # for every share data, do XOR with Ext
+                        combined_share_pri = bytes()
                         for sharedata in original_str:
                                 # turn to bytes because self.xor(bytes, bytes)
                                 share_data_b64 = base64.b64encode(sharedata['ShareData'].encode('utf-8'))
-                                share_pri = self.xor(share_data_b64, Ext)
-                                # just test output
-                                print('sh\'', i+1, ':', share_pri)
-                                share_pri_list.append(share_pri)
+                                share_pri = self.xor(share_data_b64, Ext_list[i])
+                                
+                                combined_share_pri += share_pri
+                        # just test output
+                        print('sh\'', i+1, ':', combined_share_pri)
+                        share_pri_list.append(share_pri)
                 
                 # combine s and r, then obtain S1 to Sn
                 sr = s + r
