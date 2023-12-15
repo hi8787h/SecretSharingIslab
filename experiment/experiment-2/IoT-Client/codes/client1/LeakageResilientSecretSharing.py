@@ -224,6 +224,9 @@ class LeakageResilientSecretSharing():
                         sr_chunk_rec = json.loads(chunk_rec.decode('utf-8'))
                         sr_chunk_reclist.append(sr_chunk_rec)
 
+                # check sh_pri_xor_r_reclist
+                print('sh_pri_xor_r_reclist:', sh_pri_xor_r_reclist)
+                
                 # get two shares of (s,r), to combine full one
                 rec_sr_list = sr_chunk_reclist[0] + sr_chunk_reclist[1]
                 rec_sr = self.combine_shares(rec_sr_list, self.sr_share_chunk)

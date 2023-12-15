@@ -224,9 +224,13 @@ class LeakageResilientSecretSharing():
                         sr_chunk_rec = json.loads(chunk_rec.decode('utf-8'))
                         sr_chunk_reclist.append(sr_chunk_rec)
 
+                # check sh_pri_xor_r_reclist
+                print('sh_pri_xor_r_reclist:', sh_pri_xor_r_reclist)
+                
                 # get two shares of (s,r), to combine full one
                 rec_sr_list = sr_chunk_reclist[0] + sr_chunk_reclist[1]
                 rec_sr = self.combine_shares(rec_sr_list, self.sr_share_chunk)
+                print('recovered sr:', rec_sr)
                 s_rec = rec_sr[0: 3*self.bin_len]
                 print('recovered s:', s_rec)
                 r_rec = rec_sr[3*self.bin_len: ]
@@ -249,11 +253,7 @@ class LeakageResilientSecretSharing():
 
         def combine_shares(self, sharelist: list, recover_dict: dict):
                 collected_chunks = self.collect_chunks(sharelist, recover_dict)
-                print('recovered dict in collect_chunks():', collected_chunks)
-                
                 combined_chunks = self.combine_chunks(collected_chunks)
-                print('recovered bytes in combine_chunks():', combined_chunks)
-                
                 recovered_chunks = self.remove_zero_padding(combined_chunks)
 
                 return recovered_chunks
@@ -283,8 +283,6 @@ class LeakageResilientSecretSharing():
 
                 for i in range(1, chunk_number+1):
                         chunk_result = Shamir.combine(collected_chunks[i])
-                        # check chunk result
-                        print('chunk_result', i, ':', chunk_result)
                         result += chunk_result    
 
                 return result
