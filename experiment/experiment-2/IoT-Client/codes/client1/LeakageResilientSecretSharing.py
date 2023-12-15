@@ -195,7 +195,7 @@ class LeakageResilientSecretSharing():
                                 combined_share_pri += share_pri
                         # just test output
                         print('sh\'', i+1, ':', combined_share_pri)
-                        share_pri_list.append(share_pri)
+                        share_pri_list.append(combined_share_pri)
                 
                 # combine s and r, then obtain S1 to Sn
                 sr = s + r
@@ -240,6 +240,7 @@ class LeakageResilientSecretSharing():
                 new_secret_rec = self.combine_shares(sharelist, self.new_share_chunk)
                 new_bytes_rec = new_secret_rec[new_secret_rec.index(b'['): ]
                 new_rec = json.loads(new_bytes_rec)
+                print('new_rec', new_rec)
 
                 # recover (w, sh' xor r, sr)
                 w_reclist = []
