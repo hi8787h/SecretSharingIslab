@@ -188,7 +188,7 @@ class LeakageResilientSecretSharing():
                         # for every share data, do XOR with Ext
                         for sharedata in original_str:
                                 # turn to bytes because self.xor(bytes, bytes)
-                                share_data_b64 = base64.b64encode(sharedata['ShareData'])
+                                share_data_b64 = base64.b64encode(sharedata['ShareData'].encode('utf-8'))
                                 share_pri = self.xor(share_data_b64, Ext)
                                 # just test output
                                 print('sh\'', i+1, ':', share_pri)
