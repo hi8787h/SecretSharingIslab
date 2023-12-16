@@ -182,8 +182,8 @@ class LeakageResilientSecretSharing():
 
                 return self.shares_list
         
-        def combine_shares(self, sharelist: list, recover_dict: dict):
-                collected_chunks = self.collect_chunks(sharelist, recover_dict)
+        def combine_shares(self, sharelist: list):
+                collected_chunks = self.collect_chunks(sharelist, self.share_chunk)
                 combined_chunks = self.combine_chunks(collected_chunks)
                 recovered_chunks = self.remove_zero_padding(combined_chunks)
 
