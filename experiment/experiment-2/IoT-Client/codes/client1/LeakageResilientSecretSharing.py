@@ -131,8 +131,8 @@ class LeakageResilientSecretSharing():
                         shared_s = self.set_s()
                         shared_r = self.set_r()
                         # check
-                        print('s', i+1, ':', shared_s)
-                        print('r', i+1, ':', shared_r)
+                        print('s', chunk_id, ':', shared_s)
+                        print('r', chunk_id, ':', shared_r)
 
                         shared_sr = shared_s + shared_r
                         shared_sr_list = self.generate_sr_shares(shared_sr)
