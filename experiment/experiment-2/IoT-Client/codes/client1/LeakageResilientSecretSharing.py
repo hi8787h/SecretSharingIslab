@@ -201,17 +201,14 @@ class LeakageResilientSecretSharing():
 
                         self.save_chunk_shares(data['ChunkID'], data['ShareIndex'],data['ShareData'])
         
-        def count_chunks_amount(self) -> int :
-                # Count chunks number from self.chunks_shares_ciphertext
+        def count_chunks_amount(self, chunklist: dict):
                 chunks_number = 0
-                for chunk_id in self.share_chunk:
-                        chunks_number += 1
-
+                for chunk_id in chunklist:
+                        chunks_number += 1        
                 # Check All chunk exist
-                for i in range(1,chunks_number+1):
-                        if i not in self.share_chunk:
+                for i in range(1, chunks_number + 1):
+                        if i not in chunklist:
                                 raise Exception("Chunk " + str(i) + " not exist")
-                        
                 return chunks_number
         
         def save_chunk_shares(self, chunk_id:int, share_id:int, share_data_b64:str):
@@ -220,21 +217,18 @@ class LeakageResilientSecretSharing():
                 # check saved chunk shares
                 print(chunk_id, ':', self.share_chunk[chunk_id])
 
-        def combine_chunks(self) -> bytes:
+        def combine_chunks(self, collected_chunks: dict) -> bytes:
                 result = bytes()
                 #Count and check chunks number
-                chunk_number = self.count_chunks_amount()
+                chunk_number = self.count_chunks_amount(collected_chunks)
 
                 for i in range(1, chunk_number+1):
-                        chunk_result = Shamir.combine(self.share_chunk[i])
-                        # check chunk result
-                        print('chunk_result:', chunk_result)
-
-                        result += chunk_result
+                        chunk_result = Shamir.combine(collected_chunks[i])
+                        result += chunk_result    
 
                 return result
         
-        def remove_zero_padding(self,data:bytes)->bytes:
+        def remove_zero_padding(self, data:bytes)->bytes:
                 # Remove header zero padding of bytes
                 zero_padding_number = 0
 
