@@ -172,7 +172,7 @@ class LeakageResilientSecretSharing():
                                 new_share_data = base64.b64encode(new_share_bytes).decode('utf-8')
                                 print('new_share_data:', new_share_data)
                                 index += 1
-                                
+
                                 share_dict = {
                                         "ChunkID": chunk_id,
                                         "ShareIndex": share_index,
@@ -181,7 +181,7 @@ class LeakageResilientSecretSharing():
                                 self.shares_list.append(share_dict)
 
                                 # check chunks
-                                print('share_dict:', share_dict)
+                                # print('share_dict:', share_dict)
 
                         chunk_id += 1
 
@@ -189,6 +189,7 @@ class LeakageResilientSecretSharing():
         
         def combine_shares(self, sharelist: list):
                 collected_chunks = self.collect_chunks(sharelist, self.share_chunk)
+                print('collected_chunks:', collected_chunks)
                 combined_chunks = self.combine_chunks(collected_chunks)
                 recovered_chunks = self.remove_zero_padding(combined_chunks)
 
