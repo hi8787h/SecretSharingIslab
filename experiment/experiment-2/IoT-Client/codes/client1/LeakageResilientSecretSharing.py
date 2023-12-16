@@ -165,7 +165,13 @@ class LeakageResilientSecretSharing():
                                 share_data_pri_X_r = self.xor(share_data_pri, shared_r)
 
                                 # get new share data : (wi, sh' XOR r, Si)
+                                print('w', index+1, ':', shared_w_list[index])
+                                print('share_data_pri_X_r', index+1, ':', share_data_pri_X_r)
+                                print('share_sr_bytes', index+1, ':', share_sr_bytes[index])
+                                
                                 new_share_data = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, share_sr_bytes[index])
+                                print('new_share_data:', new_share_data)
+
                                 index += 1
 
                                 share_dict = {
@@ -176,7 +182,7 @@ class LeakageResilientSecretSharing():
                                 self.shares_list.append(share_dict)
 
                                 # check chunks
-                                print(share_dict)
+                                print('share_dict:', share_dict)
 
                         chunk_id += 1
 
