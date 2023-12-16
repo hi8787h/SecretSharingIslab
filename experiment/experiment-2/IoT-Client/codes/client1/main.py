@@ -49,7 +49,7 @@ if __name__ == "__main__":
     print('share 2:', part_2)
     print('share 3:', part_3)
 
-    recovered_secret = lrss.combine_shares(part_1 + part_2)
+    recovered_secret = lrss.combine_lrShares(part_1 + part_2)
     print('recovered_secret:', recovered_secret)
     
     cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
