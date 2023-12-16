@@ -66,13 +66,13 @@ class LeakageResilientSecretSharing():
                         data = b'\x00' + data
                 return data
         
-        def split_data(self, data: bytes):
+        def split_data(self, data: bytes, chunk_list: list):
                 sqeuence_start = 0
                 sqeuence_end = 16
                 data = self.zero_byte_padding(data)
                 for i in range(len(data)//16):
                         data_chunk: bytes = data[sqeuence_start:sqeuence_end]
-                        self.data_chunk_list.append(data_chunk)
+                        chunk_list.append(data_chunk)
                         sqeuence_start += 16
                         sqeuence_end += 16
         
@@ -97,9 +97,11 @@ class LeakageResilientSecretSharing():
         
         def generate_sr_shares(self, data: bytes) -> list:
                 sr_list = []
-                sr_chunklist = self.split_data(data)
+                sr_chunk_list = []
+                self.split_data(data, sr_chunk_list)
+                
                 chunk_id = 1
-                for sr_chunk in sr_chunklist:
+                for sr_chunk in sr_chunk_list:
                         sr_shares = Shamir.split(self.k, self.n, sr_chunk)
                         for share in sr_shares:
                                 share_dict = dict()
