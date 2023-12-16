@@ -76,16 +76,20 @@ class LeakageResilientSecretSharing():
                         sqeuence_start += 16
                         sqeuence_end += 16
         
-        def get_new_shares(self, w: bytes, priXr: bytes, sr_part: bytes) -> str:
+        def get_new_shares(self, w: bytes, priXr: bytes, sr_part: bytes) -> bytes:
+                w_b64 = base64.b64encode(w).decode('utf-8')
+                priXr_b64 = base64.b64encode(priXr).decode('utf-8')
+                sr_part_b64 = base64.b64encode(sr_part).decode('utf-8')
+                
                 new_share = dict()
                 new_share = {
-                        "w": w, 
-                        "sh_pri_X_r": priXr, 
-                        "sr_share": sr_part
+                        "w": w_b64, 
+                        "sh_pri_X_r": priXr_b64, 
+                        "sr_share": sr_part_b64
                 }
-                new_share_str = json.dumps(new_share)
+                new_share_bytes = json.dumps(new_share).encode('utf-8')
 
-                return new_share_str
+                return new_share_bytes
         
         def shuffle_shares(self, sharelist: list, index: int) -> list:
                 modified_list = []
@@ -164,15 +168,11 @@ class LeakageResilientSecretSharing():
                                 share_data_pri_X_r = self.xor(share_data_pri, shared_r)
 
                                 # get new share data : (wi, sh' XOR r, Si)
-                                print('w', index+1, ':', shared_w_list[index])
-                                print('share_data_pri_X_r', index+1, ':', share_data_pri_X_r)
-                                print('share_sr_bytes', index+1, ':', share_sr_bytes[index])
-
-                                new_share_data = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, share_sr_bytes[index])
+                                new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, share_sr_bytes[index])
+                                new_share_data = base64.b64encode(new_share_bytes).decode('utf-8')
                                 print('new_share_data:', new_share_data)
-
                                 index += 1
-
+                                
                                 share_dict = {
                                         "ChunkID": chunk_id,
                                         "ShareIndex": share_index,
