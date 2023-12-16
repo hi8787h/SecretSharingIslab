@@ -35,7 +35,7 @@ if __name__ == "__main__":
 
     start_time =  datetime.datetime.now() 
     # Use leakage resilient algorithm on secret
-    lrss_list = lrss.lrShare(Secret)
+    lrss_list = lrss.genarate_lrShares(Secret)
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Encrypt time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
@@ -44,25 +44,25 @@ if __name__ == "__main__":
     part_2 = lrss.shuffle_shares(lrss_list, 2)
     part_3 = lrss.shuffle_shares(lrss_list, 3)
     # test output
-    recovered_secret = lrss.recover_lrShare(part_1 + part_2)
+    recovered_secret = lrss.combine_shares(part_1 + part_2)
     print('recovered_secret:', recovered_secret)
     
-    cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
-    cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
-    cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
+    #cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
+    #cipher_bytes_2 = json.dumps(part_2).encode('utf-8')
+    #cipher_bytes_3 = json.dumps(part_3).encode('utf-8')
     
     # Check sending data
     #print('data_1:', cipher_bytes_1)
     #print('data_2:', cipher_bytes_2)
     #print('data_3:', cipher_bytes_3)
 
-    print("[Client] Sending data to servers...")
-    pause_time = 0.1
-    SocketConnection.send_data("10.18.173.78", 10001, cipher_bytes_1)
-    time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78", 10002, cipher_bytes_2)
-    time.sleep(pause_time)
-    SocketConnection.send_data("10.18.173.78", 10003, cipher_bytes_3)
+    #print("[Client] Sending data to servers...")
+    #pause_time = 0.1
+    #SocketConnection.send_data("10.18.173.78", 10001, cipher_bytes_1)
+    #time.sleep(pause_time)
+    #SocketConnection.send_data("10.18.173.78", 10002, cipher_bytes_2)
+    #time.sleep(pause_time)
+    #SocketConnection.send_data("10.18.173.78", 10003, cipher_bytes_3)
 
-    total_end_time = datetime.datetime.now() - datetime.timedelta(seconds = pause_time*2)
-    print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
+    #total_end_time = datetime.datetime.now() - datetime.timedelta(seconds = pause_time*2)
+    #print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")

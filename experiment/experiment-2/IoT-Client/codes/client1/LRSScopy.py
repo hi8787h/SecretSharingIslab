@@ -160,35 +160,43 @@ class LeakageResilientSecretSharing():
                 
                 original_bytes = [original_share_byte1, original_share_byte2, original_share_byte3]
                 # just test output
-                print('original share list :', original_bytes)
+                #print('original share list :', original_bytes)
                 
                 # set parameters
                 s = self.set_s()
                 r = self.set_r()
-                print('shared s :', s)
-                print('shared r :', r)
+                #print('shared s :', s)
+                #print('shared r :', r)
 
                 w_list = []
                 for i in range(self.n):
                         w = self.set_w()
-                        # just test output
-                        print('w', i+1, ':', w)
                         w_list.append(w)
                 
                 # Sh' = Sh XOR Ext(wi, s)
-                share_pri_list = []
+                pri_list = []
                 Ext_list = []
                 for i in range(self.n):
                         Ext = self.get_inner_product(w_list[i], s)
-                        print('Ext', i+1, ':', Ext)
+                        #print('Ext', i+1, ':', Ext)
                         Ext_list.append(Ext)
-                        #original_share = json.dumps(original_bytes[i]).encode('utf-8')
-                        print('original_share', i+1, ':', original_bytes[i])
-                        share_pri = self.xor(original_bytes[i], Ext)
-                        # just test output
-                        print('sh\'', i+1, ':', share_pri)
                         
-                        share_pri_list.append(share_pri)
+                        # get string, then we can capture 'ShareData' part
+                        original_bytes_dec = original_bytes[i].decode('utf-8')
+                        original_str = json.loads(original_bytes_dec)
+
+                        # for every share data, do XOR with Ext
+                        combined_pri = bytes() 
+                        for sharedata in original_str:
+                                # turn to bytes because self.xor(bytes, bytes)
+                                share_data_b64 = base64.b64encode(sharedata['ShareData'].encode('utf-8'))
+                                print('share_data_b64:')
+                                share_pri = self.xor(share_data_b64, Ext_list[i])
+                                
+                                combined_pri += share_pri
+                                
+                        print('pri:', i+1, ':', combined_pri)
+                        pri_list.append(combined_pri)
                 
                 # combine s and r, then obtain S1 to Sn
                 sr = s + r
@@ -206,24 +214,26 @@ class LeakageResilientSecretSharing():
 
                 # generate new shares (w, sh' xor r, sr)
                 new_share_list = []
+                
                 for i in range(self.n):
                         # change type of (w, sh' xor r, sr) from bytes to string
                         # because json dumps can't have type bytes
                         w_b64 = base64.b64encode(w_list[i]).decode('utf-8')
-                        sh_xor_r = self.xor(share_pri_list[i], r)
-                        sh_xor_r_b64 = base64.b64encode(sh_xor_r).decode('utf-8')
                         sr_b64 = base64.b64encode(sr_bytes[i]).decode('utf-8')
+
+                        priXr_bytes = self.xor(pri_list[i], r)
+                        print('priXr_bytes:', priXr_bytes)
+                        priXr_b64 = base64.b64encode(priXr_bytes).decode('utf-8')
 
                         new_share = dict()
                         new_share = {
                                 "w": w_b64,
-                                "share_pri_xor_r": sh_xor_r_b64,
+                                "priXr": priXr_b64,
                                 "sr": sr_b64
                         }
                         new_share_list.append(new_share)
                 
                 new_secret = json.dumps(new_share_list).encode('utf-8')
-
                 new_shares_list = self.genarate_new_shares(self.k, self.n, new_secret)
 
                 return new_shares_list
@@ -236,22 +246,17 @@ class LeakageResilientSecretSharing():
 
                 # recover (w, sh' xor r, sr)
                 w_reclist = []
-                sh_pri_xor_r_reclist = []
+                priXr_reclist = []
                 sr_chunk_reclist = []
-
-                # check new_rec length
-                print('new_rec length:', len(new_rec))
 
                 for i in range(len(new_rec)):
                         w_rec = base64.b64decode(new_rec[i]['w'])
-                        # just test output
-                        print('recovered w', i+1, ':', w_rec)
                         w_reclist.append(w_rec)
-                        sh_pri_xor_r_rec = base64.b64decode(new_rec[i]['share_pri_xor_r'])
-                        # just test output
-                        print('recovered sh\' xor r', i+1, ':', sh_pri_xor_r_rec)
-                        
-                        sh_pri_xor_r_reclist.append(sh_pri_xor_r_rec)
+
+                        priXr_rec = base64.b64decode(new_rec[i]['priXr'])
+                        print('priXr_rec', i+1, ':', priXr_rec)
+                        priXr_reclist.append(priXr_rec)
+
                         chunk_rec = base64.b64decode(new_rec[i]['sr'])
                         sr_chunk_rec = json.loads(chunk_rec.decode('utf-8'))
                         sr_chunk_reclist.append(sr_chunk_rec)
@@ -261,18 +266,20 @@ class LeakageResilientSecretSharing():
                 rec_sr = self.combine_shares(rec_sr_list, self.sr_share_chunk)
                 s_rec = rec_sr[0: 3*self.bin_len]
                 r_rec = rec_sr[3*self.bin_len: ]
-                print('recovered s:', s_rec)
-                print('recovered r:', r_rec)
+                #print('recovered s:', s_rec)
+                #print('recovered r:', r_rec)
 
                 recovered_result = bytes()
                 for i in range(self.n):
-                        sh_pri_rec = self.xor(sh_pri_xor_r_reclist[i], r_rec)
-                        print('sh_pri_rec:', sh_pri_rec)
+                        sh_pri_rec = self.xor(priXr_reclist[i], r_rec)
+                        print('sh_pri_rec:', i+1, ':', sh_pri_rec)
                         Ext_rec: bytes = self.get_inner_product(w_reclist[i], s_rec)
-                        print('Ext_rec', i+1, ':', Ext_rec)
+                        #print('Ext_rec', i+1, ':', Ext_rec)
                         
-                        original_secret_rec = self.xor(sh_pri_rec, Ext_rec)
-                        print('original_secret_rec:', original_secret_rec)
+                        original_secret_b64 = self.xor(sh_pri_rec, Ext_rec)
+                        print('original_secret_b64', i+1, ':', original_secret_b64)
+
+                        original_secret_rec = base64.b64decode(original_secret_b64)
                         recovered_result += original_secret_rec
 
                 return recovered_result
@@ -305,9 +312,6 @@ class LeakageResilientSecretSharing():
                 result = bytes()
                 #Count and check chunks number
                 chunk_number = self.count_chunks_amount(collected_chunks)
-
-                # check chunk number
-                print('Total chunk number:', chunk_number)
 
                 for i in range(1, chunk_number+1):
                         chunk_result = Shamir.combine(collected_chunks[i])
