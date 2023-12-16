@@ -66,18 +66,15 @@ class LeakageResilientSecretSharing():
                         data = b'\x00' + data
                 return data
         
-        def split_data(self, data: bytes) -> list:
+        def split_data(self, data: bytes):
                 sqeuence_start = 0
                 sqeuence_end = 16
-                split_list = []
                 data = self.zero_byte_padding(data)
-                for i in range(len(data) // 16):
-                        data_chunk: bytes = data[sqeuence_start: sqeuence_end]
-                        split_list.append(data_chunk)
+                for i in range(len(data)//16):
+                        data_chunk: bytes = data[sqeuence_start:sqeuence_end]
+                        self.data_chunk_list.append(data_chunk)
                         sqeuence_start += 16
                         sqeuence_end += 16
-
-                return split_list
         
         def get_new_shares(self, w: bytes, priXr: bytes, sr_part: bytes) -> str:
                 new_share = dict()
@@ -118,7 +115,7 @@ class LeakageResilientSecretSharing():
 
                 return sr_list
         
-        def genarate_lrShares(self, data: bytes)->list:
+        def genarate_lrShares(self, data: bytes)-> list:
                 self.split_data(data)
                 chunk_id = 1
 
@@ -168,7 +165,7 @@ class LeakageResilientSecretSharing():
                                 print('w', index+1, ':', shared_w_list[index])
                                 print('share_data_pri_X_r', index+1, ':', share_data_pri_X_r)
                                 print('share_sr_bytes', index+1, ':', share_sr_bytes[index])
-                                
+
                                 new_share_data = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, share_sr_bytes[index])
                                 print('new_share_data:', new_share_data)
 
