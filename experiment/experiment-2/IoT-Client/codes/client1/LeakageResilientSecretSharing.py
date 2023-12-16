@@ -222,8 +222,8 @@ class LeakageResilientSecretSharing():
                 print('recovered_sr', recovered_sr)
                 s_rec = recovered_sr[0: 3*self.bin_len]
                 r_rec = recovered_sr[3*self.bin_len: ]
-                print(f'recovered_s: {s_rec}')
-                print(f'recovered_r: {r_rec}')
+                print('recovered_s:', s_rec)
+                print('recovered_r:', r_rec)
 
                 #self.collect_chunks(sharelist, self.share_chunk_dict)
                 combined_share_chunks = self.combine_chunks(self.share_chunk_dict)
@@ -245,10 +245,10 @@ class LeakageResilientSecretSharing():
         def combine_chunks(self, recover_dict: dict) -> bytes:
                 result = bytes()
                 #Count and check chunks number
-                chunk_number = self.count_chunks_amount(self.share_chunk_dict)
+                chunk_number = self.count_chunks_amount(recover_dict)
 
                 for i in range(1, chunk_number+1):
-                        chunk_result = Shamir.combine(self.share_chunk_dict[i])
+                        chunk_result = Shamir.combine(recover_dict[i])
                         result += chunk_result
 
                 return result
