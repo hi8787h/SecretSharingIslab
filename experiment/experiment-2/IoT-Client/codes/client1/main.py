@@ -35,15 +35,20 @@ if __name__ == "__main__":
 
     start_time =  datetime.datetime.now() 
     # Use leakage resilient algorithm on secret
-    lrss_list = lrss.genarate_lrShares(Secret)
+    lrss_share_list = lrss.genarate_lrShares(Secret)
+    print('shares:', lrss_share_list)
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Encrypt time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
     # Shuffle the order of shares, send by 3 paths
-    part_1 = lrss.shuffle_shares(lrss_list, 1)
-    part_2 = lrss.shuffle_shares(lrss_list, 2)
-    part_3 = lrss.shuffle_shares(lrss_list, 3)
+    part_1 = lrss.shuffle_shares(lrss_share_list, 1)
+    part_2 = lrss.shuffle_shares(lrss_share_list, 2)
+    part_3 = lrss.shuffle_shares(lrss_share_list, 3)
     # test output
+    print('share 1:', part_1)
+    print('share 2:', part_2)
+    print('share 3:', part_3)
+
     recovered_secret = lrss.combine_shares(part_1 + part_2)
     print('recovered_secret:', recovered_secret)
     

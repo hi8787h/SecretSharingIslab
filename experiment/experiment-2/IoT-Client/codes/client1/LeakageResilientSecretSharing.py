@@ -182,41 +182,26 @@ class LeakageResilientSecretSharing():
 
                 return self.shares_list
         
-        def combine_shares(self, data_list: list) -> bytes:
-                collected_chunks = self.collect_chunks(data_list, self.share_chunk)
+        def combine_shares(self, sharelist: list, recover_dict: dict):
+                collected_chunks = self.collect_chunks(sharelist, recover_dict)
                 combined_chunks = self.combine_chunks(collected_chunks)
-
                 recovered_chunks = self.remove_zero_padding(combined_chunks)
-                print('recovered_chunks:', recovered_chunks)
 
                 return recovered_chunks
         
-        def collect_chunks(self, data_list:list, saved_dict: dict) -> dict:
+        def collect_chunks(self, sharelist: list, recover_dict: dict) -> dict:
                 chunk_id_list = []
-
-                for data in data_list:
+                for data in sharelist:
                         if data['ChunkID'] not in chunk_id_list:
                                 chunk_id_list.append(data['ChunkID'])
-                                self.share_chunk[data['ChunkID']] = []
+                                recover_dict[data['ChunkID']] = []
 
-                        self.save_chunk_shares(data['ChunkID'], data['ShareIndex'],data['ShareData'])
-        
-        def count_chunks_amount(self, chunklist: dict):
-                chunks_number = 0
-                for chunk_id in chunklist:
-                        chunks_number += 1        
-                # Check All chunk exist
-                for i in range(1, chunks_number + 1):
-                        if i not in chunklist:
-                                raise Exception("Chunk " + str(i) + " not exist")
-                return chunks_number
-        
-        def save_chunk_shares(self, chunk_id:int, share_id:int, share_data_b64:str):
-                share_data = base64.b64decode(share_data_b64.encode("utf-8"))
-                self.share_chunk[chunk_id].append((share_id,share_data))
-                # check saved chunk shares
-                print(chunk_id, ':', self.share_chunk[chunk_id])
+                        share_data = base64.b64decode(data['ShareData'].encode("utf-8"))
+                        
+                        recover_dict[data['ChunkID']].append((data['ShareIndex'], share_data))
 
+                return recover_dict
+        
         def combine_chunks(self, collected_chunks: dict) -> bytes:
                 result = bytes()
                 #Count and check chunks number
@@ -228,10 +213,19 @@ class LeakageResilientSecretSharing():
 
                 return result
         
-        def remove_zero_padding(self, data:bytes)->bytes:
+        def count_chunks_amount(self, chunklist: dict):
+                chunks_number = 0
+                for chunk_id in chunklist:
+                        chunks_number += 1        
+                # Check All chunk exist
+                for i in range(1, chunks_number + 1):
+                        if i not in chunklist:
+                                raise Exception("Chunk " + str(i) + " not exist")
+                return chunks_number
+
+        def remove_zero_padding(self, data: bytes) -> bytes:
                 # Remove header zero padding of bytes
                 zero_padding_number = 0
-
                 for i in range(len(data)):
                         if data[i] == 0:
                                 zero_padding_number += 1

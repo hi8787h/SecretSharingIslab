@@ -301,10 +301,8 @@ class LeakageResilientSecretSharing():
                                 recover_dict[data['ChunkID']] = []
 
                         share_data = base64.b64decode(data['ShareData'].encode("utf-8"))
-                        if self.check_duplicate_shares(data['ChunkID'], share_data):
-                                print(f"Duplicate share_data for chunk_id {data['ChunkID']}, share_id {data['ShareIndex']}")
-                        else:
-                                recover_dict[data['ChunkID']].append((data['ShareIndex'], share_data))
+                        
+                        recover_dict[data['ChunkID']].append((data['ShareIndex'], share_data))
 
                 return recover_dict
         
