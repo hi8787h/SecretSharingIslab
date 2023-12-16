@@ -118,7 +118,7 @@ class LeakageResilientSecretSharing():
                 return sr_list
         
         def genarate_lrShares(self, data: bytes)-> list:
-                self.split_data(data)
+                self.split_data(data, self.data_chunk_list)
                 chunk_id = 1
 
                 # For each chunk
