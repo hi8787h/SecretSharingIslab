@@ -45,9 +45,9 @@ if __name__ == "__main__":
     part_2 = lrss.shuffle_shares(lrss_share_list, 2)
     part_3 = lrss.shuffle_shares(lrss_share_list, 3)
     # test output
-    print('share 1:', part_1)
-    print('share 2:', part_2)
-    print('share 3:', part_3)
+    #print('share 1:', part_1)
+    #print('share 2:', part_2)
+    #print('share 3:', part_3)
 
     recovered_secret = lrss.combine_lrShares(part_1 + part_2)
     print('recovered_secret:', recovered_secret)

@@ -143,31 +143,31 @@ class LeakageResilientSecretSharing():
                         shared_sr_bytes1 = json.dumps(shared_sr_part1).encode('utf-8')
                         shared_sr_bytes2 = json.dumps(shared_sr_part2).encode('utf-8')
                         shared_sr_bytes3 = json.dumps(shared_sr_part3).encode('utf-8')
+                        print('shared_sr_byte1:', shared_sr_bytes1)
+                        print('shared_sr_byte2:', shared_sr_bytes2)
+                        print('shared_sr_byte3:', shared_sr_bytes3)
 
-                        share_sr_bytes = [shared_sr_bytes1, shared_sr_bytes2, shared_sr_bytes3]
+                        shared_sr_bytes = [shared_sr_bytes1, shared_sr_bytes2, shared_sr_bytes3]
                         # check
-                        print('share_sr_bytes:', share_sr_bytes)
+                        print('shared_sr_bytes:', shared_sr_bytes)
 
                         shared_w_list = []
                         for i in range(self.n):
                                 shared_w = self.set_w()
                                 # check
-                                print('w', i+1, ':', shared_w)
+                                print('w [', chunk_id, ',', i+1, ']:', shared_w)
                                 shared_w_list.append(shared_w)
 
                         shared_Ext_list = []
                         for i in range(self.n):
                                 shared_Ext = self.get_inner_product(shared_w_list[i], shared_s)
                                 # check
-                                print('Ext', i+1, ':', shared_Ext)
+                                print('Ext [', chunk_id, ',', i+1, ']:', shared_Ext)
                                 shared_Ext_list.append(shared_Ext)
-
                         # split into 3 shares
                         shares = Shamir.split(self.k, self.n, data_chunk)
-                        # test output
-                        print('shares split by Shamir:', shares)
-                        index = 0
                         
+                        index = 0
                         for share in shares:
                                 share_dict = dict()
                                 share_index = share[0] 
@@ -176,11 +176,9 @@ class LeakageResilientSecretSharing():
                                 # use leakage resilient on share_data
                                 share_data_pri = self.xor(share_data, shared_Ext_list[index])
                                 share_data_pri_X_r = self.xor(share_data_pri, shared_r)
-
                                 # get new share data : (wi, sh' XOR r, Si)
-                                new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, share_sr_bytes[index])
+                                new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, shared_sr_bytes[index])
                                 new_share_data = base64.b64encode(new_share_bytes).decode('utf-8')
-                                print('new_share_data:', new_share_data)
                                 index += 1
 
                                 share_dict = {
@@ -194,30 +192,46 @@ class LeakageResilientSecretSharing():
 
                 return self.shares_list
         
-        def combine_lrShares(self, sharelist: list):
-                collected_chunks = self.collect_chunks(sharelist, self.share_chunk_dict)
-                print('collected_chunks:', collected_chunks)
+        def combine_sr_shares(self, sharelist: list):
+                collected_sr_chunks = self.collect_chunks(sharelist, self.sr_chunk_dict)
+                print('collected_sr_chunks:', collected_sr_chunks)
 
-                # leakage resilient recover
-                recovered_w_list = []
-                recovered_sh_pri_X_r_list = []
-                recovered_sr_share_list = []
-                for chunk in collected_chunks:
-                        for bytes in collected_chunks[chunk]:
-                                data = json.loads(bytes[1])
-                                w_rec = base64.b64decode(data['w'])
-                                sh_pri_X_r_rec = base64.b64decode(data['sh_pri_X_r'])
-                                sr_share_rec = base64.b64decode(data['sr_share'])
-                                print('w', w_rec) #recovered_w_list.append(w_rec)
-                                print('sh_pri_X_r', sh_pri_X_r_rec)#recovered_sh_pri_X_r_list.append(sh_pri_X_r_rec)
-                                print('sr_share', sr_share_rec) #recovered_sr_share_list.append(sr_share_rec)
+                combined_sr = self.combine_chunks(collected_sr_chunks)
+                recovered_sr = self.remove_zero_padding(combined_sr)
 
-                combined_chunks = self.combine_chunks(collected_chunks)
-                recovered_chunks = self.remove_zero_padding(combined_chunks)
-
-                return recovered_chunks
+                return recovered_sr
         
-        def collect_chunks(self, sharelist: list, recover_dict: dict) -> dict:
+        def combine_lrShares(self, sharelist: list):
+                chunk_id_list = []
+                for data in sharelist:
+                        if data['ChunkID'] not in chunk_id_list:
+                                chunk_id_list.append(data['ChunkID'])
+                                self.sr_chunk_dict[data['ChunkID']] = []
+
+                        share_data_bytes = base64.b64decode(data['ShareData'].encode("utf-8"))
+                        share_data = json.loads(share_data_bytes)
+
+                        share_sr = base64.b64decode(share_data['sr_share'])
+                        #print(f'share_data[sr_share] {count} ', share_sr)
+                        
+                        self.sr_chunk_dict[data['ChunkID']].append((data['ShareIndex'], share_sr))
+                        print(self.sr_chunk_dict[data['ChunkID']])
+                
+                combined_sr = self.combine_chunks(self.sr_chunk_dict)
+                recovered_sr = self.remove_zero_padding(combined_sr)
+                print('recovered_sr', recovered_sr)
+                s_rec = recovered_sr[0: 3*self.bin_len]
+                r_rec = recovered_sr[3*self.bin_len: ]
+                print(f'recovered_s: {s_rec}')
+                print(f'recovered_r: {r_rec}')
+
+                #self.collect_chunks(sharelist, self.share_chunk_dict)
+                combined_share_chunks = self.combine_chunks(self.share_chunk_dict)
+                recovered_share_chunks = self.remove_zero_padding(combined_share_chunks)
+
+                return recovered_share_chunks
+        
+        def collect_chunks(self, sharelist: list, recover_dict: dict):
                 chunk_id_list = []
                 for data in sharelist:
                         if data['ChunkID'] not in chunk_id_list:
@@ -227,17 +241,15 @@ class LeakageResilientSecretSharing():
                         share_data = base64.b64decode(data['ShareData'].encode("utf-8"))
                         
                         recover_dict[data['ChunkID']].append((data['ShareIndex'], share_data))
-
-                return recover_dict
         
-        def combine_chunks(self, collected_chunks: dict) -> bytes:
+        def combine_chunks(self, recover_dict: dict) -> bytes:
                 result = bytes()
                 #Count and check chunks number
-                chunk_number = self.count_chunks_amount(collected_chunks)
+                chunk_number = self.count_chunks_amount(self.share_chunk_dict)
 
                 for i in range(1, chunk_number+1):
-                        chunk_result = Shamir.combine(collected_chunks[i])
-                        result += chunk_result    
+                        chunk_result = Shamir.combine(self.share_chunk_dict[i])
+                        result += chunk_result
 
                 return result
         
