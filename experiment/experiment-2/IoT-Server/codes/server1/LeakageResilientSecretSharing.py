@@ -252,7 +252,7 @@ class LeakageResilientSecretSharing():
                         # check
                         print(f'chunk id: {chunk_id}, share index: {shareIndex}')
                         shareIndex = shareIndex % self.k + 1
-                        chunk_id = chunk_id % (len(recoverlist)/self.k) + 1
+                        chunk_id = chunk_id % (len(recoverlist)//self.k) + 1
                         share_id += 1
 
                 result = self.combine_chunks(self.share_chunk_dict)
