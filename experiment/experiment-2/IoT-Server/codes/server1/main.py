@@ -50,7 +50,8 @@ if __name__ == "__main__":
 
         start_decryption_time = datetime.datetime.now()
         random.shuffle(data_list)
-        recovered_secret = lrss.combine_lrShares(data_list[0: 2])
+        part_size = len(data_list)//3
+        recovered_secret = lrss.combine_lrShares(data_list[0: 2*part_size])
         end_decryption_time =  datetime.datetime.now()
 
         print("[Server] Data SHA256: ",end =" ")
