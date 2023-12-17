@@ -1,6 +1,7 @@
 # Server
 import json
 import datetime
+import random
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 from LeakageResilientSecretSharing import LeakageResilientSecretSharing
@@ -48,7 +49,8 @@ if __name__ == "__main__":
         lrss = LeakageResilientSecretSharing()
 
         start_decryption_time = datetime.datetime.now()
-        recovered_secret = lrss.combine_lrShares(data_list)
+        random.shuffle(data_list)
+        recovered_secret = lrss.combine_lrShares(data_list[0: 2])
         end_decryption_time =  datetime.datetime.now()
 
         print("[Server] Data SHA256: ",end =" ")
