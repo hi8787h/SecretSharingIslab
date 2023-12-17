@@ -1,7 +1,6 @@
 # Server
 import json
 import datetime
-import random
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 from LeakageResilientSecretSharing import LeakageResilientSecretSharing
@@ -35,8 +34,9 @@ if __name__ == "__main__":
             data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part3 = json.loads(data3)
             print("data 3 received.")
-            data_list += part3
-            received_data_count += 1
+            if received_data_count < 2:
+                data_list += part3
+                received_data_count += 1
         except Exception:
             pass
 
@@ -49,9 +49,8 @@ if __name__ == "__main__":
         lrss = LeakageResilientSecretSharing()
 
         start_decryption_time = datetime.datetime.now()
-        random.shuffle(data_list)
-        part_size = len(data_list)//3
-        recovered_secret = lrss.combine_lrShares(data_list[0: 2*part_size])
+
+        recovered_secret = lrss.combine_lrShares(data_list)
         end_decryption_time =  datetime.datetime.now()
 
         print("[Server] Data SHA256: ",end =" ")
