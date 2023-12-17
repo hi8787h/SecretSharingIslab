@@ -243,8 +243,6 @@ class LeakageResilientSecretSharing():
                 share_id = 0
                 chunk_id = 1
                 shareIndex = 0
-                # check
-                print(len(recoverlist))
                 for data in recoverlist:
                         shareIndex += 1
                         if data['ChunkID'] not in share_id_list:
@@ -256,7 +254,7 @@ class LeakageResilientSecretSharing():
                         print(f'chunk id: {chunk_id}, share index: {shareIndex}')
                         
                         if shareIndex % self.k == 0:
-                                shareIndex = 1
+                                shareIndex = 0
                                 chunk_id = chunk_id % (len(recoverlist)//self.k) + 1
                         share_id += 1
 
