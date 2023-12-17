@@ -1,7 +1,6 @@
 # Server
 import json
 import datetime
-import time
 from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 from LeakageResilientSecretSharing import LeakageResilientSecretSharing
@@ -39,9 +38,6 @@ if __name__ == "__main__":
             received_data_count += 1
         except Exception:
             pass
-        
-        # Check combined data
-        print('Received:', data_list)
 
          # If not received enough data to recover secret 
         if received_data_count < 2 :
@@ -52,7 +48,7 @@ if __name__ == "__main__":
         lrss = LeakageResilientSecretSharing()
 
         start_decryption_time = datetime.datetime.now()
-        recovered_secret = lrss.leakage_resilient_recovery(data_list)
+        recovered_secret = lrss.combine_lrShares(data_list)
         end_decryption_time =  datetime.datetime.now()
 
         print("[Server] Data SHA256: ",end =" ")
