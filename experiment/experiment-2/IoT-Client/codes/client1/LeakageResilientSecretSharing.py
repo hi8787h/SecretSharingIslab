@@ -250,14 +250,21 @@ class LeakageResilientSecretSharing():
                 # combine secret
                 share_id_list = []
                 share_id = 0
+                chunk_id = 1
+                shareIndex = 1
                 for data in recoverlist:
                         if data['ChunkID'] not in share_id_list:
                                 share_id_list.append(data['ChunkID'])
                                 self.share_chunk_dict[data['ChunkID']] = []
                         share_data_bytes = base64.b64decode(recovered_datalist[share_id])
                         #print('share_data_bytes', share_data_bytes)
-                        self.share_chunk_dict[data['srID']].append((data['ShareIndex'], share_data_bytes))
-                        print('share_chunk_dict', data['srID'], data['ShareIndex'], share_data_bytes)
+                        self.share_chunk_dict[chunk_id].append((shareIndex, share_data_bytes))
+                        shareIndex += 1
+                        if shareIndex == 3:
+                                chunk_id += 1
+                                shareIndex = 1
+
+                        print('share_chunk_dict', chunk_id, shareIndex, share_data_bytes)
                         share_id += 1
 
                 
