@@ -153,6 +153,8 @@ class LeakageResilientSecretSharing():
                                 shared_Ext_list.append(shared_Ext)
                         # split into 3 shares
                         shares = Shamir.split(self.k, self.n, data_chunk)
+                        # check
+                        print('original share:', shares)
                         
                         index = 0
                         for share in shares:
@@ -248,9 +250,12 @@ class LeakageResilientSecretSharing():
                                 share_id_list.append(data['ChunkID'])
                                 self.share_chunk_dict[data['ChunkID']] = []
                         share_data_bytes = base64.b64decode(recovered_datalist[share_id])
+                        print('share_data_bytes', share_data_bytes)
                         self.share_chunk_dict[data['ChunkID']].append((data['ShareIndex'], share_data_bytes))
 
+                print('share_chunk_dict', self.share_chunk_dict)
                 result = self.combine_chunks(self.share_chunk_dict)
+                print('result', result)
                 recovered_secret = self.remove_zero_padding(result)
 
                 return recovered_secret
@@ -270,6 +275,7 @@ class LeakageResilientSecretSharing():
                 result = bytes()
                 #Count and check chunks number
                 chunk_number = self.count_chunks_amount(recover_dict)
+                print('chunk_number', chunk_number)
 
                 for i in range(1, chunk_number+1):
                         chunk_result = Shamir.combine(recover_dict[i])
