@@ -45,7 +45,7 @@ if __name__ == "__main__":
     part_3 = lrss.shuffle_shares(lrss_share_list, 3)
 
     recovered_secret = lrss.combine_lrShares(part_1 + part_2)
-    #print('recovered_secret:', recovered_secret)
+    print('recovered_secret:', recovered_secret)
     
     #cipher_bytes_1 = json.dumps(part_1).encode('utf-8')
     #cipher_bytes_2 = json.dumps(part_2).encode('utf-8')

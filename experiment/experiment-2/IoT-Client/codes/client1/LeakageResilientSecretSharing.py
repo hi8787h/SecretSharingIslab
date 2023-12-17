@@ -145,15 +145,11 @@ class LeakageResilientSecretSharing():
                         shared_w_list = []
                         for i in range(self.n):
                                 shared_w = self.set_w()
-                                # check
-                                print('w [', chunk_id, ',', i+1, ']:', shared_w)
                                 shared_w_list.append(shared_w)
 
                         shared_Ext_list = []
                         for i in range(self.n):
                                 shared_Ext = self.get_inner_product(shared_w_list[i], shared_s)
-                                # check
-                                print('Ext [', chunk_id, ',', i+1, ']:', shared_Ext)
                                 shared_Ext_list.append(shared_Ext)
                         # split into 3 shares
                         shares = Shamir.split(self.k, self.n, data_chunk)
@@ -163,8 +159,6 @@ class LeakageResilientSecretSharing():
                                 share_dict = dict()
                                 share_index = share[0]
                                 share_data = base64.b64encode(share[1])
-                                # check
-                                print('original shares', share_data)
                                 # use leakage resilient on share_data
                                 # new share form: (wi, sh' XOR r, Si)
                                 share_data_pri = self.xor(share_data, shared_Ext_list[index])
@@ -228,7 +222,6 @@ class LeakageResilientSecretSharing():
                         recovered_sr_list = json.loads(sr_str)
                         self.collect_chunks(recovered_sr_list, self.sr_chunk_dict)
                         recovered_sr = self.combine_chunks(self.sr_chunk_dict)
-                        print('recovered_sr:', recovered_sr)
 
                         recovered_s = recovered_sr[0: 3*self.bin_len]
                         recovered_r = recovered_sr[3*self.bin_len: ]
@@ -244,11 +237,23 @@ class LeakageResilientSecretSharing():
                         for w in w_dict[srID]:
                                 recovered_Ext = self.get_inner_product(w[1], recovered_s)
                                 recovered_share = self.xor(recovered_sh_pri_list[count], recovered_Ext)
-                                print('recovered shares', recovered_share)
                                 recovered_datalist.append(recovered_share)
                                 count += 1
-                        
-                return recovered_sr
+                
+                # combine secret
+                share_id_list = []
+                share_id = 0
+                for data in recoverlist:
+                        if data['ChunkID'] not in share_id_list:
+                                share_id_list.append(data['ChunkID'])
+                                self.share_chunk_dict[data['ChunkID']] = []
+                        share_data_bytes = base64.b64decode(recovered_datalist[share_id].encode("utf-8"))
+                        self.share_chunk_dict[data['ChunkID']].append((data['ShareIndex'], share_data_bytes))
+
+                result = self.combine_chunks(self.share_chunk_dict)
+                recovered_secret = self.remove_zero_padding(result)
+
+                return recovered_secret
         
         def collect_chunks(self, sharelist: list, recover_dict: dict):
                 chunk_id_list = []
