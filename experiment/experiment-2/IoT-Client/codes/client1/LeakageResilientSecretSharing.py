@@ -172,7 +172,7 @@ class LeakageResilientSecretSharing():
                                         "ChunkID": chunk_id,
                                         "ShareIndex": share_index,
                                         "ShareData": new_share_data, 
-                                        "srID": sr_id
+                                        "srID": chunk_id
                                 }
                                 self.shares_list.append(share_dict)
 
