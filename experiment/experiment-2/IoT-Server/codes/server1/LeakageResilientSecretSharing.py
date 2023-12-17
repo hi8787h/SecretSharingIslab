@@ -249,6 +249,8 @@ class LeakageResilientSecretSharing():
                                 self.share_chunk_dict[data['ChunkID']] = []
                         share_data_bytes = base64.b64decode(recovered_datalist[share_id])
                         self.share_chunk_dict[chunk_id].append((shareIndex, share_data_bytes))
+                        # check
+                        print(f'chunk id: {chunk_id}, share index: {shareIndex}')
                         shareIndex += 1
                         if shareIndex == 3:
                                 chunk_id += 1
