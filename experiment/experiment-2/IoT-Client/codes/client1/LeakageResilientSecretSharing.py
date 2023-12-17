@@ -203,35 +203,35 @@ class LeakageResilientSecretSharing():
 
                 return recovered_sr
         
-        def combine_lrShares(self, sharelist: list):
-                chunk_id_list = []
-                for data in sharelist:
-                        if data['ChunkID'] not in chunk_id_list:
-                                chunk_id_list.append(data['ChunkID'])
-                                self.sr_chunk_dict[data['ChunkID']] = []
+        def combine_lrShares(self, recoverlist: list):
+                sr_id_list = []
+                sr_dict = dict()
+                for data in recoverlist:
+                        if data['srID'] not in sr_id_list:
+                                sr_id_list.append(data['srID'])
+                                sr_dict[data['srID']] = []
+                        # recover {'w', 'Sh_pri XOR r', sr_share}
+                        recovered_data = base64.b64decode(data['ShareData'].encode("utf-8"))
+                        recovered_json = json.loads(recovered_data)
+                        # save sr chunks
+                        recovered_sr_json = recovered_json['sr_share']
+                        recovered_sr_bytes = base64.b64decode(recovered_sr_json)
+                        sr_dict[data['srID']].append([data['ShareIndex'], recovered_sr_bytes])
 
-                        share_data_bytes = base64.b64decode(data['ShareData'].encode("utf-8"))
-                        share_data = json.loads(share_data_bytes)
-
-                        share_sr = base64.b64decode(share_data['sr_share'])
-                        #print(f'share_data[sr_share] {count} ', share_sr)
+                for srID in sr_dict:
+                        sr_bytes = bytes()
+                        for sr in sr_dict[srID]:
+                                sr_bytes += sr[1]
                         
-                        self.sr_chunk_dict[data['ChunkID']].append((data['srID'], share_sr))
-                        print(self.sr_chunk_dict[data['ChunkID']])
-                
-                combined_sr = self.combine_chunks(self.sr_chunk_dict)
-                recovered_sr = self.remove_zero_padding(combined_sr)
-                print('recovered_sr', recovered_sr)
-                s_rec = recovered_sr[0: 3*self.bin_len]
-                r_rec = recovered_sr[3*self.bin_len: ]
-                print('recovered_s:', s_rec)
-                print('recovered_r:', r_rec)
+                        sr_dec = sr_bytes.decode('utf-8')
+                        sr_str = sr_dec.replace('][', ',')
+                        recovered_sr_list = json.loads(sr_str)
+                        self.collect_chunks(recovered_sr_list, self.sr_chunk_dict)
+                        recovered_sr = self.combine_chunks(self.sr_chunk_dict)
+                        print('recovered_sr:', recovered_sr)
 
-                #self.collect_chunks(sharelist, self.share_chunk_dict)
-                combined_share_chunks = self.combine_chunks(self.share_chunk_dict)
-                recovered_share_chunks = self.remove_zero_padding(combined_share_chunks)
-
-                return recovered_share_chunks
+                # check recovered sr
+                return recovered_sr
         
         def collect_chunks(self, sharelist: list, recover_dict: dict):
                 chunk_id_list = []
