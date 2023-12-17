@@ -242,8 +242,11 @@ class LeakageResilientSecretSharing():
                 share_id_list = []
                 share_id = 0
                 chunk_id = 1
-                shareIndex = 1
+                shareIndex = 0
+                # check
+                print(len(recoverlist))
                 for data in recoverlist:
+                        shareIndex += 1
                         if data['ChunkID'] not in share_id_list:
                                 share_id_list.append(data['ChunkID'])
                                 self.share_chunk_dict[data['ChunkID']] = []
@@ -251,8 +254,10 @@ class LeakageResilientSecretSharing():
                         self.share_chunk_dict[chunk_id].append((shareIndex, share_data_bytes))
                         # check
                         print(f'chunk id: {chunk_id}, share index: {shareIndex}')
-                        shareIndex = shareIndex % self.k + 1
-                        chunk_id = chunk_id % (len(recoverlist)//self.k) + 1
+                        
+                        if shareIndex % self.k == 0:
+                                shareIndex = 1
+                                chunk_id = chunk_id % (len(recoverlist)//self.k) + 1
                         share_id += 1
 
                 result = self.combine_chunks(self.share_chunk_dict)
