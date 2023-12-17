@@ -125,7 +125,6 @@ class LeakageResilientSecretSharing():
                 self.split_data(data, self.data_chunk_list)
                 # For each chunk
                 chunk_id = 1
-                sr_id = 1
                 for data_chunk in self.data_chunk_list:
                         # set parameters
                         shared_s = self.set_s()
@@ -153,7 +152,6 @@ class LeakageResilientSecretSharing():
                                 shared_Ext_list.append(shared_Ext)
                         # split into n shares
                         shares = Shamir.split(self.k, self.n, data_chunk)
-                        combined = Shamir.combine(shares)
                         
                         index = 0
                         for share in shares:
@@ -177,7 +175,6 @@ class LeakageResilientSecretSharing():
                                 self.shares_list.append(share_dict)
 
                         chunk_id += 1
-                sr_id += 1
 
                 return self.shares_list
         
