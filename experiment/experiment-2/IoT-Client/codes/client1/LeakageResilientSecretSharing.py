@@ -153,6 +153,8 @@ class LeakageResilientSecretSharing():
                                 shared_Ext_list.append(shared_Ext)
                         # split into 3 shares
                         shares = Shamir.split(self.k, self.n, data_chunk)
+                        combined = Shamir.combine(shares)
+                        print('original combined:', combined)
                         # check
                         print('original share:', shares)
                         
