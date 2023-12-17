@@ -130,26 +130,17 @@ class LeakageResilientSecretSharing():
                         # set parameters
                         shared_s = self.set_s()
                         shared_r = self.set_r()
-                        # check
-                        print('s', chunk_id, ':', shared_s)
-                        print('r', chunk_id, ':', shared_r)
-
                         shared_sr = shared_s + shared_r
                         shared_sr_list = self.generate_sr_shares(shared_sr)
                         # turn sr_shares into bytes
                         shared_sr_part1 = self.shuffle_shares(shared_sr_list, 1)
                         shared_sr_part2 = self.shuffle_shares(shared_sr_list, 2)
                         shared_sr_part3 = self.shuffle_shares(shared_sr_list, 3)
+
                         shared_sr_bytes1 = json.dumps(shared_sr_part1).encode('utf-8')
                         shared_sr_bytes2 = json.dumps(shared_sr_part2).encode('utf-8')
                         shared_sr_bytes3 = json.dumps(shared_sr_part3).encode('utf-8')
-                        print('shared_sr_byte1:', shared_sr_bytes1)
-                        print('shared_sr_byte2:', shared_sr_bytes2)
-                        print('shared_sr_byte3:', shared_sr_bytes3)
-
                         shared_sr_bytes = [shared_sr_bytes1, shared_sr_bytes2, shared_sr_bytes3]
-                        # check
-                        print('shared_sr_bytes:', shared_sr_bytes)
 
                         shared_w_list = []
                         for i in range(self.n):
@@ -166,17 +157,18 @@ class LeakageResilientSecretSharing():
                                 shared_Ext_list.append(shared_Ext)
                         # split into 3 shares
                         shares = Shamir.split(self.k, self.n, data_chunk)
+                        # check
+                        print('original shares', shares)
                         
                         index = 0
                         for share in shares:
                                 share_dict = dict()
-                                share_index = share[0] 
-                                #share_data = base64.b64encode(share[1]).decode('utf-8')
+                                share_index = share[0]
                                 share_data = base64.b64encode(share[1])
                                 # use leakage resilient on share_data
+                                # new share form: (wi, sh' XOR r, Si)
                                 share_data_pri = self.xor(share_data, shared_Ext_list[index])
                                 share_data_pri_X_r = self.xor(share_data_pri, shared_r)
-                                # get new share data : (wi, sh' XOR r, Si)
                                 new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, shared_sr_bytes[index])
                                 new_share_data = base64.b64encode(new_share_bytes).decode('utf-8')
                                 index += 1
@@ -205,7 +197,11 @@ class LeakageResilientSecretSharing():
         
         def combine_lrShares(self, recoverlist: list):
                 sr_id_list = []
+                w_dict = dict()
+                priXr_dict = dict()
                 sr_dict = dict()
+                
+                # get each sr share to combine 4 (s, r)
                 for data in recoverlist:
                         if data['srID'] not in sr_id_list:
                                 sr_id_list.append(data['srID'])
@@ -213,11 +209,20 @@ class LeakageResilientSecretSharing():
                         # recover {'w', 'Sh_pri XOR r', sr_share}
                         recovered_data = base64.b64decode(data['ShareData'].encode("utf-8"))
                         recovered_json = json.loads(recovered_data)
+                        # save each w
+                        recovered_w_json = recovered_json['w']
+                        recovered_w_bytes = base64.b64decode(recovered_w_json)
+                        w_dict[data['srID']].append([data['ShareIndex'], recovered_w_bytes])
+                        # save each Sh_pri XOR r
+                        recovered_priXr_json = recovered_json['sh_pri_X_r']
+                        recovered_priXr_bytes = base64.b64decode(recovered_priXr_json)
+                        priXr_dict[data['srID']].append([data['ShareIndex'], recovered_priXr_bytes])
                         # save sr chunks
                         recovered_sr_json = recovered_json['sr_share']
                         recovered_sr_bytes = base64.b64decode(recovered_sr_json)
                         sr_dict[data['srID']].append([data['ShareIndex'], recovered_sr_bytes])
 
+                # recover (s, r), and then recover the share data
                 for srID in sr_dict:
                         sr_bytes = bytes()
                         for sr in sr_dict[srID]:
@@ -230,7 +235,22 @@ class LeakageResilientSecretSharing():
                         recovered_sr = self.combine_chunks(self.sr_chunk_dict)
                         print('recovered_sr:', recovered_sr)
 
-                # check recovered sr
+                        recovered_s = recovered_sr[0: 3*self.bin_len]
+                        recovered_r = recovered_sr[3*self.bin_len: ]
+
+                        # recover Sh' = Sh' XOR r
+                        recovered_sh_pri_list = []
+                        for sh_pri_X_r in priXr_dict[srID]:
+                                recovered_sh_pri = self.xor(sh_pri_X_r[1], recovered_r)
+                                recovered_sh_pri_list.append(recovered_sh_pri)
+
+                        # recover Sh = Sh' XOR Ext(w, s)
+                        count = 0
+                        for w in w_dict[srID]:
+                                recovered_Ext = self.get_inner_product(w[1], recovered_s)
+                                recovered_share = self.xor(recovered_sh_pri_list, recovered_Ext)
+                                print('recovered shares', recovered_share)
+                        
                 return recovered_sr
         
         def collect_chunks(self, sharelist: list, recover_dict: dict):
