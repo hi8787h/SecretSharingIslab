@@ -16,7 +16,7 @@ if __name__ == "__main__":
             data1 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part1 = json.loads(data1)
             print("data 1 received.")
-            data_list.append(part1)
+            data_list += part1
             received_data_count += 1
         except Exception:
             pass
@@ -25,7 +25,7 @@ if __name__ == "__main__":
             data2 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part2 = json.loads(data2)
             print("data 2 received.")
-            data_list.append(part2)
+            data_list += part2
             received_data_count += 1
         except Exception:
             pass
@@ -34,7 +34,7 @@ if __name__ == "__main__":
             data3 = SocketConnection.receive_data(HOST,PORT).decode('utf-8')
             part3 = json.loads(data3)
             print("data 3 received.")
-            data_list.append(part3)
+            data_list += part3
             received_data_count += 1
         except Exception:
             pass
