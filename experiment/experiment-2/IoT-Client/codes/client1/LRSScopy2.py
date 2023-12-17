@@ -123,9 +123,9 @@ class LeakageResilientSecretSharing():
         
         def genarate_lrShares(self, data: bytes)-> list:
                 self.split_data(data, self.data_chunk_list)
-                # For each chunk
                 chunk_id = 1
-                sr_id = 1
+
+                # For each chunk
                 for data_chunk in self.data_chunk_list:
                         # set parameters
                         shared_s = self.set_s()
@@ -184,13 +184,11 @@ class LeakageResilientSecretSharing():
                                 share_dict = {
                                         "ChunkID": chunk_id,
                                         "ShareIndex": share_index,
-                                        "ShareData": new_share_data, 
-                                        "srID": chunk_id
+                                        "ShareData": new_share_data
                                 }
                                 self.shares_list.append(share_dict)
 
                         chunk_id += 1
-                sr_id += 1
 
                 return self.shares_list
         
@@ -216,7 +214,7 @@ class LeakageResilientSecretSharing():
                         share_sr = base64.b64decode(share_data['sr_share'])
                         #print(f'share_data[sr_share] {count} ', share_sr)
                         
-                        self.sr_chunk_dict[data['ChunkID']].append((data['ShareIndex'], share_sr, data['srID']))
+                        self.sr_chunk_dict[data['ChunkID']].append((data['ShareIndex'], share_sr))
                         print(self.sr_chunk_dict[data['ChunkID']])
                 
                 combined_sr = self.combine_chunks(self.sr_chunk_dict)
