@@ -20,7 +20,6 @@ if __name__ == "__main__":
     IoT_Info['RAM_usage'] = psutil.virtual_memory().percent
 
     Secret = json.dumps(IoT_Info).encode('utf-8')
-    print('Secret:', Secret)
     print("[Client] Sending data size:", len(Secret), "bytes")
 
     # Hash
