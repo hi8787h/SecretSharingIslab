@@ -216,7 +216,7 @@ class LeakageResilientSecretSharing():
                         share_sr = base64.b64decode(share_data['sr_share'])
                         #print(f'share_data[sr_share] {count} ', share_sr)
                         
-                        self.sr_chunk_dict[data['ChunkID']].append((data['ShareIndex'], share_sr, data['srID']))
+                        self.sr_chunk_dict[data['ChunkID']].append((data['srID'], share_sr))
                         print(self.sr_chunk_dict[data['ChunkID']])
                 
                 combined_sr = self.combine_chunks(self.sr_chunk_dict)
