@@ -164,7 +164,7 @@ class LeakageResilientSecretSharing():
                                 share_index = share[0]
                                 share_data = base64.b64encode(share[1])
                                 # check
-                                print('original shares', shares)
+                                print('original shares', share_data)
                                 # use leakage resilient on share_data
                                 # new share form: (wi, sh' XOR r, Si)
                                 share_data_pri = self.xor(share_data, shared_Ext_list[index])
@@ -217,6 +217,7 @@ class LeakageResilientSecretSharing():
                         sr_dict[data['srID']].append([data['ShareIndex'], recovered_sr_bytes])
 
                 # recover (s, r), and then recover the share data
+                recovered_datalist = []
                 for srID in sr_dict:
                         sr_bytes = bytes()
                         for sr in sr_dict[srID]:
@@ -244,6 +245,7 @@ class LeakageResilientSecretSharing():
                                 recovered_Ext = self.get_inner_product(w[1], recovered_s)
                                 recovered_share = self.xor(recovered_sh_pri_list[count], recovered_Ext)
                                 print('recovered shares', recovered_share)
+                                recovered_datalist.append(recovered_share)
                                 count += 1
                         
                 return recovered_sr
