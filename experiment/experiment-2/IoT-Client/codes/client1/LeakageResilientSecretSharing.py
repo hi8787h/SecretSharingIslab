@@ -251,10 +251,8 @@ class LeakageResilientSecretSharing():
                         self.share_chunk_dict[chunk_id].append((shareIndex, share_data_bytes))
                         # check
                         print(f'chunk id: {chunk_id}, share index: {shareIndex}')
-                        shareIndex += 1
-                        if shareIndex == 3:
-                                chunk_id += 1
-                                shareIndex = 1
+                        shareIndex = shareIndex % self.k + 1
+                        chunk_id = chunk_id % len(self.data_chunk_list) + 1
                         share_id += 1
 
                 result = self.combine_chunks(self.share_chunk_dict)
