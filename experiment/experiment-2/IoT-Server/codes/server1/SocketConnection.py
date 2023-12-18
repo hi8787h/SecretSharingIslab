@@ -8,11 +8,13 @@ class SocketConnection:
             s.sendall(data)
             s.close()
     @staticmethod
-    def receive_data(HOST, PORT):
+    def receive_data(HOST, PORT, timeout=10):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.bind((HOST, PORT))
             s.listen()
+            s.settimeout(timeout)
             conn, addr = s.accept()
+
             data = bytes()
             with conn:
                 print(f"[Server] Client IP: {addr}")
