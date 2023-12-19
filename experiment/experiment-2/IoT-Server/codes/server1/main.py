@@ -46,3 +46,6 @@ if __name__ == "__main__":
         HashFunction.print_sha256(recovered_secret)
 
         print("[Server] Decryption time：", (end_decryption_time - start_decryption_time).total_seconds() ,"sec")
+
+        if received_data_count >= 2:
+            break
