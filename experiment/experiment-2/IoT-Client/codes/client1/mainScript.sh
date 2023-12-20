@@ -2,5 +2,5 @@
 for i in {1..100};
 do
     python main.py
-    sleep 2
+    sleep 5
 done
