@@ -33,7 +33,7 @@ if __name__ == "__main__":
     start_time =  datetime.datetime.now() 
     # Use leakage resilient algorithm on secret
     lrss_share_list = lrss.genarate_lrShares(Secret)
-    print('Share list:', lrss_share_list, f'length: {len(lrss_share_list)}')
+    #print('Share list:', lrss_share_list, f'length: {len(lrss_share_list)}')
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Shares construction time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
@@ -45,9 +45,9 @@ if __name__ == "__main__":
     data_1 = json.dumps(part_1).encode('utf-8')
     data_2 = json.dumps(part_2).encode('utf-8')
     data_3 = json.dumps(part_3).encode('utf-8')
-    print('Data on port 1:', data_1, f'length: {len(data_1)}')
-    print('Data on port 2:', data_2, f'length: {len(data_2)}')
-    print('Data on port 3:', data_3, f'length: {len(data_3)}')
+    print(f'Data length on port 1:', len(data_1))
+    print(f'Data length on port 2:', len(data_2))
+    print(f'Data length on port 3:', len(data_3))
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1

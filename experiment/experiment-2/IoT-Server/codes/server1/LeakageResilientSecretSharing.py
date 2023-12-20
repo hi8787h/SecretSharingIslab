@@ -132,9 +132,9 @@ class LeakageResilientSecretSharing():
                         shared_r = self.set_r()
                         shared_sr = shared_s + shared_r
                         shared_sr_list = self.generate_sr_shares(shared_sr)
-                        print(f's {chunk_id}:', shared_s)
-                        print(f'r {chunk_id}:', shared_r)
-                        print(f'(s, r) share list {chunk_id}:', shared_sr_list)
+                        #print(f's {chunk_id}:', shared_s)
+                        #print(f'r {chunk_id}:', shared_r)
+                        #print(f'(s, r) share list {chunk_id}:', shared_sr_list)
                         # turn sr_shares into bytes
                         shared_sr_part1 = self.classify_shares(shared_sr_list, 1)
                         shared_sr_part2 = self.classify_shares(shared_sr_list, 2)
@@ -148,18 +148,18 @@ class LeakageResilientSecretSharing():
                         shared_w_list = []
                         for i in range(self.n):
                                 shared_w = self.set_w()
-                                print(f'w[{chunk_id},{i+1}]:', shared_w)
+                                #print(f'w[{chunk_id},{i+1}]:', shared_w)
                                 shared_w_list.append(shared_w)
 
                         shared_Ext_list = []
                         for i in range(self.n):
                                 shared_Ext = self.get_inner_product(shared_w_list[i], shared_s)
-                                print(f'Ext [{chunk_id},{i+1}]:', shared_Ext)
+                                #print(f'Ext [{chunk_id},{i+1}]:', shared_Ext)
                                 shared_Ext_list.append(shared_Ext)
 
                         # split into n shares
                         shares = Shamir.split(self.k, self.n, data_chunk)
-                        print(f'Original share list {chunk_id}(split by Shamir):', shares)
+                        #print(f'Original share list {chunk_id}(split by Shamir):', shares)
                         
                         index = 0
                         for share in shares:
@@ -179,8 +179,8 @@ class LeakageResilientSecretSharing():
                                         "ShareIndex": share_index,
                                         "ShareData": new_share_data
                                 }
-                                print(f'sh\'[{chunk_id},{index}]:', share_data_pri)
-                                print(f'sh\'XOR r[{chunk_id},{index}]:', share_data_pri_X_r)
+                                #print(f'sh\'[{chunk_id},{index}]:', share_data_pri)
+                                #print(f'sh\'XOR r[{chunk_id},{index}]:', share_data_pri_X_r)
 
                                 self.shares_list.append(share_dict)
                         chunk_id += 1
@@ -234,8 +234,8 @@ class LeakageResilientSecretSharing():
 
                         recovered_s = recovered_sr[0: self.eta*self.bin_len]
                         recovered_r = recovered_sr[self.eta*self.bin_len: ]
-                        print(f'recovered s {recovered_sr_count}', recovered_s)
-                        print(f'recovered r {recovered_sr_count}', recovered_r)
+                        #print(f'recovered s {recovered_sr_count}', recovered_s)
+                        #print(f'recovered r {recovered_sr_count}', recovered_r)
                         recovered_sr_count += 1
 
                         # recover Sh' = Sh' XOR r
@@ -251,10 +251,10 @@ class LeakageResilientSecretSharing():
                                 recovered_share = self.xor(recovered_sh_pri_list[count], recovered_Ext)
                                 recovered_datalist.append(recovered_share)
                                 
-                                print(f'recovered w[{srID},{count+1}]:', w[1])
-                                print(f'recovered Sh\'[{srID},{count+1}]:', recovered_sh_pri_list[count])
-                                print(f'recovered Ext[{srID},{count+1}]:', recovered_Ext)
-                                print(f'recovered Sh[{srID},{count+1}]:', recovered_share)
+                                #print(f'recovered w[{srID},{count+1}]:', w[1])
+                                #print(f'recovered Sh\'[{srID},{count+1}]:', recovered_sh_pri_list[count])
+                                #print(f'recovered Ext[{srID},{count+1}]:', recovered_Ext)
+                                #print(f'recovered Sh[{srID},{count+1}]:', recovered_share)
                                 count += 1
                 # combine secret
                 share_id_list = []
@@ -296,9 +296,9 @@ class LeakageResilientSecretSharing():
                 chunk_number = self.count_chunks_amount(recover_dict)
 
                 for i in range(1, chunk_number+1):
-                        print(f'Recovered share list {i}(by Shamir):', recover_dict[i])
+                        #print(f'Recovered share list {i}(by Shamir):', recover_dict[i])
                         chunk_result = Shamir.combine(recover_dict[i])
-                        print(f'Chunk {i}:', chunk_result)
+                        #print(f'Chunk {i}:', chunk_result)
                         result += chunk_result
 
                 return result

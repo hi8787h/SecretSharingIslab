@@ -38,8 +38,7 @@ if __name__ == "__main__":
         lrss = LeakageResilientSecretSharing()
 
         start_decryption_time = datetime.datetime.now()
-
-        print('Received data lists:', data_list)
+        
         recovered_secret = lrss.combine_lrShares(data_list)
         print('Recovered secret:', recovered_secret)
         end_decryption_time =  datetime.datetime.now()
