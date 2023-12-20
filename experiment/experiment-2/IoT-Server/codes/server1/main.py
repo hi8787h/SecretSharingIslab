@@ -39,13 +39,15 @@ if __name__ == "__main__":
 
         start_decryption_time = datetime.datetime.now()
 
+        print('Received data lists:', data_list)
         recovered_secret = lrss.combine_lrShares(data_list)
+        print('Recovered secret:', recovered_secret)
         end_decryption_time =  datetime.datetime.now()
 
         print("[Server] Data SHA256: ",end =" ")
         HashFunction.print_sha256(recovered_secret)
 
-        print("[Server] Decryption time：", (end_decryption_time - start_decryption_time).total_seconds() ,"sec")
+        print("[Server] Recover time：", (end_decryption_time - start_decryption_time).total_seconds() ,"sec")
 
-        if received_data_count >= 2:
-            break
+        #if received_data_count >= 2:
+            #break
