@@ -179,8 +179,8 @@ class LeakageResilientSecretSharing():
                                         "ShareIndex": share_index,
                                         "ShareData": new_share_data
                                 }
-                                print(f'sh\'[{chunk_id},{index+1}]:', share_data_pri)
-                                print(f'sh\'XOR r[{chunk_id},{index+1}]:', share_data_pri_X_r)
+                                print(f'sh\'[{chunk_id},{index}]:', share_data_pri)
+                                print(f'sh\'XOR r[{chunk_id},{index}]:', share_data_pri_X_r)
 
                                 self.shares_list.append(share_dict)
                         chunk_id += 1

@@ -57,5 +57,5 @@ if __name__ == "__main__":
     time.sleep(pause_time)
     SocketConnection.send_data("10.18.173.78", 10003, data_3)
 
-    #total_end_time = datetime.datetime.now() - datetime.timedelta(seconds = pause_time*2)
-    #print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
+    total_end_time = datetime.datetime.now() - datetime.timedelta(seconds = pause_time*2)
+    print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
