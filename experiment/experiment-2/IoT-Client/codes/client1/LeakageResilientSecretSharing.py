@@ -16,7 +16,7 @@ class LeakageResilientSecretSharing():
         def __init__(self):
                 self.bin_len = 16
                 self.modulus = 2 ** self.bin_len
-                self.eta = 3
+                self.eta = 4
                 self.k = 2
                 self.n = 3
                 # For encrypt
@@ -109,11 +109,7 @@ class LeakageResilientSecretSharing():
                 
                 chunk_id = 1
                 for sr_chunk in sr_chunk_list:
-                        # check
-                        print(f'sr chunk {chunk_id}', sr_chunk)
-                        sr_shares = Shamir.split(self.k, self.n, sr_chunk)
-                        # check
-                        print(f'sr chunk {chunk_id} split by Shamir:', sr_shares) 
+                        sr_shares = Shamir.split(self.k, self.n, sr_chunk) 
                         for share in sr_shares:
                                 share_dict = dict()
                                 share_index = share[0] 
@@ -144,9 +140,6 @@ class LeakageResilientSecretSharing():
                         shared_sr_part3 = self.classify_shares(shared_sr_list, 3)
 
                         shared_sr_bytes1 = json.dumps(shared_sr_part1).encode('utf-8')
-                        # check
-                        print('sr share list1:', shared_sr_bytes1)
-                        print(f'length:', len(shared_sr_bytes1))
                         shared_sr_bytes2 = json.dumps(shared_sr_part2).encode('utf-8')
                         shared_sr_bytes3 = json.dumps(shared_sr_part3).encode('utf-8')
                         shared_sr_bytes = [shared_sr_bytes1, shared_sr_bytes2, shared_sr_bytes3]
@@ -174,8 +167,6 @@ class LeakageResilientSecretSharing():
                                 share_data_pri = self.xor(share_data, shared_Ext_list[index])
                                 share_data_pri_X_r = self.xor(share_data_pri, shared_r)
                                 new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, shared_sr_bytes[index])
-                                print(f'new share {index+1} (chunk {chunk_id}):', new_share_bytes)
-                                print('size', len(new_share_bytes))
                                 new_share_data = base64.b64encode(new_share_bytes).decode('utf-8')
                                 index += 1
 
