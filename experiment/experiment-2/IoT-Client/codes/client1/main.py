@@ -45,9 +45,6 @@ if __name__ == "__main__":
     data_1 = json.dumps(part_1).encode('utf-8')
     data_2 = json.dumps(part_2).encode('utf-8')
     data_3 = json.dumps(part_3).encode('utf-8')
-    print(f'Data length on port 1:', len(data_1))
-    print(f'Data length on port 2:', len(data_2))
-    print(f'Data length on port 3:', len(data_3))
 
     print("[Client] Sending data to servers...")
     pause_time = 0.1
