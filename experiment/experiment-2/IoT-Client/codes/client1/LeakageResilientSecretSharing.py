@@ -144,6 +144,9 @@ class LeakageResilientSecretSharing():
                         shared_sr_part3 = self.classify_shares(shared_sr_list, 3)
 
                         shared_sr_bytes1 = json.dumps(shared_sr_part1).encode('utf-8')
+                        # check
+                        print('sr share list1:', shared_sr_bytes1)
+                        print(f'length:', len(shared_sr_bytes1))
                         shared_sr_bytes2 = json.dumps(shared_sr_part2).encode('utf-8')
                         shared_sr_bytes3 = json.dumps(shared_sr_part3).encode('utf-8')
                         shared_sr_bytes = [shared_sr_bytes1, shared_sr_bytes2, shared_sr_bytes3]
