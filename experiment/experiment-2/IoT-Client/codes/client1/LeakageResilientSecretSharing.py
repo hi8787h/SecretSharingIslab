@@ -14,7 +14,7 @@ class LeakageResilientSecretSharing():
         That will improve secure of system!
         """
         def __init__(self):
-                self.bin_len = 128
+                self.bin_len = 16
                 self.modulus = 2 ** self.bin_len
                 self.eta = 3
                 self.k = 2
@@ -26,14 +26,14 @@ class LeakageResilientSecretSharing():
                 self.share_chunk_dict = dict()
                 self.sr_chunk_dict = dict()
 
-        def set_s(self):
-                s = random.choices("01", k=self.bin_len*self.eta)
+        def set_s(self) -> bytes:
+                s = random.choices("01", k = self.eta*self.bin_len)
                 combined_s = ''.join(s).encode('utf-8')
 
                 return combined_s
         
         def set_r(self):
-                r = random.choices("01", k=self.bin_len)
+                r = random.choices("01", k = self.bin_len)
                 combined_r = ''.join(r).encode('utf-8')
 
                 return combined_r
@@ -46,16 +46,18 @@ class LeakageResilientSecretSharing():
         
         def get_inner_product(self, byte1: bytes, byte2: bytes) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
-                int_1 = int.from_bytes(byte1, byteorder='big')
-                int_2 = int.from_bytes(byte2, byteorder='big')
+                result = bytes()
+                for i in range(self.eta):
+                        w = int.from_bytes(byte1[i*self.bin_len: (i+1)*self.bin_len], byteorder='big')
+                        s = int.from_bytes(byte2[i*self.bin_len: (i+1)*self.bin_len], byteorder='big')
+                        inner_product = w * s
+                        inner_mod = inner_product % self.modulus
 
-                inner_product = int_1 * int_2
-                inner_mod = inner_product % self.modulus
+                        inner_bin = bin(inner_mod)[2: ].zfill(self.bin_len)
+                        inner_byte = bytes(inner_bin, 'utf-8')
+                        result += inner_byte
 
-                inner_bin = bin(inner_mod)[2: ].zfill(128)
-                inner_byte = bytes(inner_bin, 'utf-8')
-
-                return inner_byte
+                return result
         
         def xor(self, byte1: bytes, byte2: bytes) -> bytes :
                 xor_bytes = bytes(x^y for x,y in zip(byte1, byte2))
@@ -167,9 +169,10 @@ class LeakageResilientSecretSharing():
                                 # use leakage resilient on share_data
                                 # new share form: (wi, sh' XOR r, Si)
                                 share_data_pri = self.xor(share_data, shared_Ext_list[index])
-                                share_data_pri_X_r = self.xor(share_data_pri, shared_r)
+                                share_data_pri_X_r = self.xor(share_data_pri, r)
                                 new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, shared_sr_bytes[index])
-                                print(f'new share {index+1} (chunk {chunk_id}) size', len(new_share_bytes))
+                                print(f'new share {index+1} (chunk {chunk_id}):', new_share_bytes)
+                                print('size', len(new_share_bytes))
                                 new_share_data = base64.b64encode(new_share_bytes).decode('utf-8')
                                 index += 1
 
