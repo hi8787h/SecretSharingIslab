@@ -107,7 +107,11 @@ class LeakageResilientSecretSharing():
                 
                 chunk_id = 1
                 for sr_chunk in sr_chunk_list:
+                        # check
+                        print(f'sr chunk {chunk_id}', sr_chunk)
                         sr_shares = Shamir.split(self.k, self.n, sr_chunk)
+                        # check
+                        print(f'sr chunk {chunk_id} split by Shamir:', sr_shares) 
                         for share in sr_shares:
                                 share_dict = dict()
                                 share_index = share[0] 
