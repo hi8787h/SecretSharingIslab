@@ -169,7 +169,7 @@ class LeakageResilientSecretSharing():
                                 # use leakage resilient on share_data
                                 # new share form: (wi, sh' XOR r, Si)
                                 share_data_pri = self.xor(share_data, shared_Ext_list[index])
-                                share_data_pri_X_r = self.xor(share_data_pri, r)
+                                share_data_pri_X_r = self.xor(share_data_pri, shared_r)
                                 new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, shared_sr_bytes[index])
                                 print(f'new share {index+1} (chunk {chunk_id}):', new_share_bytes)
                                 print('size', len(new_share_bytes))
