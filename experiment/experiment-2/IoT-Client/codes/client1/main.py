@@ -33,9 +33,8 @@ if __name__ == "__main__":
     start_time =  datetime.datetime.now() 
     # Use leakage resilient algorithm on secret
     lrss_share_list = lrss.genarate_lrShares(Secret)
-    #print('Share list:', lrss_share_list, f'length: {len(lrss_share_list)}')
     encrypt_end_time =  datetime.datetime.now()
-    print("[Client] Shares construction time： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
+    print("[Client] Shares construction cost： ", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
     # Classify the order of shares, send by 3 paths
     part_1 = lrss.classify_shares(lrss_share_list, 1)

@@ -46,7 +46,7 @@ if __name__ == "__main__":
         print("[Server] Data SHA256: ",end =" ")
         HashFunction.print_sha256(recovered_secret)
 
-        print("[Server] Recover time：", (end_decryption_time - start_decryption_time).total_seconds() ,"sec")
+        print("[Server] Recover cost：", (end_decryption_time - start_decryption_time).total_seconds() ,"sec")
 
         #if received_data_count >= 2:
             #break
