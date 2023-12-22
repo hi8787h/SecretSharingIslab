@@ -9,6 +9,8 @@ HOST = "0.0.0.0"
 PORT = 80
 
 if __name__ == "__main__":
+    recover_time = 0.0
+    receive_rounds = 0
     while True:
         received_data_count = 0
         data_list = []
@@ -29,12 +31,12 @@ if __name__ == "__main__":
             data_list += part3
             received_data_count += 1
 
-         # If not received enough data to recover secret 
+        # If not received enough data to recover secret 
         if received_data_count < 2 :
             print("No enough data to recover the secret !")
             continue
         
-        #sssbs = ShamirSecretSharingBytesStreamer()
+        receive_rounds += 1
         lrss = LeakageResilientSecretSharing()
 
         start_decryption_time = datetime.datetime.now()
@@ -46,7 +48,9 @@ if __name__ == "__main__":
         print("[Server] Data SHA256: ",end =" ")
         HashFunction.print_sha256(recovered_secret)
 
+        recover_time += (end_decryption_time - start_decryption_time).total_seconds()
         print("[Server] Recover cost：", (end_decryption_time - start_decryption_time).total_seconds() ,"sec")
 
-        #if received_data_count >= 2:
-            #break
+        if receive_rounds == 100:
+            average_recover_time = recover_time/100
+            print('Average recover cost:', round(average_recover_time, 4))
