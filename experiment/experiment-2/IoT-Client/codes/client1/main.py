@@ -46,12 +46,9 @@ if __name__ == "__main__":
     data_3 = json.dumps(part_3).encode('utf-8')
 
     print("[Client] Sending data to servers...")
-    pause_time = 3
+    pause_time = 2
     SocketConnection.send_data("10.18.173.78", 10001, data_1)
     time.sleep(pause_time)
     SocketConnection.send_data("10.18.173.78", 10002, data_2)
     time.sleep(pause_time)
     SocketConnection.send_data("10.18.173.78", 10003, data_3)
-
-    total_end_time = datetime.datetime.now() - datetime.timedelta(seconds = pause_time*2)
-    print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
