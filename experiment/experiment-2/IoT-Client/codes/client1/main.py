@@ -61,9 +61,9 @@ if __name__ == "__main__":
         Total_time += (total_end_time - start_time).total_seconds()
         print("[Client] Total time：", (total_end_time - start_time).total_seconds() ,"sec")
 
-        time.sleep(3)
+        time.sleep(5)
 
     average_construction_time = construction_time/100
-    total_average_time = construction_time/100
+    total_average_time = Total_time/100
     print('Average share contruction cost:', round(average_construction_time, 4))
     print('Average time cost at client:', round(total_average_time, 4))
