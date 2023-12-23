@@ -222,8 +222,8 @@ class LeakageResilientSecretSharing():
 
                         recovered_s = recovered_sr[0: self.eta*self.bin_len]
                         recovered_r = recovered_sr[self.eta*self.bin_len: ]
-                        print(f'recovered chunk {chunk_id} s:', recovered_s)
-                        print(f'recovered chunk {chunk_id} r:', recovered_r)
+                        print(f'recovered chunk {srID} s:', recovered_s)
+                        print(f'recovered chunk {srID} r:', recovered_r)
 
                         recovered_sr_count += 1
 
