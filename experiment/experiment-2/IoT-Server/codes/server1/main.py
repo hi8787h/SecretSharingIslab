@@ -38,13 +38,14 @@ if __name__ == "__main__":
         
         lrss = LeakageResilientSecretSharing()
 
-        start_decryption_time = datetime.datetime.now()
-        
-        recovered_secret = lrss.combine_lrShares(data_list)
         print(f'{receive_rounds} th share recover')
-        print('Recovered secret:', recovered_secret)
+
+        start_decryption_time = datetime.datetime.now()
+        # Recover shares
+        recovered_secret = lrss.combine_lrShares(data_list)
         end_decryption_time =  datetime.datetime.now()
 
+        print('Recovered secret:', recovered_secret)
         print("[Server] Data SHA256: ",end =" ")
         HashFunction.print_sha256(recovered_secret)
 
