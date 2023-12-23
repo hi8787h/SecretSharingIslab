@@ -8,7 +8,7 @@ class SocketConnection:
             s.sendall(data)
             s.close()
     @staticmethod
-    def receive_data(HOST, PORT, timeout=10):
+    def receive_data(HOST, PORT, timeout=20):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             s.bind((HOST, PORT))
