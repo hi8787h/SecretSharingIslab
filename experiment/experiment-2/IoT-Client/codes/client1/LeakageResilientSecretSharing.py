@@ -261,8 +261,8 @@ class LeakageResilientSecretSharing():
                                 chunk_id = chunk_id % (len(recoverlist)//self.k) + 1
                         share_id += 1
 
-                for i in range(chunk_id):
-                        print(f'recovered chunk {i+1} shares:', self.share_chunk_dict[i])
+                for i in range(1, chunk_id+1):
+                        print(f'recovered chunk {i} shares:', self.share_chunk_dict[i])
 
                 result = self.combine_chunks(self.share_chunk_dict)
                 recovered_secret = self.remove_zero_padding(result)
