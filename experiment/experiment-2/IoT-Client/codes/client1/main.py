@@ -60,7 +60,7 @@ if __name__ == "__main__":
         time.sleep(pause_time)
         SocketConnection.send_data("10.18.173.78", 10003, data_3)
 
-        time.sleep(3)
+        time.sleep(5)
 
     average_time = round(total_construction_time/100, 3)
     print('Average share constructing time:', average_time)
