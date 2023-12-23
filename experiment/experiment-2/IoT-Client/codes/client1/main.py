@@ -23,6 +23,7 @@ if __name__ == "__main__":
         IoT_Info['RAM_usage'] = psutil.virtual_memory().percent
 
         Secret = json.dumps(IoT_Info).encode('utf-8')
+        print(f'{i+1} th share construction')
         print('Secret :', Secret)
         print("[Client] Sending data size:", len(Secret), "bytes")
 
@@ -33,7 +34,6 @@ if __name__ == "__main__":
         # Secret sharing begins
         lrss = LeakageResilientSecretSharing()
 
-        print(f'{i+1} th share construction')
         start_time =  datetime.datetime.now() 
         # Use leakage resilient algorithm on secret
         lrss_share_list = lrss.genarate_lrShares(Secret)
