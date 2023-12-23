@@ -53,7 +53,7 @@ if __name__ == "__main__":
         data_3 = json.dumps(part_3).encode('utf-8')
 
         print("[Client] Sending data to servers...")
-        pause_time = 1
+        pause_time = 3
         SocketConnection.send_data("10.18.173.78", 10001, data_1)
         time.sleep(pause_time)
         SocketConnection.send_data("10.18.173.78", 10002, data_2)
