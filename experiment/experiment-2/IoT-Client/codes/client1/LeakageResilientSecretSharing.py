@@ -13,9 +13,9 @@ class LeakageResilientSecretSharing():
         That will improve secure of system!
         """
         def __init__(self):
-                self.bin_len = 128
+                self.bin_len = 16
                 self.modulus = 2 ** self.bin_len
-                self.eta = 197
+                self.eta = 3
                 self.k = 2
                 self.n = 3
                 # For encrypt
@@ -24,6 +24,7 @@ class LeakageResilientSecretSharing():
                 # For decrypt
                 self.share_chunk_dict = dict()
                 self.sr_chunk_dict = dict()
+        
         def set_s(self):
                 s = random.choices("01", k=self.bin_len*self.eta)
                 combined_s = ''.join(s).encode('utf-8')
@@ -41,11 +42,16 @@ class LeakageResilientSecretSharing():
         
         def get_inner_product(self, byte1: bytes, byte2: bytes) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
-                int_1 = int.from_bytes(byte1, byteorder='big')
-                int_2 = int.from_bytes(byte2, byteorder='big')
-                inner_product = int_1 * int_2
+                inner_product = 0
+                element_len = len(byte1)//self.eta
+                for i in range(self.eta):
+                        w_element = byte1[i*element_len: (i+1)*element_len]
+                        s_element = byte1[i*element_len: (i+1)*element_len]
+                        int_1 = int.from_bytes(w_element, byteorder='big')
+                        int_2 = int.from_bytes(s_element, byteorder='big')
+                        inner_product += int_1 * int_2
                 inner_mod = inner_product % self.modulus
-                inner_bin = bin(inner_mod)[2: ].zfill(128)
+                inner_bin = bin(inner_mod)[2: ].zfill(16)
                 inner_byte = bytes(inner_bin, 'utf-8')
                 return inner_byte
         
@@ -274,6 +280,7 @@ class LeakageResilientSecretSharing():
                         if i not in chunklist:
                                 raise Exception("Chunk " + str(i) + " not exist")
                 return chunks_number
+        
         def remove_zero_padding(self, data: bytes) -> bytes:
                 # Remove header zero padding of bytes
                 zero_padding_number = 0
