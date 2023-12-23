@@ -13,7 +13,7 @@ class LeakageResilientSecretSharing():
         That will improve secure of system!
         """
         def __init__(self):
-                self.bin_len = 16
+                self.bin_len = 128
                 self.modulus = 2 ** self.bin_len
                 self.eta = 3
                 self.k = 2
@@ -43,15 +43,14 @@ class LeakageResilientSecretSharing():
         def get_inner_product(self, byte1: bytes, byte2: bytes) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
                 inner_product = 0
-                element_len = len(byte1)//self.eta
                 for i in range(self.eta):
-                        w_element = byte1[i*element_len: (i+1)*element_len]
-                        s_element = byte1[i*element_len: (i+1)*element_len]
+                        w_element = byte1[i*self.bin_len: (i+1)*self.bin_len]
+                        s_element = byte1[i*self.bin_len: (i+1)*self.bin_len]
                         int_1 = int.from_bytes(w_element, byteorder='big')
                         int_2 = int.from_bytes(s_element, byteorder='big')
                         inner_product += int_1 * int_2
                 inner_mod = inner_product % self.modulus
-                inner_bin = bin(inner_mod)[2: ].zfill(16)
+                inner_bin = bin(inner_mod)[2: ].zfill(128)
                 inner_byte = bytes(inner_bin, 'utf-8')
                 return inner_byte
         
@@ -69,7 +68,7 @@ class LeakageResilientSecretSharing():
                 sqeuence_end = 16
                 data = self.zero_byte_padding(data)
                 for i in range(len(data)//16):
-                        data_chunk: bytes = data[sqeuence_start:sqeuence_end]
+                        data_chunk: bytes = data[sqeuence_start: sqeuence_end]
                         chunk_list.append(data_chunk)
                         sqeuence_start += 16
                         sqeuence_end += 16
