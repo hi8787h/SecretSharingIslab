@@ -56,9 +56,6 @@ class ShamirSecretSharingBytesStreamer:
                 }
                 self.shares_list.append(share_dict)
 
-                # check chunks
-                print(share_dict)
-
             chunk_id += 1
         return self.shares_list
 
@@ -68,39 +65,17 @@ class ShamirSecretSharingBytesStreamer:
         chunks_number = 0
         for chunk_id in self.chunks_shares_ciphertext:
             chunks_number += 1
-        
-        # check chunks_number
-        print('chunks_number in count_chunks_amount():', chunks_number)
 
         # Check All chunk exist
         for i in range(1,chunks_number+1):
             if i not in self.chunks_shares_ciphertext:
                 raise Exception("Chunk " + str(i) + " not exist")
         return chunks_number
-
-    def check_duplicate_shares(self, chunk_id: int, new_share_data: bytes) -> bool:
-        # check duplicate shares
-        print('checking new share data:', new_share_data)
-
-        for _, existing_share_data in self.chunks_shares_ciphertext.get(chunk_id, []):
-            if existing_share_data == new_share_data:
-                print('Same share data exists:', existing_share_data)
-                return True
-            
-        print('It is a new share data !')
-        return False
     
     def save_chunk_shares(self, chunk_id:int, share_id:int, share_data_base64:str):
         share_data = base64.b64decode(share_data_base64.encode("utf-8"))
         
-        if self.check_duplicate_shares(chunk_id, share_data):
-            print(f"Duplicate share_data for chunk_id {chunk_id}, share_id {share_id}")
-        
-        else:
-            self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data))
-        
-        # check saved chunk shares
-        print(chunk_id, ':', self.chunks_shares_ciphertext[chunk_id])
+        self.chunks_shares_ciphertext[chunk_id].append((share_id,share_data))
         
     def collect_chunks(self, data_list:list):
         chunk_id_list = []
@@ -115,18 +90,10 @@ class ShamirSecretSharingBytesStreamer:
         #Count and check chunks number
         chunk_number = self.count_chunks_amount()
 
-        # check chunk number
-        print('chunk number in combine_chunks():', chunk_number)
-
         for i in range(1, chunk_number+1):
             chunk_result = Shamir.combine(self.chunks_shares_ciphertext[i])
-            # check chunk result
-            print('chunk_result:', chunk_result)
-
             result += chunk_result
 
-        # check result
-        print('result of combine_chunks():', result)    
         return result
             
     def remove_zero_padding(self,data:bytes)->bytes:
@@ -142,13 +109,8 @@ class ShamirSecretSharingBytesStreamer:
     def combine_shares(self, data_list:list)->bytes:
         self.collect_chunks(data_list)
         result = self.combine_chunks()
-        
-        # check combine_chunks
-        print('combine_chunks:', result)
 
         result = self.remove_zero_padding(result)
-        # check remove_zero_padding
-        print('remove_zero_padding:', result)
 
         return result
 
