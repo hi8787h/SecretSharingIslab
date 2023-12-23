@@ -52,7 +52,8 @@ if __name__ == "__main__":
         recover_time += (end_decryption_time - start_decryption_time).total_seconds()
         print("[Server] Recover cost：", (end_decryption_time - start_decryption_time).total_seconds() ,"sec")
 
-        average_recover_time = recover_time/receive_rounds
-        print('Average recover cost:', round(average_recover_time, 4))
+        if receive_rounds == 100:
+            average_recover_time = recover_time/100
+            print('Average recover cost:', round(average_recover_time, 3))
         
         receive_rounds += 1

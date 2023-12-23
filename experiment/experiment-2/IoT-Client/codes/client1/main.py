@@ -62,6 +62,6 @@ if __name__ == "__main__":
 
         time.sleep(1)
 
-    average_time = round(total_construction_time/100, 4)
+    average_time = round(total_construction_time/100, 3)
     print('Average share constructing time:', average_time)
     
