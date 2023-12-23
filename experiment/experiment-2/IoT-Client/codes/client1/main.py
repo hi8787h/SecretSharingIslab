@@ -33,6 +33,7 @@ if __name__ == "__main__":
         # Secret sharing begins
         lrss = LeakageResilientSecretSharing()
 
+        print(f'{i+1} th share construction')
         start_time =  datetime.datetime.now() 
         # Use leakage resilient algorithm on secret
         lrss_share_list = lrss.genarate_lrShares(Secret)
@@ -60,7 +61,7 @@ if __name__ == "__main__":
         SocketConnection.send_data("10.18.173.78", 10003, data_3)
 
         time.sleep(1)
-        
+
     average_time = round(total_construction_time/100, 4)
     print('Average share constructing time:', average_time)
     
