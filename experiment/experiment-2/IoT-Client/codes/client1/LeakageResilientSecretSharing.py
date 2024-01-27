@@ -85,6 +85,8 @@ class LeakageResilientSecretSharing():
                         "sr_share": sr_part_b64
                 }
                 new_share_bytes = json.dumps(new_share).encode('utf-8')
+                print('new_share_bytes:', new_share_bytes)
+                print('Length:', len(new_share_bytes))
                 return new_share_bytes
         
         def classify_shares(self, sharelist: list, index: int) -> list:
