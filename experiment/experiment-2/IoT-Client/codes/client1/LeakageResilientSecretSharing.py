@@ -13,7 +13,7 @@ class LeakageResilientSecretSharing():
         That will improve secure of system!
         """
         def __init__(self):
-                self.bin_len = 128
+                self.bin_len = 16
                 self.modulus = 2 ** self.bin_len
                 self.eta = 3
                 self.k = 2
@@ -64,13 +64,6 @@ class LeakageResilientSecretSharing():
                 return data
         
         def split_data(self, data: bytes, chunk_list: list):
-                sqeuence_start = 0
-                sqeuence_end = 16
-                data = self.zero_byte_padding(data)
-                for i in range(len(data)//16):
-                        data_chunk: bytes = data[sqeuence_start: sqeuence_end]
-                        chunk_list.append(data_chunk)
-                        sqeuence_start += 16
                         sqeuence_end += 16
         
         def get_new_shares(self, w: bytes, priXr: bytes, sr_part: bytes) -> bytes:
@@ -85,8 +78,6 @@ class LeakageResilientSecretSharing():
                         "sr_share": sr_part_b64
                 }
                 new_share_bytes = json.dumps(new_share).encode('utf-8')
-                print('new_share_bytes:', new_share_bytes)
-                print('Length:', len(new_share_bytes))
                 return new_share_bytes
         
         def classify_shares(self, sharelist: list, index: int) -> list:
