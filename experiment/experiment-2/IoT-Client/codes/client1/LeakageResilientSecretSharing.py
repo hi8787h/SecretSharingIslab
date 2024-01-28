@@ -155,10 +155,9 @@ class LeakageResilientSecretSharing():
                         for share in shares:
                                 share_dict = dict()
                                 share_index = share[0]
-                                share_data = base64.b64encode(share[1])
                                 # use leakage resilient on share_data
                                 # new share form: (w, Sh' XOR r, S)
-                                share_data_pri = self.xor(share_data, shared_Ext_list[index])
+                                share_data_pri = self.xor(share[1], shared_Ext_list[index])
                                 share_data_pri_X_r = self.xor(share_data_pri, shared_r)
                                 new_share_bytes = self.get_new_shares(shared_w_list[index], share_data_pri_X_r, shared_sr_bytes[index])
                                 new_share_data = base64.b64encode(new_share_bytes).decode('utf-8')
@@ -254,7 +253,7 @@ class LeakageResilientSecretSharing():
                         if data['ChunkID'] not in share_id_list:
                                 share_id_list.append(data['ChunkID'])
                                 self.share_chunk_dict[data['ChunkID']] = []
-                        share_data_bytes = base64.b64decode(recovered_datalist[share_id])
+                        share_data_bytes = recovered_datalist[share_id]
                         self.share_chunk_dict[chunk_id].append((shareIndex, share_data_bytes))
                         
                         if shareIndex % self.k == 0:
