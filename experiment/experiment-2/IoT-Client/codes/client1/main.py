@@ -13,7 +13,7 @@ if __name__ == "__main__":
     
     total_construction_time = 0.0
 
-    for i in range(100):
+    for i in range(1):
         IoT_Info = dict()
         # Temperature
         cpu = CPUTemperature()    
@@ -62,6 +62,6 @@ if __name__ == "__main__":
 
         time.sleep(3)
 
-    average_time = round(total_construction_time/100, 3)
-    print('Average share constructing time:', average_time)
+    #average_time = round(total_construction_time/100, 3)
+    #print('Average share constructing time:', average_time)
     
