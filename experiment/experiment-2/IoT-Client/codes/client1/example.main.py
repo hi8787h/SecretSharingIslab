@@ -9,8 +9,7 @@ from SocketConnection import SocketConnection
 from HashFunction import HashFunction
 
 if __name__ == "__main__":
-    datasize_mb = int(input("[Client] Data Size MB: "))
-    data_byte_size = 1024*datasize_mb
+    data_byte_size = int(input("[Client] Data Size (Bytes): "))
     print("[Client] Sending data size:", data_byte_size, "bytes")
     data = os.urandom(data_byte_size)
 
@@ -20,7 +19,7 @@ if __name__ == "__main__":
     sssbs = ShamirSecretSharingBytesStreamer()
 
     start_time =  datetime.datetime.now() 
-    cipher_list = sssbs.genarate_shares(2,4,data)
+    cipher_list = sssbs.genarate_shares(2,3,data)
     encrypt_end_time =  datetime.datetime.now()
     print("[Client] Encrypt time：", (encrypt_end_time - start_time).total_seconds() ,"sec")
 
