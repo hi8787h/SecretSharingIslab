@@ -50,7 +50,7 @@ class LeakageResilientSecretSharing():
                         int_2 = int.from_bytes(s_element, byteorder='big')
                         inner_product += int_1 * int_2
                 inner_mod = inner_product % self.modulus
-                inner_bin = bin(inner_mod)[2: ].zfill(128)
+                inner_bin = bin(inner_mod)[2: ].zfill(16)
                 inner_byte = bytes(inner_bin, 'utf-8')
                 return inner_byte
         

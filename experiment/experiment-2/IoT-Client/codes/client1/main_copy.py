@@ -52,4 +52,5 @@ if __name__ == "__main__":
         data_2 = json.dumps(part_2).encode('utf-8')
         data_3 = json.dumps(part_3).encode('utf-8')
 
-        print('transfer data length', data_1)
+        print('transfer data', data_1)
+        print('length', len(data_1))
