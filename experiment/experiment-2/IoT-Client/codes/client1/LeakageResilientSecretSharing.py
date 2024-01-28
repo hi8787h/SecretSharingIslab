@@ -64,6 +64,13 @@ class LeakageResilientSecretSharing():
                 return data
         
         def split_data(self, data: bytes, chunk_list: list):
+                sqeuence_start = 0
+                sqeuence_end = 16
+                data = self.zero_byte_padding(data)
+                for i in range(len(data)//16):
+                        data_chunk: bytes = data[sqeuence_start: sqeuence_end]
+                        chunk_list.append(data_chunk)
+                        sqeuence_start += 16
                         sqeuence_end += 16
         
         def get_new_shares(self, w: bytes, priXr: bytes, sr_part: bytes) -> bytes:
