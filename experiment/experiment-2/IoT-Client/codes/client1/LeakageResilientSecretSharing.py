@@ -74,8 +74,8 @@ class LeakageResilientSecretSharing():
                         sqeuence_end += 16
         
         def get_new_shares(self, w: bytes, priXr: bytes, sr_part: bytes) -> bytes:
-                w_b64 = base64.b64encode(w).decode('utf-8')
-                priXr_b64 = base64.b64encode(priXr).decode('utf-8')
+                w_b64 = w.decode('utf-8')
+                priXr_b64 = priXr.decode('utf-8')
                 sr_part_b64 = base64.b64encode(sr_part).decode('utf-8')
                 
                 new_share = dict()
@@ -195,11 +195,11 @@ class LeakageResilientSecretSharing():
                         recovered_json = json.loads(recovered_data)
                         # save each w
                         recovered_w_json = recovered_json['w']
-                        recovered_w_bytes = base64.b64decode(recovered_w_json)
+                        recovered_w_bytes = recovered_w_json.encode('utf-8')
                         w_dict[data['ChunkID']].append([data['ShareIndex'], recovered_w_bytes])
                         # save each Sh_pri XOR r
                         recovered_priXr_json = recovered_json['sh_pri_X_r']
-                        recovered_priXr_bytes = base64.b64decode(recovered_priXr_json)
+                        recovered_priXr_bytes = recovered_priXr_json.encode('utf-8')
                         priXr_dict[data['ChunkID']].append([data['ShareIndex'], recovered_priXr_bytes])
                         # save sr chunks
                         recovered_sr_json = recovered_json['sr_share']
