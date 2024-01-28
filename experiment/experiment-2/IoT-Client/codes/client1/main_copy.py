@@ -52,5 +52,10 @@ if __name__ == "__main__":
         data_2 = json.dumps(part_2).encode('utf-8')
         data_3 = json.dumps(part_3).encode('utf-8')
 
-        print('transfer data', data_1)
-        print('length', len(data_1))
+        data_list = []
+        data_list += data_1
+        data_list += data_2
+        data_list += data_3
+
+        recovered_secret = lrss.combine_lrShares(data_list)
+        print('Recovered secret:', recovered_secret)
