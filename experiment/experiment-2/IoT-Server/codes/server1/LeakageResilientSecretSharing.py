@@ -240,7 +240,7 @@ class LeakageResilientSecretSharing():
                         if data['ChunkID'] not in share_id_list:
                                 share_id_list.append(data['ChunkID'])
                                 self.share_chunk_dict[data['ChunkID']] = []
-                        share_data_bytes = base64.b64decode(recovered_datalist[share_id])
+                        share_data_bytes = recovered_datalist[share_id]
                         self.share_chunk_dict[chunk_id].append((shareIndex, share_data_bytes))
                         print(shareIndex, share_data_bytes)
                         
