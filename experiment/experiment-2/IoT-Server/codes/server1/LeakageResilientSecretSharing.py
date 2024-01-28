@@ -242,6 +242,7 @@ class LeakageResilientSecretSharing():
                                 self.share_chunk_dict[data['ChunkID']] = []
                         share_data_bytes = base64.b64decode(recovered_datalist[share_id])
                         self.share_chunk_dict[chunk_id].append((shareIndex, share_data_bytes))
+                        print(shareIndex, share_data_bytes)
                         
                         if shareIndex % self.k == 0:
                                 shareIndex = 0
