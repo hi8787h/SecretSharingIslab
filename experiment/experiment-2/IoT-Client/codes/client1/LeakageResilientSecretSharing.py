@@ -42,13 +42,14 @@ class LeakageResilientSecretSharing():
                 inner_product = 0
                 for i in range(self.eta):
                         w_element = byte1[i*self.byte_size: (i+1)*self.byte_size]
-                        s_element = byte1[i*self.byte_size: (i+1)*self.byte_size]
+                        s_element = byte2[i*self.byte_size: (i+1)*self.byte_size]
                         int_1 = int.from_bytes(w_element, byteorder='big')
                         int_2 = int.from_bytes(s_element, byteorder='big')
                         inner_product += int_1 * int_2
                 inner_mod = inner_product % self.modulus
                 inner_bin = bin(inner_mod)[2: ].zfill(128)
-                inner_byte = bytes(inner_bin, 'utf-8')
+                inner_int = int(inner_bin, 2)
+                inner_byte = inner_int.to_bytes(len(inner_bin)//8, 'big')
                 return inner_byte
         
         def xor(self, byte1: bytes, byte2: bytes) -> bytes :
