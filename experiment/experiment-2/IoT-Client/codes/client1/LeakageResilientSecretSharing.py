@@ -15,7 +15,7 @@ class LeakageResilientSecretSharing():
         def __init__(self):
                 self.byte_size = 16
                 self.modulus = 2 ** 128
-                self.eta = 5
+                self.eta = 6
                 self.k = 2
                 self.n = 3
                 # For encrypt
