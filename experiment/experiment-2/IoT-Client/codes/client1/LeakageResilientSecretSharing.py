@@ -13,8 +13,8 @@ class LeakageResilientSecretSharing():
         That will improve secure of system!
         """
         def __init__(self):
-                self.bin_len = 128
-                self.modulus = 2 ** self.bin_len
+                self.byte_size = 16
+                self.modulus = 2 ** 128
                 self.eta = 3
                 self.k = 2
                 self.n = 3
@@ -26,26 +26,23 @@ class LeakageResilientSecretSharing():
                 self.sr_chunk_dict = dict()
         
         def set_s(self):
-                s = random.choices("01", k=self.bin_len*self.eta)
-                combined_s = ''.join(s).encode('utf-8')
-                return combined_s
+                s = random.randbytes(self.byte_size*self.eta)
+                return s
         
         def set_r(self):
-                r = random.choices("01", k=self.bin_len)
-                combined_r = ''.join(r).encode('utf-8')
-                return combined_r
+                r = random.randbytes(self.byte_size)
+                return r
         
         def set_w(self):
-                w = random.choices("01", k=self.bin_len*self.eta)
-                combined_w = ''.join(w).encode('utf-8')
-                return combined_w
+                w = random.randbytes(self.byte_size*self.eta)
+                return w
         
         def get_inner_product(self, byte1: bytes, byte2: bytes) -> bytes:          
                 # Change datatype from bytes to int, and compute inner product
                 inner_product = 0
                 for i in range(self.eta):
-                        w_element = byte1[i*self.bin_len: (i+1)*self.bin_len]
-                        s_element = byte1[i*self.bin_len: (i+1)*self.bin_len]
+                        w_element = byte1[i*self.byte_size: (i+1)*self.byte_size]
+                        s_element = byte1[i*self.byte_size: (i+1)*self.byte_size]
                         int_1 = int.from_bytes(w_element, byteorder='big')
                         int_2 = int.from_bytes(s_element, byteorder='big')
                         inner_product += int_1 * int_2
@@ -221,8 +218,8 @@ class LeakageResilientSecretSharing():
                         self.collect_chunks(recovered_sr_list, self.sr_chunk_dict)
                         recovered_sr = self.combine_chunks(self.sr_chunk_dict)
 
-                        recovered_s = recovered_sr[0: self.eta*self.bin_len]
-                        recovered_r = recovered_sr[self.eta*self.bin_len: ]
+                        recovered_s = recovered_sr[0: self.eta*self.byte_size]
+                        recovered_r = recovered_sr[self.eta*self.byte_size: ]
                         print(f"recovered s:", recovered_s)
                         print(f"recovered r:", recovered_r)
 
