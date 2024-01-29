@@ -53,14 +53,14 @@ if __name__ == "__main__":
         data_3 = json.dumps(part_3).encode('utf-8')
 
         print("[Client] Sending data to servers...")
-        pause_time = 0.5
+        pause_time = 1
         SocketConnection.send_data("10.18.173.78", 10001, data_1)
         time.sleep(pause_time)
         SocketConnection.send_data("10.18.173.78", 10002, data_2)
         time.sleep(pause_time)
         SocketConnection.send_data("10.18.173.78", 10003, data_3)
 
-        time.sleep(1)
+        time.sleep(3)
 
     average_time = round(total_construction_time/100, 3)
     print('Average share constructing time:', average_time)
